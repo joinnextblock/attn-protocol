@@ -10,21 +10,33 @@ PNIP-01 defines a decentralized protocol for content promotion on Nostr. The pro
 
 - b - the pubkey of a billboard
 
-### Event Kinds
-- 28888: Billboard Configuration
-- 18888: Buyer Event
-- 17888: Seller Event
+## Key Components
 
-### Roles
-- **Buyer**: An npub publishing promotion requests
-- **Seller**: An npub viewing promoted content for payment
-- **Billboard**: A verification node managing promotions and payments
+### Protocol Participants
+- **Relay**: Standard Nostr relay servers that propagate events between participants
+- **Buyers**: Nostr pubkeys that publish kind:18888 events to promote specific notes
+- **Sellers**: Nostr pubkeys that publish kind:17888 events to signal availability for viewing promoted content
+- **Billboards**: Verification nodes that publish kind:28888 events, match buyers with sellers, and validate content viewing
 
-### Trust Model
-- Buyers specify trusted billboards in promotion requests
-- Sellers specify accepted billboards in participation events
-- Trust relationships are sovereign and market-driven
-- No central billboard authority required
+### Event Schema Implementation
+- **kind:28888**: Defines billboard operational parameters
+  - Fee structure (percentage or fixed amount)
+  - Duration constraints (minimum/maximum viewing time)
+  - Update interval (frequency of promotion rotation)
+  - Service endpoints (primary/backup URLs)
+  - Relay preferences (read/write specifications)
+
+- **kind:18888**: Defines buyer promotion parameters
+  - Target note ID (event to be promoted)
+  - Bid amount (payment offered per view)
+  - Duration requirement (viewing time needed)
+  - Trusted billboard specification (pubkey and relay)
+
+- **kind:17888**: Defines seller viewing parameters
+  - Asking price (payment required per view)
+  - Maximum duration (upper limit on viewing time)
+  - Accepted billboard specification (pubkey and relay)
+
 
 ## Event Specifications
 
@@ -137,11 +149,6 @@ Event kind:17888 from sellers setting view parameters
 - MUST respect billboard's minimum duration requirements
 - MUST include valid billboard pubkey in events
 
-## Future Specifications
-- Verification protocol defined in separate PNIP
-- Content moderation defined in separate PNIP
-- Payment protocol defined in separate PNIP
-
 ## Flow Diagram
 ```mermaid
 sequenceDiagram
@@ -163,43 +170,16 @@ sequenceDiagram
     Note over Relay,Buyer: statistic notes defined in PNIP-XX
 ```
 
-## Key Components
+### Trust Model
+- Buyers specify trusted billboards in promotion requests
+- Sellers specify accepted billboards in participation events
+- Trust relationships are sovereign and market-driven
+- No central billboard authority required
 
-### Protocol Participants
-- **Relay**: Standard Nostr relay servers that propagate events between participants
-- **Buyers**: Nostr pubkeys that publish kind:18888 events to promote specific notes
-- **Sellers**: Nostr pubkeys that publish kind:17888 events to signal availability for viewing promoted content
-- **Billboards**: Verification nodes that publish kind:28888 events, match buyers with sellers, and validate content viewing
+### Basic Workflow
 
-### Event Schema Implementation
-- **kind:28888**: Defines billboard operational parameters
-  - Fee structure (percentage or fixed amount)
-  - Duration constraints (minimum/maximum viewing time)
-  - Update interval (frequency of promotion rotation)
-  - Service endpoints (primary/backup URLs)
-  - Relay preferences (read/write specifications)
-
-- **kind:18888**: Defines buyer promotion parameters
-  - Target note ID (event to be promoted)
-  - Bid amount (payment offered per view)
-  - Duration requirement (viewing time needed)
-  - Trusted billboard specification (pubkey and relay)
-
-- **kind:17888**: Defines seller viewing parameters
-  - Asking price (payment required per view)
-  - Maximum duration (upper limit on viewing time)
-  - Accepted billboard specification (pubkey and relay)
-
-### Economic Architecture
-- Market-driven pricing mechanism with no central rate setting
-- Direct peer-to-peer economic relationship between buyers and sellers
-- Billboard fee structure clearly defined in kind:28888 events
-- All monetary values denominated in satoshis for consistency
-- Billboards only match when bid ≥ ask + billboard_fee
-
-### Trust Framework
-- Decentralized trust model with no central authority
-- Explicit pubkey-based billboard selection by both buyers and sellers
-- Self-sovereign trust relationships maintained by individual participants
-- Trust signals propagated through successful transaction history
-- Market incentives naturally align with honest operation
+1. **Registration**: Billboards Operators publish kind:28888 events announcing their services
+2. **Seller Availability**: Sellers publish kind:17888 events indicating willingness to view content
+3. **Buyer Request**: Buyers publish kind:18888 events to promote specific notes
+4. **Matching**: Billboards Operators match buyers with sellers when bid ≥ ask
+5. **Verification**: Billboards Operators validates that sellers viewed content for required duration

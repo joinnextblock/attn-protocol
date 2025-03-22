@@ -65,6 +65,20 @@ This design encourages market-driven selection of effective billboard implementa
 
 The protocol establishes a sustainable ecosystem where participants can both promote content and earn from viewing others' promotions, all while maintaining creative independence and privacy. Billboard Operators provide the crucial verification layer that ensures trust and transparency in the promotion network.
 
+## Economic Architecture
+- Market-driven pricing mechanism with no central rate setting
+- Direct peer-to-peer economic relationship between buyers and sellers
+- Billboard fee structure clearly defined in kind:28888 events
+- All monetary values denominated in satoshis for consistency
+- Billboards only match BUYERs and SELLERS when bid ≥ ask
+
+## Trust Framework
+- Decentralized trust model with no central authority
+- Explicit pubkey-based billboard selection by both buyers and sellers
+- Self-sovereign trust relationships maintained by individual participants
+- Trust signals propagated through successful transaction history
+- Market incentives naturally align with honest operation
+
 ## Promoted Note Implementation Possibilities (PNIPs)
 The Promoted Note Protocol is improved through PNIPs (Promoted Note Implementation Possibilities).
 
