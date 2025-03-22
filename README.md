@@ -84,6 +84,12 @@ The Promoted Note Protocol is improved through PNIPs (Promoted Note Implementati
 
 ### List
 - [PNIP-01](./PNIP-01.md): BASIC PROTOCOL
+- PNIP-02: BILLBOARD METRICS (coming soon)
+- PNIP-03: SELLER PREFERNCES (coming soon)
+- PNIP-04: BUYER PREFERNCES (coming soon)
+- PNIP-05: BILLBOARD STATISTICS (coming soon)
+- PNIP-06: LIGHTNING PAYMENTS (coming soon)
+- PNIP-07: ECASH PAYMENTS (coming soon)
 
 ## License
 All PNIPs are public domain.
