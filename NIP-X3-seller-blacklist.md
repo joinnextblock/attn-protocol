@@ -1,5 +1,5 @@
 
-# NIP-X3 - SELLER PREFERENCES
+# NIP-X3 - SELLER BLACKLLIST
 `draft optional`
 
 ## Abstract
