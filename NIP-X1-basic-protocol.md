@@ -57,7 +57,10 @@ Event kind:28888 defining billboard operating parameters
         ["min_fee", "<value>", "sats"],
         ["u", "<url>", "primary"],
         ["u", "<url>", "backup"],
-        ["nips", "XX", ...]
+        ["nip", "X1"],
+        ["nip", "X2"],
+        ["k", "22"],
+        ["k", "20"],
     ]
 }
 ```
@@ -67,6 +70,7 @@ Event kind:28888 defining billboard operating parameters
 - `fee`: Billboard commission (percent or fixed sats)
 - `u`: Billboard endpoint URLs
 - `nips`: Implemented NIP versions
+- `kinds`: supported kinds of promotion
 
 #### Optional Tags
 - `max_duration`: Maximum allowed view duration
