@@ -4,13 +4,13 @@
 - [What is the PROMO PROTOCOL?](#what-is-the-promo-protocol)
 - [How does it work?](#how-does-it-work)
 - [Why is this better than centralized advertising?](#why-is-this-better-than-centralized-advertising)
-- [How do I participate as a content promoter?](#how-do-i-participate-as-a-content-promoter)
-- [How do I participate as a content viewer?](#how-do-i-participate-as-a-content-viewer)
-- [How do I filter the promotions I see?](#how-do-i-filter-the-promotions-i-see)
-- [How do block lists work?](#how-do-block-lists-work)
+- [How do I participate as a PROMOTER?](#how-do-i-participate-as-a-promoter)
+- [How do I participate as a PROMOTION VIEWER?](#how-do-i-participate-as-a-promotion-viewer)
+- [How do I filter the PROMOTIONS I see?](#how-do-i-filter-the-promotions-i-see)
+- [How do PROMOTION VIEWER block lists work?](#how-do-promotion-viewer-block-lists-work)
 - [What types of content can I choose to see?](#what-types-of-content-can-i-choose-to-see)
-- [How do I run a billboard?](#how-do-i-run-a-billboard)
-- [How do promotions begin and end?](#how-do-promotions-begin-and-end)
+- [How do I run a BILLBOARD?](#how-do-i-run-a-billboard)
+- [How do PROMOTIONS begin and end?](#how-do-promotions-begin-and-end)
 - [What's the economic model?](#whats-the-economic-model)
 - [How is trust established?](#how-is-trust-established)
 - [Content Preferences and Filtering](#content-preferences-and-filtering)
@@ -31,24 +31,24 @@ A decentralized framework enabling paid content promotion within the Nostr ecosy
 The protocol connects three types of participants through standardized Nostr events:
 
 ### Protocol Components
-- **Event Kind 28888**: Billboard configuration events
-- **Event Kind 18888**: Buyer promotion requests
-- **Event Kind 17888**: Seller availability signals
+- **Event Kind 28888**: BILLBOARD configuration events
+- **Event Kind 18888**: PROMOTER promotion requests
+- **Event Kind 17888**: PROMOTION VIEWER availability signals
 - **Standard Relays**: For event propagation between participants
 
 ### Basic Workflow
-1. Billboard operators publish configuration events (kind:28888)
-2. Sellers announce availability by publishing kind:17888 events
-3. Buyers request promotion of specific notes via kind:18888 events
-4. Billboards match compatible buyers and sellers
-5. Billboards verify content viewing and facilitate payment
+1. BILLBOARD OPERATORS publish configuration events (kind:28888)
+2. PROMOTION VIEWERS announce availability by publishing kind:17888 events
+3. PROMOTERS request promotion of specific notes via kind:18888 events
+4. BILLBOARDs match compatible PROMOTERS and PROMOTION VIEWERS
+5. BILLBOARDs verify content viewing and facilitate payment
 6. All parties can monitor engagement via statistical events
 
 ## Why is this better than centralized advertising?
 
 ### Market-Driven Trust Systems
-- Natural competition between billboard operators improves services and lowers fees
-- Specialized billboards can emerge for different content niches and audience segments
+- Natural competition between BILLBOARD OPERATORS improves services and lowers fees
+- Specialized BILLBOARDs can emerge for different content niches and audience segments
 - Operators build reputation as their primary capital, incentivizing honest behavior
 - Similar to how [Cashu](https://cashu.space) mint operators compete in the ecash ecosystem
 
@@ -58,16 +58,16 @@ The protocol connects three types of participants through standardized Nostr eve
 - Enables continuous experimentation and improvement by different operators
 
 ### True User Sovereignty
-- Viewers explicitly choose what content to view and for what compensation
-- Promoters determine their own budgets and targeting parameters
+- PROMOTION VIEWERS explicitly choose what content to view and for what compensation
+- PROMOTERS determine their own budgets and targeting parameters
 - Direct value exchange without platforms extracting the majority of value
-- All participants select which billboard operators they trust
-- Viewers can block specific promotions or promoters they don't want to see
-- Viewers can filter content by type (text, images, videos) based on preferences
+- All participants select which BILLBOARD OPERATORS they trust
+- PROMOTION VIEWERS can block specific PROMOTIONS or PROMOTERS they don't want to see
+- PROMOTION VIEWERS can filter content by type (text, images, videos) based on preferences
 
 ### Resilience Through Decentralization
 - No single point of failure or censorship
-- Diverse content policies across different billboard operators
+- Diverse content policies across different BILLBOARD operators
 - Lower barrier to entry compared to centralized advertising networks
 - Persistence of the network despite individual node failures
 
@@ -76,73 +76,72 @@ The protocol connects three types of participants through standardized Nostr eve
 - Leverages existing Nostr infrastructure rather than building from scratch
 - Allows for progressive enhancement as more sophisticated solutions develop
 
-## How do I participate as a content promoter?
+## How do I participate as a PROMOTER?
 
-As a Buyer in the protocol, you can:
+As a PROMOTER in the protocol, you can:
 - Specify Nostr Events to promote
 - Set custom bid amounts in `sats_per_second`
 - Define required viewing durations for content
-- Choose trusted billboard nodes for verification
-- Submit promotion requests through Nostr events (kind: 18888)
-- Exercise direct control over promotion parameters
+- Choose trusted BILLBOARD nodes for verification
+- Submit PROMOTION requests through Nostr events (kind: 18888)
+- Exercise direct control over PROMOTION parameters
 
-Buyers publish kind:18888 events to initiate promotions, specifying their bid, the content to promote, and which billboard operators they trust.
+PROMOTERS publish kind:18888 events to initiate PROMOTIONS, specifying their bid, the content to promote, and which BILLBOARD operators they trust.
 
-## How do I participate as a content viewer?
+## How do I participate as a PROMOTION VIEWER?
 
-As a Seller in the protocol, you can:
+As a PROMOTION VIEWER in the protocol, you can:
 - Set personal asking prices in `sats_per_second`
-- Select trusted billboard operators
+- Select trusted BILLBOARD operators
 - Earn by viewing promoted content
 - Participate through simple Nostr events (kind: 17888)
 - Maintain full control over which content to view
 - Adjust asking prices based on market conditions
-- Create and maintain block lists to filter out unwanted promotions
+- Create and maintain block lists to filter out unwanted PROMOTIONS
 - Specify which kinds of content you're willing to view (text, images, videos, etc.)
 
-Sellers publish kind:17888 events to signal availability, specifying their asking price and which billboard operators they accept. They can also reference a NIP-51 list (kind:30003) to block specific promotions or promoters.
+PROMOTION VIEWERS publish kind:17888 events to signal availability, specifying their asking price and which BILLBOARD operators they accept. They can also reference a [NIP-51](https://github.com/nostr-protocol/nips/blob/master/51.md) list (kind:30003) to block specific PROMOTIONS or PROMOTERS.
 
-## How do I filter the promotions I see?
+## How do I filter the PROMOTIONS I see?
 
-The PROMO PROTOCOL gives you complete control over which promotions you see:
+The PROMO PROTOCOL gives you complete control over which PROMOTIONS you see:
 
-- **Block specific promotions**: Add any promotion event ID to your block list
-- **Block specific promoters**: Add any promoter's pubkey to your block list
+- **Block specific PROMOTIONS**: Add any PROMOTION event ID to your block list
+- **Block specific PROMOTERS**: Add any PROMOTER's pubkey to your block list
 - **Filter by content type**: Specify which kinds of content you're willing to see promoted
-- **Default allow model**: You'll only see promotions you haven't explicitly blocked
+- **Default allow model**: You'll only see PROMOTIONS you haven't explicitly blocked
 - **Real-time updates**: Your preference changes take effect immediately
 
 These filtering capabilities ensure you maintain control over your promotional content experience while still participating in the ecosystem.
 
-## How do block lists work?
+## How do PROMOTION VIEWER block lists work?
 
-Block lists in the PROMO PROTOCOL use the NIP-51 standard:
+Block lists in the PROMO PROTOCOL use the [NIP-51](https://github.com/nostr-protocol/nips/blob/master/51.md) standard:
 
 1. **Creating a block list**: Publish a parameterized replaceable list (kind:30003) with the d-tag "promotions-block-list"
-2. **Blocking promotions**: Add the event IDs of objectionable promotions as e-tags
-3. **Blocking promoters**: Add the pubkeys of objectionable promoters as p-tags
-4. **Referencing your block list**: Include a "global_block_list" tag in your kind:17888 seller event
+2. **Blocking PROMOTIONS**: Add the event IDs of objectionable PROMOTIONS as e-tags
+3. **Blocking PROMOTERS**: Add the pubkeys of objectionable PROMOTERS as p-tags
+4. **Referencing your block list**: Include a "global_block_list" tag in your kind:17888 PROMOTION VIEWER event
 5. **Updating preferences**: Publish a new version of your block list to update your preferences
 
-Billboards must fetch and respect your block list when matching promotions, ensuring you never see content you've chosen to block.
+BILLBOARDs must fetch and respect your block list when matching PROMOTIONS, ensuring you never see content you've chosen to block.
 
 ## What types of content can I choose to see?
 
 You can specify exactly which types of promoted content you're willing to view:
 
-- Use "k" tags in your kind:17888 seller event to list accepted content kinds
+- Use "k" tags in your kind:17888 PROMOTION VIEWER event to list accepted content kinds
 - For example:
-  - `["k", "1"]` for regular text notes
-  - `["k", "20"]` for media content (NIP-68)
-  - `["k", "22"]` for short vertical video (NIP-71)
-- If you include any "k" tags, billboards will only show you promoted content of those kinds
-- If you don't include "k" tags, billboards may show you any kind of content (unless blocked)
+  - `["k", "20"]` for media content ([NIP-68](https://github.com/nostr-protocol/nips/blob/master/68.md))
+  - `["k", "22"]` for short vertical video ([NIP-71](https://github.com/nostr-protocol/nips/blob/master/71.md))
+- If you include any "k" tags, BILLBOARDs will only show you promoted content of those kinds
+- If you don't include "k" tags, BILLBOARDs may show you any kind of content (unless blocked)
 
-This gives you fine-grained control over the format of promotions you receive.
+This gives you fine-grained control over the format of PROMOTIONS you receive.
 
-## How do I run a billboard?
+## How do I run a BILLBOARD?
 
-Billboard operators maintain full autonomy over implementation details. The protocol defines only the communication standards, while operators can:
+BILLBOARD operators maintain full autonomy over implementation details. The protocol defines only the communication standards, while operators can:
 - Choose how to handle event deletions
 - Implement custom matching algorithms
 - Select verification methods
@@ -151,39 +150,39 @@ Billboard operators maintain full autonomy over implementation details. The prot
 - Deploy anti-fraud measures
 - Define business logic
 
-As a Billboard Operator, you:
+As a BILLBOARD Operator, you:
 - Serve as verification infrastructure
 - Configure viewing duration requirements
 - Set customizable service fees
-- Validate transactions between buyers and sellers
+- Validate transactions between PROMOTERS and PROMOTION VIEWERS
 - Update market conditions at configurable intervals
 - Operate through standard Nostr events (kind: 28888)
 
-This design encourages market-driven selection of effective billboard implementations and practices.
+This design encourages market-driven selection of effective BILLBOARD implementations and practices.
 
-## How do promotions begin and end?
+## How do PROMOTIONS begin and end?
 
-### Promotion Lifecycle
-- Promotions begin when buyers publish kind:18888 events
-- Promotions remain active until:
-  1. The buyer publishes a kind:5 event deleting the promotion
-  2. The billboard terminates the promotion based on its criteria
-- Billboards must monitor for and respect deletion events
+### PROMOTION Lifecycle
+- PROMOTIONS begin when PROMOTERS publish kind:18888 events
+- PROMOTIONS remain active until:
+  1. The PROMOTER publishes a kind:5 event deleting the PROMOTION
+  2. The BILLBOARD terminates the PROMOTION based on its criteria
+- BILLBOARDs must monitor for and respect deletion events
 
 ## What's the economic model?
 
 ### Economic Architecture
 - Market-driven pricing mechanism with no central rate setting
-- Direct peer-to-peer economic relationship between buyers and sellers
-- Billboard fee structure clearly defined in kind:28888 events
+- Direct peer-to-peer economic relationship between PROMOTERS and PROMOTION VIEWERS
+- BILLBOARD fee structure clearly defined in kind:28888 events
 - All monetary values denominated in satoshis for consistency
-- Billboards only match BUYERS and SELLERS when bid ≥ ask
+- BILLBOARDs only match PROMOTERS and PROMOTION VIEWERS when bid ≥ ask
 
 ## How is trust established?
 
 ### Trust Framework
 - Decentralized trust model with no central authority
-- Explicit pubkey-based billboard selection by both buyers and sellers
+- Explicit pubkey-based BILLBOARD selection by both PROMOTERS and PROMOTION VIEWERS
 - Self-sovereign trust relationships maintained by individual participants
 - Trust signals propagated through successful transaction history
 - Market incentives naturally align with honest operation
@@ -193,26 +192,26 @@ This design encourages market-driven selection of effective billboard implementa
 The protocol supports robust content filtering options for viewers:
 
 ### Block List Capabilities
-- Viewers can maintain personal block lists for unwanted promotions
-- Block specific promotion event IDs using NIP-51 lists
-- Block all content from specific promoter pubkeys
-- Specify which content types (kinds) they're willing to view
+- PROMOTION VIEWERS can maintain personal block lists for unwanted PROMOTIONS
+- PROMOTION VIEWERS can block specific PROMOTION event IDs using NIP-51 lists
+- PROMOTION VIEWERS can block all PROMOTIONS from specific PROMOTERS
+- PROMOTION VIEWERS can specify which content types (kinds) they're willing to view
 
 ### Implementation
 - Block lists are maintained as addressable NIP-51 lists (kind:30003)
-- Preferences are expressed in kind:17888 seller events
-- Billboards must respect all viewer preferences when matching promotions
+- Preferences are expressed in kind:17888 PROMOTION VIEWER events
+- BILLBOARDs must respect all viewer preferences when matching PROMOTIONS
 - All preferences update in real-time when viewers publish changes
 
 ### Preference Evaluation Rules
 1. **Addressable Block List**: Block list is maintained as an addressable NIP-51 list
-2. **Default Allow**: All promotions are implicitly allowed unless explicitly blocked
+2. **Default Allow**: All PROMOTIONS are implicitly allowed unless explicitly blocked
 3. **Kind Filtering**: Promoted content must be of a kind specified in a `k` tag (if any `k` tags are present)
-4. **Most Specific First**: Promotion-level block lists take precedence over promoter-level block lists
-5. **Block List Priority**: If a promotion is blocked, it must not be shown regardless of other factors
+4. **Most Specific First**: PROMOTION-level block lists take precedence over PROMOTER-level block lists
+5. **Block List Priority**: If a PROMOTION is blocked, it must not be shown regardless of other factors
 
 ### Privacy Considerations
-- Seller promotion block list preferences are public, as they are published in Nostr events
+- PROMOTION VIEWER block lists are public, as they are published in Nostr events
 - Aggregated metrics may include overall matching rates without identifying specific block list patterns
 
 ## Technical Specifications & Documentation
@@ -220,8 +219,9 @@ The protocol supports robust content filtering options for viewers:
 ### NIP List
 - [NIP-X1](./NIP-X1.md): BASIC PROTOCOL
 - [NIP-X2](./NIP-X2.md): BILLBOARD METRICS
-- [NIP-X3](./NIP-X3.md): SELLER BLOCK LIST
-- NIP-XX: BUYER PREFERNCES (coming soon)
+- [NIP-X3](./NIP-X3.md): PROMOTION VIEWER BLOCK LIST
+- [NIP-X4](./NIP-X4.md): PROMOTION VIEWER PREFERRED TOPICS
+- NIP-XX: BUYER PREFERENCES (coming soon)
 - NIP-XX: BILLBOARD STATISTICS (coming soon)
 - NIP-XX: LIGHTNING PAYMENTS (coming soon)
 - NIP-XX: ECASH PAYMENTS (coming soon)

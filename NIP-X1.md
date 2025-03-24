@@ -1,53 +1,53 @@
 # NIP-X1 - BASIC PROTOCOL
-`draft mandatory`
+`draft` `mandatory`
 
 ## Abstract
-NIP-XX defines a decentralized protocol for content promotion on Nostr. The protocol establishes a market-driven system connecting content promoters (buyers), content viewers (sellers), and verification nodes (billboards).
+NIP-X1 defines a decentralized protocol for content promotion on Nostr. The protocol establishes a market-driven system connecting PROMOTERS and PROMOTION VIEWERS through BILLBOARDS (verification nodes).
 
 ## Protocol Components
 
 ### NEW TAGS
 
-- b - the pubkey of a billboard
+- b - the pubkey of a BILLBOARD
 
 ## Key Components
 
 ### Protocol Participants
 - **Relay**: Standard Nostr relay servers that propagate events between participants
-- **Buyers**: Nostr pubkeys that publish kind:18888 events to promote specific notes
-- **Sellers**: Nostr pubkeys that publish kind:17888 events to signal availability for viewing promoted content
-- **Billboards**: Verification nodes that publish kind:28888 events, match buyers with sellers, and validate content viewing
+- **PROMOTERS**: Nostr pubkeys that publish kind:18888 events to promote specific notes
+- **PROMOTION VIEWERS**: Nostr pubkeys that publish kind:17888 events to signal availability for viewing promoted content
+- **BILLBOARDs**: Verification nodes that publish kind:28888 events, match PROMOTERS with PROMOTION VIEWERS, and validate content viewing
 
 ### Event Schema Implementation
-- **kind:28888**: Defines billboard operational parameters
+- **kind:28888**: Defines BILLBOARD parameters
   - Fee structure (percentage or fixed amount)
   - Duration constraints (minimum/maximum viewing time)
-  - Update interval (frequency of promotion rotation)
+  - Update interval (frequency of PROMOTION rotation)
   - Service endpoints (primary/backup URLs)
   - Relay preferences (read/write specifications)
 
-- **kind:18888**: Defines buyer promotion parameters
+- **kind:18888**: Defines PROMOTION parameters
   - Target note ID (event to be promoted)
-  - Bid amount (payment offered per view)
+  - sats_per_second amount (payment offered per view)
   - Duration requirement (viewing time needed)
-  - Trusted billboard specification (pubkey and relay)
+  - Trusted BILLBOARD specification (pubkey and relay)
 
-- **kind:17888**: Defines seller viewing parameters
+- **kind:17888**: Defines PROMOTION VIEWER parameters
   - Asking price (payment required per view)
   - Maximum duration (upper limit on viewing time)
-  - Accepted billboard specification (pubkey and relay)
+  - Accepted BILLBOARD specification (pubkey and relay)
 
 
 ## Event Specifications
 
-### Billboard Configuration
-Event kind:28888 defining billboard operating parameters
+### BILLBOARD Configuration
+Event kind:28888 defining BILLBOARD parameters
 
 ```json
 {
     "kind": 28888,
-    "pubkey": "<billboard_pubkey>",
-    "content": "{optional: billboard name}",
+    "pubkey": "<BILLBOARD_pubkey>",
+    "content": "",
     "created_at": UNIX_TIMESTAMP,
     "tags": [
         ["max_duration", "<value>", "seconds"],
@@ -64,29 +64,29 @@ Event kind:28888 defining billboard operating parameters
 
 #### Required Tags
 - `interval`: Update frequency in seconds
-- `fee`: Billboard commission (percent or fixed sats)
-- `u`: Billboard endpoint URLs
-- `nip`: Implemented NIP version
+- `fee`: BILLBOARD commission (percent or fixed sats)
+- `u`: List of BILLBOARD endpoint URLs
+- `nip`: List of PROMO PROTOCOL Implemented NIP version
 
 #### Optional Tags
 - `max_duration`: Maximum allowed view duration
 - `min_duration`: Minimum allowed view duration
 - `min_fee`: Minimum commission in sats
 
-### Buyer Event
-Event kind:18888 from buyers requesting note promotion
+### PROMOTER Event
+Event kind:18888 from PROMOTERS requesting note promotion
 
 ```json
 {
     "kind": 18888,
-    "pubkey": "<buyer_pubkey>",
+    "pubkey": "<PROMOTER_pubkey>",
     "content": "",
     "created_at": UNIX_TIMESTAMP,
     "tags": [
         ["e", "<note_id>"],
         ["duration", "<value>", "seconds"],
         ["sats_per_second", "<value>"],
-        ["b", "<billboard_pubkey>", "<relay_url>"]
+        ["b", "<BILLBOARD_pubkey>", "<relay_url>"]
     ]
 }
 ```
@@ -95,87 +95,87 @@ Event kind:18888 from buyers requesting note promotion
 - `e`: ID of note to promote
 - `duration`: Required view duration
 - `sats_per_second`: Payment amount per view
-- `b`: Trusted billboard pubkey and relay
+- `b`: List of trusted BILLBOARD pubkey and relay
 
-### Seller Event
-Event kind:17888 from sellers setting view parameters
+### PROMOTION VIEWER Event
+Event kind:17888 from PROMOTION VIEWERS setting view parameters
 
 ```json
 {
     "kind": 17888,
-    "pubkey": "<seller_pubkey>",
+    "pubkey": "<PROMOTION_VIEWER_pubkey>",
     "content": "",
     "created_at": UNIX_TIMESTAMP,
     "tags": [
         ["max_duration", "<value>", "seconds"],
         ["sats_per_second", "<value>"],
-        ["b", "<billboard_pubkey>", "<relay_url>"]
+        ["b", "<BILLBOARD_pubkey>", "<relay_url>"]
     ]
 }
 ```
 
 #### Required Tags
 - `sats_per_second`: Required payment per view
-- `b`: Accepted billboard pubkey and relay
+- `b`: List of trusted BILLBOARD pubkey and relay
 
 #### Optional Tags
 - `max_duration`: Maximum viewing duration
 
 ## Protocol Behavior
 
-### Promotion Lifecycle
-- Promotions are initiated when buyers publish kind:18888 events
-- A promotion remains active until one of:
-  1. The buyer publishes a kind:5 event referencing the promotion event ID
-  2. The billboard terminates the promotion based on its criteria
-- Billboards MUST:
-  - Monitor for kind:5 events referencing active promotions
-  - Remove promotions immediately upon detecting valid deletion events
+### PROMOTION Lifecycle
+- PROMOTIONS are initiated when PROMOTERS publish kind:18888 events
+- A PROMOTION remains active until one of:
+  1. The PROMOTER publishes a kind:5 event referencing the PROMOTION event ID
+  2. The BILLBOARD terminates the PROMOTION based on its criteria
+- BILLBOARDs MUST:
+  - Monitor for kind:5 events referencing active PROMOTIONS
+  - Remove PROMOTIONS immediately upon detecting valid deletion events
 
-### Billboard Requirements
+### BILLBOARD Requirements
 - MUST validate all duration values against configured limits
-- MUST reject promotions where BUYER sats_per_second < SELLER sats_per_second
-- MUST attempt billboard URLs in specified order
+- MUST reject PROMOTIONS where PROMOTION sats_per_second < PROMOTION VIEWER sats_per_second
+- MUST attempt BILLBOARD URLs in specified order
 - MUST operate on specified relays according to read/write designation
 - MUST honor fee structure specified in configuration
 
 ### Client Requirements
-- SHOULD publish events to billboard's write/both relays
-- SHOULD monitor billboard's read/both relays
-- MUST respect billboard's minimum duration requirements
-- MUST include valid billboard pubkey in events
+- SHOULD publish events to BILLBOARD's write/both relays
+- SHOULD monitor BILLBOARD's read/both relays
+- MUST respect BILLBOARD's minimum duration requirements
+- MUST include valid BILLBOARD pubkey in events
 
 ## Flow Diagram
 ```mermaid
 sequenceDiagram
-    participant Relay
-    participant Billboard
-    participant Seller
-    participant Buyer
+    participant RELAY
+    participant BILLBOARD
+    participant PROMOTION_VIEWER
+    participant PROMOTER
 
-    Billboard->>Relay: Publishes kind:28888 event<br/>with configuration details<br/>(fees, durations, URLs)
-    Note over Billboard: Billboard subscribes to all 18888 & 17888 events
-    Buyer->>Relay: Publishes kind:18888 event<br/>with promotion request<br/>(note ID, bid, duration)
-    Relay->>Billboard: Publishes kind:18888 event<br/>with promotion request<br/>(note ID, bid, duration)
-    Seller->>Relay: Publishes kind:17888 event<br/>with participation details<br/>(asking price)
-    Relay->>Billboard: Publishes kind:17888 event<br/>with promotion request<br/>(note ID, bid, duration)
-    Seller->>Billboard: Navigates to billboard
-    Billboard->>Seller: Billboard displays best promoted note for seller
-    Note over Relay,Buyer: verification notes defined in NIP-XX
-    Note over Relay,Buyer: payment notes defined in NIP-XX
-    Note over Relay,Buyer: statistic notes defined in NIP-XX
+    BILLBOARD->>Relay: Publishes kind:28888 event<br/>with configuration details<br/>(fees, durations, URLs)
+    Note over BILLBOARD: BILLBOARD subscribes to all 18888 & 17888 events
+    PROMOTER->>Relay: Publishes kind:18888 event<br/>with PROMOTION request<br/>(note ID, sats_per_second, duration)
+    Relay->>BILLBOARD: Publishes kind:18888 event<br/>with PROMOTION request<br/>(note ID, sats_per_second, duration)
+    PROMOTION_VIEWER->>Relay: Publishes kind:17888 event<br/>with participation details<br/>(asking price)
+    Relay->>BILLBOARD: Publishes kind:17888 event<br/>with PROMOTION request<br/>(note ID, sats_per_second, duration)
+    PROMOTION_VIEWER->>BILLBOARD: Navigates to BILLBOARD
+    BILLBOARD->>PROMOTION_VIEWER: BILLBOARD displays best promoted note for PROMOTION_VIEWER
+    Note over Relay,PROMOTER: verification notes defined in NIP-XX
+    Note over Relay,PROMOTER: payment notes defined in NIP-XX
+    Note over Relay,PROMOTER: statistic notes defined in NIP-XX
 ```
 
 ### Trust Model
-- Buyers specify trusted billboards in promotion requests
-- Sellers specify accepted billboards in participation events
+- PROMOTERS specify trusted BILLBOARDs in PROMOTION requests
+- PROMOTION VIEWERS specify accepted BILLBOARDs in participation events
 - Trust relationships are sovereign and market-driven
-- No central billboard authority required
+- No central BILLBOARD authority required
 
 ### Basic Workflow
 
-1. **Registration**: Billboards Operators publish kind:28888 events announcing their services
-2. **Seller Availability**: Sellers publish kind:17888 events indicating willingness to view content
-3. **Buyer Request**: Buyers publish kind:18888 events to promote specific notes
-4. **Matching**: Billboards Operators match buyers with sellers when bid ≥ ask
-5. **Verification**: Billboards Operators validates that sellers viewed content for required duration
+1. **Registration**: BILLBOARD OPERATORS publish BILLBOARD DETAIL(kind:28888) event(s) announcing their BILLBOARD
+2. **PROMOTION VIEWER Availability**: PROMOTION VIEWERS publish OPT-IN(kind:17888) event(s) indicating willingness to view PROMOTIONS
+3. **PROMOTER Request**: PROMOTERS publish PROMOTION(kind:18888) event(s) to promote specific event
+4. **Matching**: BILLBOARD OPERATORS match PROMOTIONS with PROMOTION VIEWERS when PROMOTION `sats_per_second` ≥ PROMOTION VIEWERS `sats_per_second`
+5. **Verification**: BILLBOARD OPERATORS validates that PROMOTION VIEWERS viewed content for required duration
