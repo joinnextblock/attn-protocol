@@ -158,6 +158,7 @@ As a BILLBOARD Operator, you:
 - Update market conditions at configurable intervals
 - Operate through standard Nostr events (kind: 28888)
 
+
 This design encourages market-driven selection of effective BILLBOARD implementations and practices.
 
 ## How do PROMOTIONS begin and end?
@@ -221,7 +222,7 @@ The protocol supports robust content filtering options for viewers:
 - [NIP-X2](./NIP-X2.md): BILLBOARD METRICS
 - [NIP-X3](./NIP-X3.md): PROMOTION VIEWER BLOCK LIST
 - [NIP-X4](./NIP-X4.md): PROMOTION VIEWER PREFERRED TOPICS
-- NIP-XX: BUYER PREFERENCES (coming soon)
+- [NIP-X5](./NIP-X5.md): PROMOTION PREFERRED TOPICS
 - NIP-XX: BILLBOARD STATISTICS (coming soon)
 - NIP-XX: LIGHTNING PAYMENTS (coming soon)
 - NIP-XX: ECASH PAYMENTS (coming soon)
