@@ -2,13 +2,13 @@
 `draft` `optional`
 
 ## Abstract
-NIP-X3 defines a standardized mechanism for PROMOTION VIEWERS to express preferences about which promoted content they do not wish to view. This enhancement allows PROMOTION VIEWERS to block specific PROMOTIONS via event ID or specific PROMOTERS via their pubkey using an addressable NIP-51 list, giving them greater control over their experience while maintaining the decentralized nature of the PROMO PROTOCOL.
+NIP-X3 defines a standardized mechanism for PROMOTION VIEWERS to express preferences about which PROMOTIONS they do not wish to view within the PROMO PROTOCOL. This enhancement allows PROMOTION VIEWERS to block specific PROMOTIONS via event ID or specific PROMOTERS via their pubkey using an addressable NIP-51 list, giving them greater control over their experience. By implementing content filtering capabilities, this NIP strengthens user sovereignty while maintaining the decentralized nature of the protocol.
 
 ## Protocol Components
 
 ### NEW TAGS FOR KIND:17888
-- `global_block_list` - Event ID of a [NIP-51](https://github.com/nostr-protocol/nips/blob/master/51.md) list (kind:30003) containing blocked PROMOTIONS and PROMOTERS
-- `k` - Specifies event kinds the PROMOTION VIEWER is willing to view as promoted content
+- `global_block_list` - Event ID of a NIP-51 list (kind:30003) containing blocked PROMOTIONS and PROMOTERS
+- `k` - Specifies event kinds the PROMOTION VIEWER is willing to view as PROMOTED CONTENT
 
 ## Key Components
 
@@ -66,18 +66,20 @@ Extended kind:17888 from PROMOTION VIEWERS setting view parameters and referenci
 }
 ```
 
-#### Existing Required Tags (from [NIP-X1](./NIP-X1.md))
-- `sats_per_second`: Required payment per view
-- `b`: Accepted BILLBOARD pubkey and relay
+#### Existing Required Tags (from NIP-X1)
+- `sats_per_second`: Required payment per view - minimum payment the PROMOTION VIEWER will accept
+- `b`: Accepted BILLBOARD pubkey and relay - BILLBOARD operators the PROMOTION VIEWER trusts
 
-#### Existing Optional Tags (from [NIP-X1](./NIP-X1.md))
-- `max_duration`: Maximum viewing duration
+#### Existing Optional Tags (from NIP-X1)
+- `max_duration`: Maximum viewing duration - upper limit on how long the PROMOTION VIEWER will watch
 
 #### New Optional Preference Tags
-- `global_block_list`: Event ID of a [NIP-51](https://github.com/nostr-protocol/nips/blob/master/51.md) list (kind:30003) containing the PROMOTION VIEWER's block list
-- `k`: Event kinds the PROMOTION VIEWER is willing to view as promoted content (can appear multiple times)
-  - Example: `["k", "22"]` indicates willingness to view kind:22 short vertical video ([NIP-71](https://github.com/nostr-protocol/nips/blob/master/71.md))
-  - Example: `["k", "20"]` indicates willingness to view kind:20 picture events ([NIP-68](https://github.com/nostr-protocol/nips/blob/master/68.md))
+- `global_block_list`: Event ID of a NIP-51 list (kind:30003) containing the PROMOTION VIEWER's block list - specifies content the PROMOTION VIEWER refuses to see
+- `k`: Event kinds the PROMOTION VIEWER is willing to view as PROMOTED CONTENT - can appear multiple times to specify multiple acceptable content types
+  - Example: `["k", "22"]` indicates willingness to view kind:22 short vertical video ([NIP-71](https://github.
+  com/nostr-protocol/nips/blob/master/71.md))
+  - Example: `["k", "20"]` indicates willingness to view kind:20 picture events ([NIP-68](https://github.com/
+  nostr-protocol/nips/blob/master/68.md))
 
 ## Protocol Behavior
 
@@ -93,7 +95,7 @@ Extended kind:17888 from PROMOTION VIEWERS setting view parameters and referenci
 - MUST respect all PROMOTION VIEWER block list preferences when matching PROMOTIONS
 - MUST NOT show a blocked PROMOTION to a PROMOTION VIEWER under any circumstances
 - MUST NOT show PROMOTIONS from blocked PROMOTER pubkeys to a PROMOTION VIEWER
-- MUST only show promoted content of kinds specified in `k` tags (if present)
+- MUST only show PROMOTED CONTENT of kinds specified in `k` tags (if present)
 - MUST propagate preference changes immediately when a new block list is detected
 - MAY cache PROMOTION VIEWER preferences for performance optimization
 
@@ -130,7 +132,7 @@ sequenceDiagram
     Note over BILLBOARD: BILLBOARD checks PROMOTION VIEWER's preferences<br/>(kinds, block list) before matching
     
     alt PROMOTION matches PROMOTION VIEWER preferences
-        BILLBOARD->>PROMOTION_VIEWER: Shows promoted content
+        BILLBOARD->>PROMOTION_VIEWER: Shows PROMOTED CONTENT
     else PROMOTION doesn't match preferences
         BILLBOARD->>PROMOTION_VIEWER: Does not show PROMOTION<br/>Finds alternative match
     end

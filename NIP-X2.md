@@ -2,12 +2,12 @@
 `draft` `optional`
 
 ## Abstract
-NIP-X2 defines a standardized event kind and structure for reporting and querying anonymized metrics related to BILLBOARD operations on the PROMO PROTOCOL. These metrics enable transparency for PROMOTERS while preserving PROMOTION VIEWER privacy.
+NIP-X2 defines standardized event kinds and structures for reporting and querying anonymized metrics related to BILLBOARD operations on the PROMO PROTOCOL. These metrics provide PROMOTERS with transparency regarding promotion performance while preserving PROMOTION VIEWER privacy through careful anonymization. By establishing consistent reporting standards, this NIP enables data-driven decision making while maintaining the protocol's commitment to privacy and decentralization.
 
 ## Protocol Components
 
 ### NEW EVENT KINDS
-- **kind:38891**: BILLBOARD METRICS - PROMOTER-facing anonymous (public)
+- **kind:38891**: BILLBOARD METRICS - PROMOTER-facing anonymous metrics event
 
 ## Key Components
 
@@ -41,13 +41,13 @@ Event kind:38891 providing anonymized metrics for PROMOTERS
 ```
 
 #### Required Tags
-- `e`: Event ID of the PROMOTER's kind:18888 PROMOTION request
-- `p`: Pubkey of the PROMOTER who created the PROMOTION
-- `period`: Timeframe of the aggregation
+- `e`: Event ID of the PROMOTER's kind:18888 PROMOTION request - identifies which PROMOTION these metrics apply to
+- `p`: Pubkey of the PROMOTER who created the PROMOTION - identifies which PROMOTER these metrics apply to
+- `period`: Timeframe of the aggregation (hourly|daily|total) - indicates the time period covered by these metrics
 
 #### Optional Tags
-- `start`: Start timestamp of the aggregation period
-- `end`: End timestamp of the aggregation period
+- `start`: Start timestamp of the aggregation period - UNIX timestamp marking when this reporting period began
+- `end`: End timestamp of the aggregation period - UNIX timestamp marking when this reporting period ended
 
 #### Content Format (Example)
 ```json
