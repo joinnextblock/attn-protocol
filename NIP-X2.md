@@ -130,11 +130,22 @@ BILLBOARD OPERATORS should:
 sequenceDiagram
     participant RELAY
     participant BILLBOARD
+    participant PROMOTION_VIEWER
     participant PROMOTER
 
-    Note over BILLBOARD: Aggregation period
-    BILLBOARD->>Relay: Publishes kind:38891 event<br/>(PROMOTER-facing metrics)
+    PROMOTER->>RELAY: Publishes kind:18888 event<br/>(PROMOTION request)
+    PROMOTION_VIEWER->>RELAY: Publishes kind:17888 event<br/>(viewing availability)
     
-    PROMOTER->>Relay: Queries PROMOTION metrics
-    Relay->>PROMOTER: Returns kind:38891 events
+    Note over BILLBOARD: BILLBOARD collects data<br/>from multiple PROMOTION views
+    BILLBOARD->>RELAY: Publishes kind:28889 event<br/>(view confirmation 1)
+    BILLBOARD->>RELAY: Publishes kind:28889 event<br/>(view confirmation 2)
+    BILLBOARD->>RELAY: Publishes kind:28889 event<br/>(view confirmation n)
+    
+    Note over BILLBOARD: BILLBOARD aggregates metrics<br/>from multiple views during<br/>specified time period
+    
+    BILLBOARD->>RELAY: Publishes kind:38891 event<br/>(anonymized PROMOTION metrics)
+    RELAY->>PROMOTER: Forwards metrics event
+    
+    PROMOTER->>RELAY: Queries historical metrics<br/>via filter
+    RELAY->>PROMOTER: Returns matching kind:38891 events
 ```

@@ -125,6 +125,28 @@ Client developers SHOULD:
 }
 ```
 
+## Flow Diagram
+```mermaid
+sequenceDiagram
+    participant RELAY
+    participant BILLBOARD
+    participant PROMOTION_VIEWER
+    participant PROMOTER
+
+    PROMOTION_VIEWER->>RELAY: Publishes kind:17888 event<br/>with topic preferences (t tags)
+    PROMOTER->>RELAY: Publishes kind:18888 event<br/>(PROMOTION request)
+    RELAY->>BILLBOARD: Forwards both events
+    
+    Note over BILLBOARD: BILLBOARD analyzes PROMOTION VIEWER's<br/>topic preferences
+    
+    alt PROMOTION has matching topics
+        BILLBOARD->>PROMOTION_VIEWER: Shows relevant PROMOTION<br/>matching PROMOTION_VIEWER interests
+        Note over PROMOTION_VIEWER,PROMOTER: Higher engagement probability
+    else No relevant topics but economics work
+        BILLBOARD->>PROMOTION_VIEWER: Shows less relevant PROMOTION<br/>based only on economic match
+    end
+```
+
 ## Benefits and Outcomes
 
 - **For PROMOTION VIEWERS**: More engaging and relevant content viewing experience

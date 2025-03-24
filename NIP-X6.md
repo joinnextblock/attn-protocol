@@ -18,8 +18,8 @@ NIP-X6 defines a standardized event kind and structure for BILLBOARDs to publish
 - **Metrics Source**: Primary data source for analytics and reporting
 
 ### Event Schema Implementation
-- **kind:28889**: Published by billboard when view requirements are met
-  - Links buyer promotion, seller, and actual viewing details
+- **kind:28889**: Published by BILLBOARD when view requirements are met
+  - Links buyer PROMOTION, seller, and actual viewing details
   - Provides verification timestamps for calculating viewing duration
 
 ## Event Specifications
@@ -86,16 +86,22 @@ sequenceDiagram
     participant PROMOTER
 
     PROMOTER->>RELAY: Publishes kind:18888 event<br/>(PROMOTION request)
+    PROMOTION_VIEWER->>RELAY: Publishes kind:17888 event<br/>(viewing availability)
+    RELAY->>BILLBOARD: Forwards both events
+    Note over BILLBOARD: BILLBOARD matches PROMOTION<br/>with PROMOTION_VIEWER
+    
     PROMOTION_VIEWER->>BILLBOARD: Navigates to BILLBOARD
-    BILLBOARD->>PROMOTION_VIEWER: Displays matched promoted content
+    BILLBOARD->>PROMOTION_VIEWER: Displays matched PROMOTION
     
+    Note over BILLBOARD: Records started_at timestamp
     Note over PROMOTION_VIEWER: Views PROMOTION for required duration
+    Note over BILLBOARD: Records completed_at timestamp
     
-    BILLBOARD->>RELAY: Publishes PROMOTION CONFIRMATION
+    BILLBOARD->>RELAY: Publishes kind:28889 event<br/>(PROMOTION CONFIRMATION with timestamps)
     RELAY->>PROMOTER: Receives PROMOTION CONFIRMATION
     RELAY->>PROMOTION_VIEWER: Receives PROMOTION CONFIRMATION
     
-    BILLBOARD->>RELAY: Publishes BILLBOARD METRICS
+    BILLBOARD->>RELAY: Publishes kind:38891 event<br/>(BILLBOARD METRICS)
 ```
 
 ## Example Implementation

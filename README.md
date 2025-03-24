@@ -2,24 +2,35 @@
 
 ## Table of Contents
 - [What is the PROMO PROTOCOL?](#what-is-the-promo-protocol)
-- [Who are the main actors in the PROMO PROTOCOL?](#who-are-the-main-actors-in-the-promo-protocol)
-- [How does it work?](#how-does-it-work)
 - [Why is this better than centralized advertising?](#why-is-this-better-than-centralized-advertising)
+- [Who are the main actors in the PROMO PROTOCOL?](#who-are-the-main-actors-in-the-promo-protocol)
+- [How does the complete promotion workflow function?](#how-does-the-complete-promotion-workflow-function)
+- [How does it work?](#how-does-it-work)
+- [What's the economic model?](#whats-the-economic-model)
+- [How is trust established?](#how-is-trust-established)
+
+<!-- User Participation Sections -->
 - [How do I participate as a PROMOTER?](#how-do-i-participate-as-a-promoter)
 - [How do I participate as a PROMOTION VIEWER?](#how-do-i-participate-as-a-promotion-viewer)
-- [How do I filter the PROMOTIONS I see?](#how-do-i-filter-the-promotions-i-see)
-- [How do PROMOTION VIEWER block lists work?](#how-do-promotion-viewer-block-lists-work)
-- [What types of content can I choose to see?](#what-types-of-content-can-i-choose-to-see)
-- [How does topic-based matching work between PROMOTERS and PROMOTION VIEWERS?](#how-does-topic-based-matching-work-between-promoters-and-promotion-viewers)
 - [How do I run a BILLBOARD?](#how-do-i-run-a-billboard)
+
+<!-- Matching Process Sections -->
+- [How are PROMOTERS and PROMOTION VIEWERS matched?](#how-are-promoters-and-promotion-viewers-matched)
+- [How does topic-based matching work between PROMOTERS and PROMOTION VIEWERS?](#how-does-topic-based-matching-work-between-promoters-and-promotion-viewers)
+- [What information is included in a promotion match?](#what-information-is-included-in-a-promotion-match)
+- [What happens after a PROMOTION match is created?](#what-happens-after-a-promotion-match-is-created)
+
+<!-- Content & Preferences Sections -->
+- [Content Preferences and Filtering](#content-preferences-and-filtering)
+- [How do I filter the PROMOTIONS I see?](#how-do-i-filter-the-promotions-i-see)
+- [What types of content can I choose to see?](#what-types-of-content-can-i-choose-to-see)
+- [How do PROMOTION VIEWER block lists work?](#how-do-promotion-viewer-block-lists-work)
+
+<!-- Technical Operation Sections -->
 - [How do PROMOTIONS begin and end?](#how-do-promotions-begin-and-end)
 - [How are PROMOTION views verified?](#how-are-promotion-views-verified)
 - [How do PROMOTERS access and interpret their campaign analytics?](#how-do-promoters-access-and-interpret-their-campaign-analytics)
-- [What's the economic model?](#whats-the-economic-model)
-- [How is trust established?](#how-is-trust-established)
-- [Content Preferences and Filtering](#content-preferences-and-filtering)
 - [Technical Specifications & Documentation](#technical-specifications--documentation)
-
 
 ## What is the PROMO PROTOCOL?
 
@@ -31,150 +42,285 @@ A decentralized framework enabling paid content promotion within the Nostr ecosy
 - Market-driven pricing mechanism
 - User-controlled content filtering and preferences
 
+## Why is this better than centralized advertising?
+
+The PROMO PROTOCOL offers significant advantages over centralized advertising platforms:
+
+- **Direct Value Exchange**: Users are directly compensated for their attention rather than having their data harvested and monetized by third parties
+- **Privacy-Preserving**: No centralized tracking of user behavior or personal data collection
+- **User Control**: PROMOTION VIEWERS have complete control over what types of content they see
+- **Transparent Economics**: All economic transactions are visible on the Nostr network, creating fair market dynamics
+- **Permissionless Innovation**: Anyone can build clients, BILLBOARDs, or tools on top of the protocol
+- **Self-Sovereign Identity**: Users maintain control of their identity through their Nostr keys
+- **Censorship Resistance**: No central authority can remove promotions that meet protocol standards
+
+This approach creates a more equitable advertising ecosystem where all participants benefit directly from their contributions, whether creating, viewing, or facilitating promotional content.
+
 ## Who are the main actors in the PROMO PROTOCOL?
 
-The PROMO PROTOCOL operates through the interaction of four main actors, each with distinct roles and responsibilities:
+The PROMO PROTOCOL ecosystem consists of three primary actors, each with distinct roles:
 
-1. **PROMOTERS**: 
-   - Publish kind:18888 events to promote specific Nostr notes
-   - Set payment rates (sats_per_second) for content viewing
-   - Specify required viewing duration
-   - Choose which BILLBOARD operators they trust
-   - Monitor campaign performance through metrics
+1. **PROMOTERS**: Entities seeking to promote content within the Nostr ecosystem
+   - Create and fund promotional campaigns
+   - Set bid prices they're willing to pay for viewer attention
+   - Define target audiences through topic tagging
+   - Publish kind:18888 events with promotion requests
 
-2. **PROMOTION VIEWERS**:
-   - Publish kind:17888 events signaling availability for viewing promotions
-   - Set their asking price (minimum sats_per_second)
-   - Specify trusted BILLBOARD operators
-   - Control content preferences through topic tags and content kind filters
-   - Maintain block lists for unwanted content or PROMOTERS
+2. **PROMOTION VIEWERS**: Individual Nostr users who opt-in to viewing promotional content
+   - Receive satoshis for viewing promotions
+   - Set their minimum ask price for viewing content
+   - Define content preferences and blocklists
+   - Publish kind:17888 events indicating viewing availability
 
-3. **BILLBOARD OPERATORS**:
-   - Publish kind:28888 configuration events defining their services
-   - Match compatible PROMOTERS with PROMOTION VIEWERS
-   - Verify content viewing through technical means
-   - Publish confirmation events (kind:28889) for completed views
-   - Provide metrics and analytics through kind:38891 events
-   - Facilitate payments between PROMOTERS and PROMOTION VIEWERS
+3. **BILLBOARDs**: Infrastructure providers that connect PROMOTERS with PROMOTION VIEWERS
+   - Match compatible PROMOTERS and VIEWERS
+   - Verify promotion viewing
+   - Facilitate payment transactions
+   - Provide analytics and reporting
+   - Publish kind:28890 match events and kind:28889 confirmation events
 
-4. **RELAYS**:
-   - Standard Nostr relay servers propagating events between participants
-   - Store and distribute protocol events according to Nostr standards
-   - Connect all actors in the ecosystem without requiring direct coordination
+These actors interact through standardized Nostr events to create a decentralized promotional content marketplace where attention is fairly valued and compensated.
 
-These actors interact in a market-driven ecosystem where PROMOTERS seek visibility, PROMOTION VIEWERS monetize their attention, and BILLBOARD OPERATORS provide the infrastructure and verification services that make the system possible. The decentralized nature ensures that no single entity controls the promotional content marketplace.
+## How does the complete promotion workflow function?
+
+The PROMO PROTOCOL follows a comprehensive workflow that connects PROMOTERS and PROMOTION VIEWERS through a transparent matching process:
+
+1. **Promotion Request**: PROMOTERS publish kind:18888 events to promote specific notes
+2. **Viewing Availability**: PROMOTION VIEWERS publish kind:17888 events indicating their availability and preferences
+3. **Match Creation**: BILLBOARDs identify compatible pairs and publish kind:28890 match events
+4. **Content Display**: PROMOTION VIEWERS are shown the matched promotions on BILLBOARD platforms
+5. **Verification**: BILLBOARDs verify that viewing time meets the required duration
+6. **Confirmation**: BILLBOARDs publish kind:28889 events confirming successful views
+7. **Payment**: Compensation flows from PROMOTERS to PROMOTION VIEWERS based on verified views
+
+Each step in this workflow is recorded through standardized Nostr events, creating a transparent and auditable promotion ecosystem. The match events (kind:28890) serve as the critical link between initial requests and final confirmations, providing clarity on how promotional content is distributed.
 
 ## How does it work?
 
-The protocol connects three types of participants through standardized Nostr events:
+The PROMO PROTOCOL operates through standardized Nostr event kinds that enable communication between the primary actors:
 
-### Protocol Components
-- **Event Kind 28888**: BILLBOARD configuration events
-- **Event Kind 18888**: PROMOTER promotion requests
-- **Event Kind 17888**: PROMOTION VIEWER availability signals
-- **Standard Relays**: For event propagation between participants
+1. **Promotion Creation**: PROMOTERS create kind:18888 events containing:
+   - The content to be promoted (typically a Nostr note ID)
+   - Maximum bid price (in satoshis per second)
+   - Minimum viewing duration
+   - Topic tags for targeting
+   - Campaign parameters (budget, timeframe, etc.)
 
-### Basic Workflow
-1. BILLBOARD OPERATORS publish configuration events (kind:28888)
-2. PROMOTION VIEWERS announce availability by publishing kind:17888 events
-3. PROMOTERS request promotion of specific notes via kind:18888 events
-4. BILLBOARDs match compatible PROMOTERS and PROMOTION VIEWERS
-5. BILLBOARDs verify content viewing and facilitate payment
-6. All parties can monitor engagement via statistical events
+2. **Viewer Availability**: PROMOTION VIEWERS publish kind:17888 events with:
+   - Minimum ask price (in satoshis per second)
+   - Content preferences (topic tags)
+   - Kind preferences (types of notes they're willing to see)
+   - Block lists (content or promoters they wish to avoid)
 
-## Why is this better than centralized advertising?
+3. **Matching Process**: BILLBOARDs monitor both event kinds and create matches when:
+   - A PROMOTER's bid meets or exceeds a VIEWER's ask
+   - Content preferences align (when applicable)
+   - VIEWER's block lists don't exclude the promotion
+   - The match is recorded in a kind:28890 event
 
-### Market-Driven Trust Systems
-- Natural competition between BILLBOARD OPERATORS improves services and lowers fees
-- Specialized BILLBOARDs can emerge for different content niches and audience segments
-- Operators build reputation as their primary capital, incentivizing honest behavior
-- Similar to how [Cashu](https://cashu.space) mint operators compete in the ecash ecosystem
+4. **Content Delivery**: BILLBOARDs present the matched promotion to the VIEWER within their client interface.
 
-### Protocol-Level Neutrality
-- Defines communication formats and workflows without dictating implementation details
-- Allows different technical solutions to verification, payment, and matching challenges
-- Enables continuous experimentation and improvement by different operators
+5. **Verification**: BILLBOARDs verify the promotion was viewed for the required duration.
 
-### True User Sovereignty
-- PROMOTION VIEWERS explicitly choose what content to view and for what compensation
-- PROMOTERS determine their own budgets and targeting parameters
-- Direct value exchange without platforms extracting the majority of value
-- All participants select which BILLBOARD OPERATORS they trust
-- PROMOTION VIEWERS can block specific PROMOTIONS or PROMOTERS they don't want to see
-- PROMOTION VIEWERS can filter content by type (text, images, videos) based on preferences
+6. **Confirmation**: A kind:28889 confirmation event is published, creating a permanent record of the successful view.
 
-### Resilience Through Decentralization
-- No single point of failure or censorship
-- Diverse content policies across different BILLBOARD operators
-- Lower barrier to entry compared to centralized advertising networks
-- Persistence of the network despite individual node failures
+7. **Payment**: Satoshis flow from the PROMOTER to the VIEWER (and potentially the BILLBOARD as a service fee).
 
-### Scalability Through Composability
-- Specialized implementations can focus on solving specific challenges
-- Leverages existing Nostr infrastructure rather than building from scratch
-- Allows for progressive enhancement as more sophisticated solutions develop
+This event-based architecture ensures all interactions are transparent, verifiable, and occur without requiring trust between participants.
+
+## What's the economic model?
+
+The PROMO PROTOCOL implements a market-driven economic model with direct value exchange:
+
+### Core Economic Principles
+
+- **Bidirectional Price Setting**: PROMOTERS set maximum bids, VIEWERS set minimum asks
+- **Pay-Per-Second**: Compensation is calculated based on actual viewing time
+- **Market Price Discovery**: Natural equilibrium emerges based on supply and demand
+- **Service Fees**: BILLBOARDs may charge fees for facilitating matches and verifying views
+- **Micropayments**: Satoshi-based payments enable economical small-value transactions
+
+### Economic Flows
+
+1. **PROMOTER Deposits**: PROMOTERS fund campaigns with satoshis allocated for promotion
+2. **View Compensation**: VIEWERS earn satoshis for each verified view
+3. **BILLBOARD Revenue**: Service providers earn fees from successful matches
+4. **Payment Channels**: Lightning Network or other payment technologies enable efficient transactions
+
+### Price Factors
+
+- **Content Quality**: High-quality promotions likely command more engagement
+- **Audience Specificity**: Targeted audiences with specific interests may command premium rates
+- **Time Sensitivity**: Urgent promotions may set higher bids to ensure distribution
+- **Market Competition**: Standard supply and demand dynamics influence pricing
+
+This economic model creates a self-regulating marketplace that properly values attention without requiring centralized intermediaries.
+
+## How is trust established?
+
+Trust in the PROMO PROTOCOL is established through:
+
+### Cryptographic Verification
+
+- **Digital Signatures**: All events are cryptographically signed using Nostr keys
+- **Immutable Records**: Published events create a permanent public record of all transactions
+- **Verification Events**: Kind:28889 events provide proof of completed views
+
+### Transparent Operation
+
+- **Open Protocol**: All protocol operations are transparent and auditable
+- **Public Events**: Promotion requests, matches, and confirmations are publicly visible
+- **Verifiable Payments**: Payment flows can be cryptographically verified
+
+### Reputation Systems
+
+- **Historical Performance**: Actors build reputation through consistent honest behavior
+- **Public Profiles**: PROMOTERS and BILLBOARDs can be identified by their public keys
+- **Community Feedback**: The Nostr ecosystem provides natural feedback mechanisms
+
+### Economic Incentives
+
+- **Aligned Interests**: All participants benefit from honest operation
+- **Service Competition**: Multiple BILLBOARDs compete on reliability and fairness
+- **Instant Payments**: Real-time compensation reduces counterparty risk
+
+By combining cryptographic verification with economic incentives and transparent operation, the PROMO PROTOCOL minimizes the need for trust between parties.
 
 ## How do I participate as a PROMOTER?
 
-As a PROMOTER in the protocol, you can:
-- Specify Nostr Events to promote
-- Set custom bid amounts in `sats_per_second`
-- Define required viewing durations for content
-- Choose trusted BILLBOARD nodes for verification
-- Submit PROMOTION requests through Nostr events (kind: 18888)
-- Exercise direct control over PROMOTION parameters
+To participate as a PROMOTER in the PROMO PROTOCOL:
 
-PROMOTERS publish kind:18888 events to initiate PROMOTIONS, specifying their bid, the content to promote, and which BILLBOARD operators they trust.
+### Getting Started
+
+1. **Set Up a Nostr Identity**: Create or use an existing Nostr keypair
+2. **Choose a PROMOTER Client**: Use a client application that supports the PROMO PROTOCOL
+3. **Fund Your Account**: Add satoshis to your client's wallet for promotion funding
+
+### Creating Promotions
+
+1. **Select Content**: Choose the Nostr note or content you want to promote
+2. **Define Parameters**:
+   - Set your maximum bid (satoshis per second)
+   - Specify minimum viewing duration
+   - Set campaign budget and timeframe
+   - Add relevant topic tags to reach your target audience
+
+3. **Publish the Promotion**: Your client will create and publish a kind:18888 event
+
+### Managing Campaigns
+
+1. **Monitor Performance**: Track how many VIEWERS are seeing your promotion
+2. **Adjust Parameters**: Modify your bid or targeting as needed
+3. **View Analytics**: Analyze which audiences engage best with your content
+4. **Manage Budget**: Add funds or adjust spending rates as necessary
+
+### Best Practices
+
+- Start with a competitive bid to establish visibility
+- Use specific topic tags to reach relevant audiences
+- Create engaging content worth promoting
+- Analyze performance data to optimize future promotions
+- Build a reputation as a quality promoter
+
+By following these steps, you can effectively promote your content to interested audiences while maintaining full control over your promotional strategy.
 
 ## How do I participate as a PROMOTION VIEWER?
 
-As a PROMOTION VIEWER in the protocol, you can:
-- Specify personal asking prices in `sats_per_second`
-- Select trusted BILLBOARD operators
-- Earn by viewing promoted content
-- Participate through simple Nostr events (kind: 17888)
-- Maintain full control over which content to view
-- Adjust asking prices based on market conditions
-- Create and maintain block lists to filter out unwanted PROMOTIONS
-- Specify which kinds of content you're willing to view (text, images, videos, etc.)
+To participate as a PROMOTION VIEWER and earn satoshis:
 
-PROMOTION VIEWERS publish kind:17888 events to signal availability, specifying their asking price and which BILLBOARD operators they accept. They can also reference a [NIP-51](https://github.com/nostr-protocol/nips/blob/master/51.md) list (kind:30003) to block specific PROMOTIONS or PROMOTERS.
+### Getting Started
 
-## How do I filter the PROMOTIONS I see?
+1. **Set Up a Nostr Identity**: Create or use an existing Nostr keypair
+2. **Choose a Compatible Client**: Use a client application that supports viewing PROMO PROTOCOL content
+3. **Configure a Lightning Wallet**: Connect a Lightning wallet to receive payments
 
-The PROMO PROTOCOL gives you complete control over which PROMOTIONS you see:
+### Setting Your Preferences
 
-- **Block specific PROMOTIONS**: Add any PROMOTION event ID to your block list
-- **Block specific PROMOTERS**: Add any PROMOTER's pubkey to your block list
-- **Filter by content type**: Specify which kinds of content you're willing to see promoted
-- **Default allow model**: You'll only see PROMOTIONS you haven't explicitly blocked
-- **Real-time updates**: Your preference changes take effect immediately
+1. **Set Your Ask Price**: Determine minimum satoshis per second you'll accept
+2. **Define Content Preferences**:
+   - Select topics you're interested in seeing
+   - Set which kinds of notes you're willing to view
+   - Create block lists for content you don't want to see
 
-These filtering capabilities ensure you maintain control over your promotional content experience while still participating in the ecosystem.
+3. **Publish Availability**: Your client will create and publish a kind:17888 event
 
-## How do PROMOTION VIEWER block lists work?
+### Viewing Promotions
 
-Block lists in the PROMO PROTOCOL use the [NIP-51](https://github.com/nostr-protocol/nips/blob/master/51.md) standard:
+1. **Receive Matches**: BILLBOARDs will match you with compatible promotions
+2. **View Content**: Promotions will appear in your client interface
+3. **Earn Satoshis**: Get paid for each verified view
+4. **Manage Earnings**: Transfer satoshis to your preferred wallet
 
-1. **Creating a block list**: Publish a parameterized replaceable list (kind:30003) with the d-tag "promotions-block-list"
-2. **Blocking PROMOTIONS**: Add the event IDs of objectionable PROMOTIONS as e-tags
-3. **Blocking PROMOTERS**: Add the pubkeys of objectionable PROMOTERS as p-tags
-4. **Referencing your block list**: Include a "global_block_list" tag in your kind:17888 PROMOTION VIEWER event
-5. **Updating preferences**: Publish a new version of your block list to update your preferences
+### Best Practices
 
-BILLBOARDs must fetch and respect your block list when matching PROMOTIONS, ensuring you never see content you've chosen to block.
+- Set a reasonable ask price to maximize earning opportunities
+- Update your topic interests to match what you genuinely want to see
+- Use reputable clients with good BILLBOARD connections
+- Provide genuine attention to maintain ecosystem health
+- Adjust preferences based on the quality of promotions you receive
 
-## What types of content can I choose to see?
+By participating as a PROMOTION VIEWER, you monetize your attention directly while maintaining control over what content you see.
 
-You can specify exactly which types of promoted content you're willing to view:
-- Use "k" tags in your kind:17888 PROMOTION VIEWER event to list accepted content kinds
-- For example:
-  - `["k", "20"]` for media content ([NIP-68](https://github.com/nostr-protocol/nips/blob/master/68.md))
-  - `["k", "22"]` for short vertical video ([NIP-71](https://github.com/nostr-protocol/nips/blob/master/71.md))
-- If you include any "k" tags, BILLBOARDs will only show you promoted content of those kinds
-- If you don't include "k" tags, BILLBOARDs may show you any kind of content (unless blocked)
+## How do I run a BILLBOARD?
 
-This gives you fine-grained control over the format of PROMOTIONS you receive.
+Running a BILLBOARD is a technical undertaking that enables you to facilitate the PROMO PROTOCOL marketplace:
+
+### Technical Requirements
+
+1. **Nostr Relay Infrastructure**: Ability to monitor and publish Nostr events
+2. **Payment Processing**: Lightning Network node or other payment channel capability
+3. **Matching Algorithm**: Software to match PROMOTERS and VIEWERS based on protocol rules
+4. **Verification System**: Mechanisms to verify promotion viewing time
+5. **Analytics Platform**: Tools to provide insights to PROMOTERS and VIEWERS
+
+### Implementation Steps
+
+1. **Set Up Infrastructure**:
+   - Deploy Nostr relay listeners for kind:18888 and kind:17888 events
+   - Implement a matching engine based on protocol specifications
+   - Configure payment channels for satoshi transfers
+   - Create verification mechanisms for viewing confirmation
+
+2. **Establish Policies**:
+   - Define fee structure for your BILLBOARD services
+   - Establish content guidelines and moderation policies
+   - Implement topic matching algorithms
+   - Set up fraud prevention mechanisms
+
+3. **Launch Operations**:
+   - Begin identifying and matching compatible promotions and viewers
+   - Publish kind:28890 match events
+   - Verify views and publish kind:28889 confirmation events
+   - Process payments between parties
+
+### Monetization Options
+
+- Percentage fee on successful matches
+- Flat fee per match or confirmation
+- Premium services for enhanced analytics or targeting
+- Value-added services for PROMOTERS or VIEWERS
+
+### Best Practices
+
+- Prioritize accurate verification to build trust
+- Implement fair matching algorithms
+- Provide transparent analytics to all parties
+- Maintain competitive fee structures
+- Continuously improve topic matching relevance
+
+Running a BILLBOARD requires technical expertise but offers opportunities to earn fees while facilitating the decentralized promotion ecosystem.
+
+## How are PROMOTERS and PROMOTION VIEWERS matched?
+
+The PROMO PROTOCOL includes an explicit matching process where BILLBOARDs create standardized match events (kind:28890) to transparently record when a PROMOTER's promotion is matched with a PROMOTION VIEWER:
+
+- **Match Events**: BILLBOARDs publish kind:28890 events that create a transparent record of matching decisions
+- **Economic Compatibility**: BILLBOARDs verify that the PROMOTER's bid meets or exceeds the PROMOTION VIEWER's ask
+- **Topic Relevance**: When supported, BILLBOARDs consider topic overlap between PROMOTERS and PROMOTION VIEWERS
+- **Content Preferences**: BILLBOARDs respect PROMOTION VIEWER kind preferences and block lists
+- **Explicit Record**: Match events provide a transparent audit trail of how promotions are distributed
+
+This matching step occurs after promotion requests and viewing availability signals, but before actual content viewing and confirmation, creating an explicit record of the matching decision.
 
 ## How does topic-based matching work between PROMOTERS and PROMOTION VIEWERS?
 
@@ -203,127 +349,364 @@ The PROMO PROTOCOL includes a bidirectional topic matching system that connects 
 
 All topic matching is case-insensitive and BILLBOARDs may implement additional algorithms like semantic matching or topic hierarchies to further improve relevance.
 
-## How do I run a BILLBOARD?
+## What information is included in a promotion match?
 
-BILLBOARD operators maintain full autonomy over implementation details. The protocol defines only the communication standards, while operators can:
-- Choose how to handle event deletions
-- Implement custom matching algorithms
-- Select verification methods
-- Establish fee structures
-- Determine event caching/storage policies
-- Deploy anti-fraud measures
-- Define business logic
+Match events (kind:28890) contain key information about the promotion arrangement:
 
-As a BILLBOARD Operator, you:
-- Serve as verification infrastructure
-- Configure viewing duration requirements
-- Set customizable service fees
-- Validate transactions between PROMOTERS and PROMOTION VIEWERS
-- Update market conditions at configurable intervals
-- Operate through standard Nostr events (kind:28888)
+- **Connection Record**: Links the specific PROMOTION with a specific PROMOTION VIEWER
+- **Economic Parameters**: The agreed sats_per_second rate and required viewing duration
+- **Topic Information**: Which topics were used for matching (when applicable)
+- **Expiration**: Optional timestamp after which the match is no longer valid
+- **Timestamps**: When the match was created
 
-This design encourages market-driven selection of effective BILLBOARD implementations and practices.
+This comprehensive record provides transparency to all marketplace participants about the terms under which content is being promoted, enabling better tracking, analysis, and optimization of the content promotion ecosystem.
 
-## How do PROMOTIONS begin and end?
+## What happens after a PROMOTION match is created?
 
-### PROMOTION Lifecycle
-- PROMOTIONS begin when PROMOTERS publish kind:18888 events
-- PROMOTIONS remain active until:
-  1. The PROMOTER publishes a kind:5 event deleting the PROMOTION
-  2. The BILLBOARD terminates the PROMOTION based on its criteria
-- BILLBOARDs must monitor for and respect deletion events
+After a match is created, several possible outcomes can occur:
 
-## How are PROMOTION views verified?
+- **Content Viewing**: The PROMOTION VIEWER sees the promoted content for the required duration, resulting in a successful view
+- **View Confirmation**: The BILLBOARD publishes a kind:28889 confirmation event after successful viewing
+- **Expiration**: If the match has an expiration time and the PROMOTION VIEWER does not view the content before that time, the match becomes invalid
+- **Cancellation**: The BILLBOARD can publish a kind:5 event to explicitly cancel a match if necessary
 
-The PROMO PROTOCOL includes a transparent verification system for promotional content views through BILLBOARD PROMOTION CONFIRMATION events:
-
-- **Confirmation Events**: BILLBOARDs publish standard kind:28889 events when a PROMOTION VIEWER successfully completes viewing promoted content
-- **Required Duration Verification**: BILLBOARDs verify that viewing time (completed_at - started_at) meets or exceeds the duration required in the original PROMOTION
-- **Complete Verification Record**: Each confirmation includes the PROMOTION event ID, PROMOTER pubkey, PROMOTION VIEWER pubkey, and precise timestamps
-- **Transparent Audit Trail**: All marketplace participants can verify completed views through these immutable confirmation events
-- **Real-Time Publication**: BILLBOARDs publish confirmations promptly after successful view completion
-
-### Verification Process
-1. PROMOTION VIEWER engages with a PROMOTION on a BILLBOARD
-2. BILLBOARD precisely tracks viewing start timestamp (started_at)
-3. BILLBOARD continues tracking until viewing requirements are met
-4. BILLBOARD records completion timestamp (completed_at)
-5. BILLBOARD verifies that (completed_at - started_at) ≥ required duration
-6. Upon verification, BILLBOARD publishes a kind:28889 BILLBOARD PROMOTION CONFIRMATION event
-7. This confirmation links the original PROMOTION, both participants' pubkeys, and exact timestamps
-8. PROMOTERS can independently verify that their content was viewed for the required duration
-9. All participants retain access to the immutable verification record
-
-BILLBOARDs will only publish confirmation events for genuinely completed views with accurate timestamps, ensuring the integrity of the verification system. These confirmation events also serve as the primary data source for the metrics and analytics described in the protocol, enabling accurate reporting and establishing trust between all participants.
-
-## How do PROMOTERS access and interpret their campaign analytics?
-
-PROMOTERS in the PROMO PROTOCOL have two primary options for accessing and interpreting campaign analytics:
-
-1. **Custom Implementation**: PROMOTERS can develop their own data analysis systems by:
-   - Subscribing to kind:38891 events (BILLBOARD METRICS) related to their PROMOTIONS
-   - Collecting kind:28889 events (PROMOTION CONFIRMATIONS) for verification records
-   - Building custom dashboards and analysis tools for their specific needs
-   - Implementing their own performance metrics and reporting systems
-
-2. **Service Providers**: PROMOTERS can pay specialized service providers who:
-   - Aggregate and analyze campaign data across multiple BILLBOARDs
-   - Provide user-friendly dashboards and reporting interfaces
-   - Offer advanced analytics and insights beyond basic metrics
-   - Handle the technical aspects of data collection and processing
-
-The standardized kind:38891 BILLBOARD METRICS events include key performance indicators such as:
-- Total impressions and complete views
-- Completion rates and average view durations
-- Cost per impression and cost per engagement
-- Total campaign spending
-
-These metrics enable PROMOTERS to evaluate campaign performance, optimize their strategies, and maximize their return on investment, regardless of whether they choose custom implementation or service providers for analysis.
-
-## What's the economic model?
-
-### Economic Architecture
-- Market-driven pricing mechanism with no central rate setting
-- Direct peer-to-peer economic relationship between PROMOTERS and PROMOTION VIEWERS
-- BILLBOARD fee structure clearly defined in kind:28888 events
-- All monetary values denominated in satoshis for consistency
-- BILLBOARDs only match PROMOTERS and PROMOTION VIEWERS when bid ≥ ask
-
-## How is trust established?
-
-### Trust Framework
-- Decentralized trust model with no central authority
-- Explicit pubkey-based BILLBOARD selection by both PROMOTERS and PROMOTION VIEWERS
-- Self-sovereign trust relationships maintained by individual participants
-- Trust signals propagated through successful transaction history
-- Market incentives naturally align with honest operation
+Match events remain valid until one of these terminal states is reached. This well-defined lifecycle ensures that all participants have clear expectations about the status of promotions and viewing opportunities.
 
 ## Content Preferences and Filtering
 
-The protocol supports robust content filtering options for PROMOTION VIEWERS:
+The PROMO PROTOCOL empowers PROMOTION VIEWERS with comprehensive content filtering capabilities:
 
-### Block List Capabilities
-- PROMOTION VIEWERS can maintain personal block lists for unwanted PROMOTIONS
-- PROMOTION VIEWERS can block specific PROMOTION event IDs using NIP-51 lists
-- PROMOTION VIEWERS can block all PROMOTIONS from specific PROMOTERS
-- PROMOTION VIEWERS can specify which content types (kinds) they're willing to view
+### Content Control Mechanisms
 
-### Implementation
-- Block lists are maintained as addressable NIP-51 lists (kind:30003)
-- Preferences are expressed in kind:17888 PROMOTION VIEWER events
-- BILLBOARDs must respect all PROMOTION VIEWER preferences when matching PROMOTIONS
-- All preferences update in real-time when PROMOTION VIEWERS publish changes
+- **Topic-Based Filtering**: Select specific topics of interest
+- **Kind Filtering**: Choose which types of Nostr notes to view
+- **Block Lists**: Exclude specific content, PROMOTERS, or categories
+- **Minimum Bid Thresholds**: Set economic minimums for your attention
+- **Content Rating Filters**: Filter based on content maturity ratings
 
-### Preference Evaluation Rules
-1. **Addressable Block List**: Block list is maintained as an addressable NIP-51 list
-2. **Default Allow**: All PROMOTIONS are implicitly allowed unless explicitly blocked
-3. **Kind Filtering**: Promoted content must be of a kind specified in a `k` tag (if any `k` tags are present)
-4. **Most Specific First**: PROMOTION-level block lists take precedence over PROMOTER-level block lists
-5. **Block List Priority**: If a PROMOTION is blocked, it must not be shown regardless of other factors
+### Implementation Approach
+
+Content preferences are primarily expressed through kind:17888 events, where PROMOTION VIEWERS specify their requirements using standardized tags:
+
+- Topic preferences use `["t", "topic"]` tags
+- Block lists use `["b", "pubkey"]` or `["b", "word"]` tags
+- Kind preferences use `["k", "kind"]` tags
+- Minimum ask uses the `{"min_sat_per_second": X}` field
+
+These preferences are honored by BILLBOARDs when creating matches, ensuring VIEWERS only see content aligned with their stated preferences.
+
+### Benefits of Preference Control
+
+- Personalized promotion experience
+- Reduced exposure to unwanted content
+- Higher-quality matches between PROMOTERS and VIEWERS
+- Better economic outcomes for all participants
+- Enhanced overall ecosystem satisfaction
+
+This preference-based system ensures that attention is directed to relevant content, improving the effectiveness of promotions while respecting viewer autonomy.
+
+## How do I filter the PROMOTIONS I see?
+
+As a PROMOTION VIEWER, you have multiple filtering options to control the promotional content you see:
+
+### Setting Topic Preferences
+
+1. **Select Interests**: Choose specific topics you want to see promotions about
+   - In your client, add topics using the `["t", "topic"]` tag format
+   - The more specific your topics, the more relevant your promotions
+   - BILLBOARDs will prioritize promotions matching your stated interests
+
+2. **Update Regularly**: Adjust your interests as they evolve over time
+
+### Using Block Lists
+
+1. **Block by Pubkey**: Exclude specific PROMOTERS you don't wish to see
+   - Block using `["b", "pubkey"]` tags
+   - Some clients may offer a simple "block" button
+
+2. **Block by Content**: Filter out specific words or phrases
+   - Block using `["b", "word"]` tags
+   - Some clients may offer content category blocking
+
+### Economic Filtering
+
+1. **Set Minimum Ask**: Require higher compensation for your attention
+   - Increase your `min_sat_per_second` value
+   - This naturally filters out lower-value promotions
+
+2. **Time-Based Filters**: Set maximum viewing duration requirements
+
+### Implementation in Clients
+
+Most client applications will provide user-friendly interfaces for:
+- Selecting topics of interest
+- Managing block lists
+- Setting economic parameters
+- Reviewing and adjusting filter settings
+
+By actively managing these preferences, you maintain control over your promotional content experience while still earning satoshis for your attention.
+
+## What types of content can I choose to see?
+
+The PROMO PROTOCOL allows PROMOTION VIEWERS to specify exactly what types of content they're willing to view:
+
+### Content Type Filtering
+
+1. **Nostr Kind Filtering**: Choose which event kinds you're willing to see
+   - Kind 1: Standard notes/posts
+   - Kind 30023: Long-form content
+   - Other kinds as they become promotable
+   - Specify using `["k", "kind"]` tags in your preferences
+
+2. **Media Type Preferences**:
+   - Text-only content
+   - Image content
+   - Video content
+   - Audio content
+   - Specify using media-specific tags
+
+3. **Content Category Preferences**:
+   - Commercial promotions
+   - Educational content
+   - Entertainment
+   - News/information
+   - Specify using category tags
+
+### Content Maturity Filtering
+
+1. **Maturity Ratings**: Filter based on content appropriateness
+   - Family-friendly
+   - General audience
+   - Mature audiences
+   - Specify using rating tags
+
+2. **Sensitive Content**: Opt in or out of potentially sensitive topics
+   - Political content
+   - Financial products
+   - Adult themes
+   - Specify using content sensitivity tags
+
+### Language Preferences
+
+- Filter promotions by language
+- Specify preferred languages using language tags
+- Exclude languages you don't understand
+
+The PROMO PROTOCOL's flexible tagging system allows PROMOTION VIEWERS to create highly specific content preferences, ensuring they only see promotions that align with their interests and comfort levels.
+
+## How do PROMOTION VIEWER block lists work?
+
+Block lists give PROMOTION VIEWERS precise control over what content they never want to see:
+
+### Block List Types
+
+1. **Pubkey-Based Blocks**:
+   - Block specific PROMOTERS by their public keys
+   - Implemented using `["b", "pubkey"]` tags
+   - Once blocked, no content from that PROMOTER will be matched
+
+2. **Word-Based Blocks**:
+   - Block content containing specific words or phrases
+   - Implemented using `["b", "word"]` tags
+   - BILLBOARDs scan promotion content for blocked terms
+
+3. **Domain Blocks**:
+   - Block promotions linking to specific domains
+   - Implemented using `["b", "domain"]` tags
+   - Useful for avoiding specific websites or services
+
+4. **Category Blocks**:
+   - Block entire categories of content
+   - Implemented using category-specific block tags
+   - Examples: gambling, politics, specific products
+
+### Block List Implementation
+
+1. **Client-Side**: Many blocks are enforced directly in the client application
+2. **BILLBOARD-Side**: BILLBOARDs honor block lists when creating matches
+3. **Protocol-Level**: Block information is included in kind:17888 events
+
+### Managing Block Lists
+
+1. **Creating Blocks**: Most clients offer simple interfaces to add blocks
+2. **Importing Blocks**: Some clients allow importing block lists from trusted sources
+3. **Exporting Blocks**: Share your block list with other devices or users
+4. **Temporary Blocks**: Some clients support time-limited blocks
 
 ### Privacy Considerations
-- PROMOTION VIEWER block lists are public, as they are published in Nostr events
-- Aggregated metrics may include overall matching rates without identifying specific block list patterns
+
+- Block lists are public in kind:17888 events
+- Consider using separate identities for different content preferences
+- Some clients may offer private blocking that doesn't publish full block details
+
+Block lists are an essential tool for ensuring PROMOTION VIEWERS have a positive experience, allowing them to permanently exclude content they find irrelevant, objectionable, or uninteresting.
+
+## How do PROMOTIONS begin and end?
+
+PROMOTIONS in the PROMO PROTOCOL have well-defined lifecycle stages:
+
+### Promotion Creation and Activation
+
+1. **Promotion Definition**:
+   - PROMOTER creates a kind:18888 event
+   - Includes content to promote, bid price, and parameters
+   - Signed with the PROMOTER's private key
+
+2. **Activation Requirements**:
+   - Valid signature verification
+   - Sufficient funds available for promotion
+   - Compliant with protocol standards
+   - Publication to sufficient relays
+
+3. **Active Status**:
+   - Promotion becomes eligible for matching
+   - BILLBOARDs begin considering it for VIEWERS
+   - Appears in the active promotion pool
+
+### Promotion Conclusion
+
+Promotions can end through several mechanisms:
+
+1. **Natural Completion**:
+   - Budget exhaustion (all allocated satoshis spent)
+   - Time-based expiration (if specified in event)
+   - View count reached (if maximum views specified)
+
+2. **Manual Termination**:
+   - PROMOTER publishes a kind:5 event referencing the promotion
+   - Explicitly ends the promotion before natural completion
+   - Remaining budget is returned or held based on client policy
+
+3. **Forced Termination**:
+   - Protocol violations detected
+   - Payment failures
+   - BILLBOARD policy enforcement
+
+### State Transitions
+
+1. **Created**: Initial publication but not yet active
+2. **Active**: Available for matching with VIEWERS
+3. **Paused**: Temporarily unavailable (if supported)
+4. **Completed**: Naturally ended based on parameters
+5. **Terminated**: Explicitly ended through kind:5 event
+
+### Handling Promotion Endings
+
+- BILLBOARDs stop creating matches for ended promotions
+- Active matches may still be honored depending on BILLBOARD policy
+- Analytics remain available for completed promotions
+- Some clients support promotion renewal or duplication
+
+This well-defined lifecycle ensures predictable behavior for all parties while allowing flexibility in how promotions are managed.
+
+## How are PROMOTION views verified?
+
+The PROMO PROTOCOL implements several mechanisms to verify genuine promotion viewing:
+
+### Verification Methods
+
+1. **Time-Based Verification**:
+   - Measures actual viewing duration
+   - Compares against required minimum viewing time
+   - Accounts for active window/tab status
+   - Tracks user engagement signals
+
+2. **Engagement Verification**:
+   - Some BILLBOARDs monitor scrolling, mouse movement, or other indicators
+   - Ensures genuine human attention rather than automated viewing
+   - Balances privacy with verification needs
+
+3. **Client-Side Attestation**:
+   - Client software confirms content was rendered
+   - Reports viewing completion to BILLBOARD
+   - May include cryptographic proofs of viewing
+
+4. **Consensus Verification**:
+   - Multiple verification methods combined
+   - Reduces reliance on any single verification approach
+   - Improves resistance to verification fraud
+
+### Verification Process
+
+1. **Display Initiation**: Promotion is shown to the VIEWER
+2. **Viewing Time Tracking**: BILLBOARD monitors viewing duration
+3. **Engagement Monitoring**: Optional tracking of interaction signals
+4. **Threshold Confirmation**: Verification when required time is reached
+5. **Confirmation Publication**: kind:28889 event published
+
+### Fraud Prevention
+
+- Viewing patterns analysis to detect automated viewing
+- Rate limiting to prevent excessive earnings from single viewers
+- Reputation-based systems for clients and viewers
+- Cryptographic attestation where appropriate
+
+### Privacy Considerations
+
+- Minimal data collection for verification purposes
+- Transparency about verification methods used
+- No persistent tracking across sessions
+
+This balanced approach ensures that PROMOTERS receive genuine attention for their satoshis while respecting VIEWER privacy and creating a sustainable ecosystem.
+
+## How do PROMOTERS access and interpret their campaign analytics?
+
+PROMOTERS gain access to comprehensive analytics to measure and optimize their promotional campaigns:
+
+### Available Analytics
+
+1. **Performance Metrics**:
+   - Views completed (with verification)
+   - View completion rate
+   - Average viewing time
+   - Engagement indicators (when available)
+   - Cost per view
+
+2. **Audience Insights**:
+   - Topic overlap success rates
+   - Viewer preference patterns
+   - Geographic distribution (if shared by viewers)
+   - Time-of-day performance
+
+3. **Economic Analytics**:
+   - Satoshis spent per time period
+   - Average cost per view
+   - Budget utilization rate
+   - ROI indicators (when conversion tracking is implemented)
+
+4. **Comparative Analytics**:
+   - Performance against similar promotions
+   - Historical campaign comparisons
+   - Market benchmark data (when available)
+
+### Accessing Analytics
+
+1. **Client Dashboards**: Most PROMOTER clients provide built-in analytics interfaces
+2. **Data Export**: Options to export raw data for external analysis
+3. **API Access**: Some platforms offer API access to analytics data
+4. **Real-Time Monitoring**: Live view of current campaign performance
+
+### Interpreting Results
+
+1. **Key Performance Indicators**:
+   - View completion rates above market average indicate engaging content
+   - High topic match rates suggest effective targeting
+   - Consistent viewing time indicates content relevance
+   - Cost per view trends show market dynamics
+
+2. **Optimization Insights**:
+   - Topic targeting effectiveness
+   - Bid price optimization opportunities
+   - Content engagement patterns
+   - Viewing time distribution
+
+3. **Strategic Applications**:
+   - A/B testing different promotions
+   - Budget allocation optimization
+   - Target audience refinement
+   - Bid strategy adjustments
+
+This comprehensive analytics ecosystem enables PROMOTERS to continuously improve their promotion strategy while maximizing the value received for their satoshis.
 
 ## Technical Specifications & Documentation
 
@@ -334,6 +717,4 @@ The protocol supports robust content filtering options for PROMOTION VIEWERS:
 - [NIP-X4](./NIP-X4.md): PROMOTION VIEWER PREFERRED TOPICS
 - [NIP-X5](./NIP-X5.md): PROMOTION PREFERRED TOPICS
 - [NIP-X6](./NIP-X6.md): BILLBOARD PROMOTION CONFIRMATION
-- NIP-XX: BILLBOARD STATISTICS (coming soon)
-- NIP-XX: LIGHTNING PAYMENTS (coming soon)
-- NIP-XX: ECASH PAYMENTS (coming soon)
+- [NIP-X7](./NIP-X7.md): PROMOTION MATCH
