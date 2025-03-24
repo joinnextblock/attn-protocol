@@ -3,8 +3,7 @@
 `draft` `optional`
 
 ## Abstract
-
-This NIP defines a standardized mechanism for PROMOTERS in the Promoted Notes network to specify content topics for their promotions using the standard Nostr topic tag (`t`). By enhancing the PROMOTER event (kind:18888) with topic tags, BILLBOARDs can more effectively match promoted content with interested PROMOTION VIEWERS, improving relevance and engagement for all marketplace participants.
+NIP-X5 defines a standardized mechanism for PROMOTERS to specify content topics for their promotions using the standard Nostr topic tag within the PROMO PROTOCOL. By enhancing the PROMOTER event (kind:18888) with topic tags, this NIP complements NIP-X4 to create a bidirectional topic matching system between PROMOTERS and PROMOTION VIEWERS. This enhancement improves content relevance and engagement rates, creating a more efficient marketplace where participants can connect based on shared interests rather than economic considerations alone.
 
 ## Motivation
 
@@ -16,6 +15,9 @@ While [NIP-X4](./NIP-X4.md) enables PROMOTION VIEWERS to express content interes
 4. Creates a more efficient marketplace with better PROMOTER-PROMOTION VIEWER matching
 
 ## Implementation
+
+### NEW TAGS FOR KIND:18888
+- `t` - Topic tag indicating content categories of the PROMOTION (can appear multiple times)
 
 ### Topic Tags in PROMOTER Events
 
@@ -147,7 +149,7 @@ BILLBOARDs that implement both NIPs can provide significantly improved matching 
 ## Compatibility
 
 This NIP is fully compatible with:
-- [NIP-X1](./NIP-X1.md) (Basic Protocol for Promoted Notes)
+- [NIP-X1](./NIP-X1.md) (Basic Protocol for PROMOTED NOTES)
 - [NIP-X2](./NIP-X2.md) (BILLBOARD Metrics)
 - [NIP-X3](./NIP-X3.md) (PROMOTION VIEWER Block List)
 - [NIP-X4](./NIP-X4.md) (PROMOTION VIEWER Preferred Topics)
@@ -178,7 +180,7 @@ sequenceDiagram
 
 ## References
 
-1. [NIP-X1](./NIP-X1.md): Basic Protocol for Promoted Notes
+1. [NIP-X1](./NIP-X1.md): Basic Protocol for PROMOTED NOTES
 2. [NIP-X2](./NIP-X2.md): BILLBOARD Metrics 
 3. [NIP-X3](./NIP-X3.md): PROMOTION VIEWER Block List
 4. [NIP-X4](./NIP-X4.md): PROMOTION VIEWER Preferred Topics

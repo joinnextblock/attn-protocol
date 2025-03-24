@@ -3,19 +3,21 @@
 `draft` `optional`
 
 ## Abstract
-
-This NIP defines a standardized mechanism for PROMOTION VIEWERS to express interests using the standard Nostr topic tag. By enhancing the PROMOTION VIEWER event (kind:17888) with topic tags, BILLBOARD OPERATORS can more effectively match relevant PROMOTION(s) with PROMOTION VIEWER(s).
+NIP-X4 defines a standardized mechanism for PROMOTION VIEWERS to express content interests using the standard Nostr topic tag within the PROMO PROTOCOL. By enhancing the PROMOTION VIEWER event (kind:17888) with topic tags, BILLBOARD OPERATORS can more effectively match relevant PROMOTIONS with interested PROMOTION VIEWERS. This improvement increases content relevance for PROMOTION VIEWERS while enabling higher engagement rates for PROMOTERS, creating a more efficient marketplace based on content preferences rather than economic factors alone.
 
 ## Motivation
 
-In the current Promoted Notes system ([NIP-X1](./NIP-X1.md)), PROMOTION VIEWERS have no standardized way to signal content preferences, leading to random or purely economic-based content matching. This NIP introduces content relevance as a matching criterion, enabling:
+In the current PROMOTED NOTES system ([NIP-X1](./NIP-X1.md)), PROMOTION VIEWERS have no standardized way to signal content preferences, leading to random or purely economic-based content matching. This NIP introduces content relevance as a matching criterion, enabling:
 
-1. Better viewer experience through relevant content
+1. Better PROMOTION VIEWER experience through relevant content
 2. Improved engagement rates for PROMOTERS
 3. More efficient marketplace operation
 4. Enhanced value proposition for all participants
 
 ## Implementation
+
+### NEW TAGS FOR KIND:17888
+- `t` - Topic tag indicating content categories the PROMOTION VIEWER is interested in (can appear multiple times)
 
 ### Topic Tags in PROMOTION VIEWER Events
 

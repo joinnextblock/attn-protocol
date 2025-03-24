@@ -2,13 +2,17 @@
 `draft` `mandatory`
 
 ## Abstract
-NIP-X1 defines a decentralized protocol for content promotion on Nostr. The protocol establishes a market-driven system connecting PROMOTERS and PROMOTION VIEWERS through BILLBOARDS (verification nodes).
+NIP-X1 defines the core decentralized protocol for content promotion on Nostr, establishing standardized event kinds and communication patterns between participants. The protocol establishes a market-driven system connecting PROMOTERS who wish to promote content with PROMOTION VIEWERS who are willing to view it, facilitated by BILLBOARD verification nodes. This foundation enables a transparent, decentralized alternative to traditional advertising systems while preserving Nostr's core principles of user sovereignty and decentralization.
 
 ## Protocol Components
 
 ### NEW TAGS
+- `b` - the pubkey of a BILLBOARD operator that the sender trusts
 
-- b - the pubkey of a BILLBOARD
+### NEW EVENT KINDS
+- **kind:28888**: BILLBOARD configuration event
+- **kind:18888**: PROMOTER promotion request event
+- **kind:17888**: PROMOTION VIEWER availability event
 
 ## Key Components
 
@@ -27,7 +31,7 @@ NIP-X1 defines a decentralized protocol for content promotion on Nostr. The prot
   - Relay preferences (read/write specifications)
 
 - **kind:18888**: Defines PROMOTION parameters
-  - Target note ID (event to be promoted)
+  - Target note_id (event to be promoted)
   - sats_per_second amount (payment offered per view)
   - Duration requirement (viewing time needed)
   - Trusted BILLBOARD specification (pubkey and relay)
@@ -63,15 +67,15 @@ Event kind:28888 defining BILLBOARD parameters
 ```
 
 #### Required Tags
-- `interval`: Update frequency in seconds
-- `fee`: BILLBOARD commission (percent or fixed sats)
-- `u`: List of BILLBOARD endpoint URLs
-- `nip`: List of PROMO PROTOCOL Implemented NIP version
+- `interval`: Update frequency in seconds - how often the BILLBOARD updates promotion matching
+- `fee`: BILLBOARD commission (percent or fixed sats) - payment the BILLBOARD takes for services
+- `u`: List of BILLBOARD endpoint URLs - service endpoints where PROMOTION VIEWERS can view PROMOTIONS
+- `nip`: List of PROMO PROTOCOL Implemented NIP versions - indicates which protocol features are supported
 
 #### Optional Tags
-- `max_duration`: Maximum allowed view duration
-- `min_duration`: Minimum allowed view duration
-- `min_fee`: Minimum commission in sats
+- `max_duration`: Maximum allowed view duration - upper limit on how long promotions can be
+- `min_duration`: Minimum allowed view duration - lower limit on how long promotions must be
+- `min_fee`: Minimum commission in sats - floor value for BILLBOARD fees regardless of percentage
 
 ### PROMOTER Event
 Event kind:18888 from PROMOTERS requesting note promotion
@@ -155,10 +159,10 @@ sequenceDiagram
 
     BILLBOARD->>Relay: Publishes kind:28888 event<br/>with configuration details<br/>(fees, durations, URLs)
     Note over BILLBOARD: BILLBOARD subscribes to all 18888 & 17888 events
-    PROMOTER->>Relay: Publishes kind:18888 event<br/>with PROMOTION request<br/>(note ID, sats_per_second, duration)
-    Relay->>BILLBOARD: Publishes kind:18888 event<br/>with PROMOTION request<br/>(note ID, sats_per_second, duration)
+    PROMOTER->>Relay: Publishes kind:18888 event<br/>with PROMOTION request<br/>(note_id, sats_per_second, duration)
+    Relay->>BILLBOARD: Publishes kind:18888 event<br/>with PROMOTION request<br/>(note_id, sats_per_second, duration)
     PROMOTION_VIEWER->>Relay: Publishes kind:17888 event<br/>with participation details<br/>(asking price)
-    Relay->>BILLBOARD: Publishes kind:17888 event<br/>with PROMOTION request<br/>(note ID, sats_per_second, duration)
+    Relay->>BILLBOARD: Publishes kind:17888 event<br/>with PROMOTION request<br/>(note_id, sats_per_second, duration)
     PROMOTION_VIEWER->>BILLBOARD: Navigates to BILLBOARD
     BILLBOARD->>PROMOTION_VIEWER: BILLBOARD displays best promoted note for PROMOTION_VIEWER
     Note over Relay,PROMOTER: verification notes defined in NIP-XX
