@@ -3,13 +3,13 @@
 `draft` `optional`
 
 ## Abstract
-NIP-X5 defines a standardized mechanism for PROMOTERS to specify content topics for their promotions using the standard Nostr topic tag within the PROMO PROTOCOL. By enhancing the PROMOTER event (kind:18888) with topic tags, this NIP complements NIP-X4 to create a bidirectional topic matching system between PROMOTERS and PROMOTION VIEWERS. This enhancement improves content relevance and engagement rates, creating a more efficient marketplace where participants can connect based on shared interests rather than economic considerations alone.
+NIP-X5 defines a standardized mechanism for PROMOTERS to specify content topics for their PROMOTIONS using the standard Nostr topic tag within the PROMO PROTOCOL. By enhancing the PROMOTER event (kind:18888) with topic tags, this NIP complements NIP-X4 to create a bidirectional topic matching system between PROMOTERS and PROMOTION VIEWERS. This enhancement improves content relevance and engagement rates, creating a more efficient marketplace where participants can connect based on shared interests rather than economic considerations alone.
 
 ## Motivation
 
 While [NIP-X4](./NIP-X4.md) enables PROMOTION VIEWERS to express content interests, PROMOTERS currently have no standardized way to categorize their promoted content. This NIP creates a bidirectional topic matching system that:
 
-1. Increases promotion relevance and effectiveness
+1. Increases PROMOTION relevance and effectiveness
 2. Improves conversion and engagement rates
 3. Enables content-based targeting without compromising privacy
 4. Creates a more efficient marketplace with better PROMOTER-PROMOTION VIEWER matching
@@ -48,7 +48,7 @@ BILLBOARDs implementing this NIP SHOULD:
 1. Extract topic tags from both PROMOTER (kind:18888) and PROMOTION VIEWER (kind:17888) events
 2. Prioritize matches where PROMOTER and PROMOTION VIEWER topics overlap
 3. Implement case-insensitive topic matching (e.g., "bitcoin" matches "Bitcoin")
-4. Consider topic matching as a significant factor in the promotion selection algorithm
+4. Consider topic matching as a significant factor in the PROMOTION selection algorithm
 5. Continue honoring all economic constraints (bid ≥ ask) as defined in [NIP-X1](./NIP-X1.md)
 6. Respect PROMOTION VIEWER block list preferences from [NIP-X3](./NIP-X3.md) if implemented
 
@@ -56,10 +56,10 @@ BILLBOARDs implementing this NIP SHOULD:
 
 When both [NIP-X4](./NIP-X4.md) and [NIP-X5](./NIP-X5.md) are implemented, BILLBOARDs SHOULD:
 
-1. First filter promotions based on economic criteria (bid ≥ ask)
-2. Then prioritize promotions with topic overlap between PROMOTER and PROMOTION VIEWER
+1. First filter PROMOTIONS based on economic criteria (bid ≥ ask)
+2. Then prioritize PROMOTIONS with topic overlap between PROMOTER and PROMOTION VIEWER
 3. Use the number of matching topics as a weighting factor
-4. For promotions with equal topic matches, prioritize by economic value
+4. For PROMOTIONS with equal topic matches, prioritize by economic value
 
 ## Technical Details
 
@@ -88,7 +88,7 @@ While this NIP does not mandate a specific topic taxonomy, BILLBOARD OPERATORS a
 
 Client developers SHOULD:
 
-1. Provide intuitive interfaces for PROMOTERS to add topic tags to promotions
+1. Provide intuitive interfaces for PROMOTERS to add topic tags to PROMOTIONS
 2. Suggest popular or trending topics
 3. Auto-extract potential topics from the note being promoted
 4. Allow PROMOTERS to see topic matching statistics in their metrics
@@ -112,7 +112,7 @@ Client developers SHOULD:
 }
 ```
 
-### Technical Article Promotion
+### Technical Article PROMOTION
 
 ```json
 {
@@ -159,22 +159,22 @@ BILLBOARDs that do not implement this NIP will ignore PROMOTER topic tags and co
 ## Flow Diagram
 ```mermaid
 sequenceDiagram
-    participant Relay
+    participant RELAY
     participant BILLBOARD
     participant PROMOTION_VIEWER
     participant PROMOTER
 
-    PROMOTER->>Relay: Publishes kind:18888 event<br/>with topic tags (t)
-    PROMOTION_VIEWER->>Relay: Publishes kind:17888 event<br/>with topic interests (t)
-    Relay->>BILLBOARD: Forwards both events
+    PROMOTER->>RELAY: Publishes kind:18888 event<br/>with topic tags (t)
+    PROMOTION_VIEWER->>RELAY: Publishes kind:17888 event<br/>with topic interests (t)
+    RELAY->>BILLBOARD: Forwards both events
     
     Note over BILLBOARD: BILLBOARD analyzes topic overlap<br/>between PROMOTER and PROMOTION_VIEWER
     
     alt Topics match and economics work (bid ≥ ask)
-        BILLBOARD->>PROMOTION_VIEWER: Shows relevant promoted note<br/>matching PROMOTION_VIEWER interests
+        BILLBOARD->>PROMOTION_VIEWER: Shows relevant PROMOTION<br/>matching PROMOTION_VIEWER interests
         Note over PROMOTION_VIEWER,PROMOTER: Higher engagement probability
     else No topic match but economics work
-        BILLBOARD->>PROMOTION_VIEWER: Shows promoted note<br/>based only on economic match
+        BILLBOARD->>PROMOTION_VIEWER: Shows PROMOTION<br/>based only on economic match
     end
 ```
 
