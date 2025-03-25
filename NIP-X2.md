@@ -2,12 +2,12 @@
 `draft` `optional`
 
 ## Abstract
-NIP-X2 defines standardized event kinds and structures for reporting and querying anonymized metrics related to BILLBOARD operations on the PROMO PROTOCOL. These metrics provide PROMOTERS with transparency regarding promotion performance while preserving PROMOTION VIEWER privacy through careful anonymization. By establishing consistent reporting standards, this NIP enables data-driven decision making while maintaining the protocol's commitment to privacy and decentralization.
+NIP-X2 defines standardized event kinds and structures for reporting and querying anonymized metrics related to BILLBOARD operations on the PROMO Protocol. These metrics provide PROMOTERS with transparency regarding promotion performance while preserving PROMOTION VIEWER privacy through careful anonymization. By establishing consistent reporting standards, this NIP enables data-driven decision making while maintaining the protocol's commitment to privacy and decentralization.
 
 ## Protocol Components
 
 ### NEW EVENT KINDS
-- **kind:38891**: BILLBOARD METRICS - PROMOTER-facing anonymous metrics event
+- **kind:38588**: BILLBOARD METRICS - PROMOTER-facing anonymous metrics event
 
 ## Key Components
 
@@ -15,21 +15,19 @@ NIP-X2 defines standardized event kinds and structures for reporting and queryin
 - **PROMOTER-Facing Aggregates**: Provides anonymized metrics for PROMOTION performance
 
 ### Event Schema Implementation
-- **kind:38891**: Provides PROMOTER-facing anonymized metrics
+- **kind:38588**: Provides PROMOTER-facing anonymized metrics
   - Public data for PROMOTION performance
   - No PROMOTION VIEWER-identifiable information
 
 ## Event Specifications
 
 ### PROMOTER-Facing Metrics Event
-Event kind:38891 providing anonymized metrics for PROMOTERS
+Event kind:38588 providing anonymized metrics for PROMOTERS
 
 ```json
 {
-    "kind": 38891,
+    "kind": 38588,
     "pubkey": "<BILLBOARD_pubkey>",
-    "content": "{JSON metrics object}",
-    "created_at": UNIX_TIMESTAMP,
     "tags": [
         ["e", "<PROMOTER_event_id>"],
         ["p", "<PROMOTER_pubkey>"],
@@ -41,7 +39,7 @@ Event kind:38891 providing anonymized metrics for PROMOTERS
 ```
 
 #### Required Tags
-- `e`: Event ID of the PROMOTER's kind:18888 PROMOTION request - identifies which PROMOTION these metrics apply to
+- `e`: Event ID of the PROMOTER's kind:38188 PROMOTION request - identifies which PROMOTION these metrics apply to
 - `p`: Pubkey of the PROMOTER who created the PROMOTION - identifies which PROMOTER these metrics apply to
 - `period`: Timeframe of the aggregation (hourly|daily|total) - indicates the time period covered by these metrics
 
@@ -72,7 +70,7 @@ Event kind:38891 providing anonymized metrics for PROMOTERS
 
 ### Authorized Publishers
 - ONLY BILLBOARD OPERATORS (identified by their pubkey) are authorized to publish metric events
-- Metric events MUST be signed by the BILLBOARD pubkey referenced in the associated kind:18888 events
+- Metric events MUST be signed by the BILLBOARD pubkey referenced in the associated kind:38188 events
 - Clients and relays SHOULD reject metric events not signed by the appropriate BILLBOARD
 
 ### Privacy Requirements
@@ -82,7 +80,7 @@ Event kind:38891 providing anonymized metrics for PROMOTERS
 - Aggregated metrics MUST be constructed to prevent de-anonymization through correlation attacks
 
 ### Metric Recording and Reporting
-- BILLBOARDs MUST create kind:38891 events at regular intervals for active PROMOTIONS
+- BILLBOARDs MUST create kind:38588 events at regular intervals for active PROMOTIONS
 - Aggregate metrics SHOULD be updated at intervals defined by BILLBOARD OPERATORS
 - Metric events MAY be published with expiration policies
 
@@ -94,15 +92,15 @@ Event kind:38891 providing anonymized metrics for PROMOTERS
 - MAY provide additional custom metrics beyond the standard schema
 
 ### Client Requirements
-- PROMOTER clients SHOULD subscribe to kind:38891 events for their PROMOTIONS
+- PROMOTER clients SHOULD subscribe to kind:38588 events for their PROMOTIONS
 - ALL clients MUST respect the privacy boundaries between PROMOTERS and PROMOTION VIEWERS
 
 ## Metric Query Methods
 
 ### For PROMOTERS
 PROMOTERS can query anonymized metrics using standard Nostr filters:
-- Filter for kind:38891 with specific PROMOTION e-tag
-- Filter for kind:38891 with PROMOTER's p-tag
+- Filter for kind:38588 with specific PROMOTION e-tag
+- Filter for kind:38588 with PROMOTER's p-tag
 
 ### For BILLBOARDs
 BILLBOARDs should implement database systems to:
@@ -130,22 +128,20 @@ BILLBOARD OPERATORS should:
 sequenceDiagram
     participant RELAY
     participant BILLBOARD
-    participant PROMOTION_VIEWER
-    participant PROMOTER
+    participant PROMOTION VIEWER
+    participant PROMOTION CREATOR
 
-    PROMOTER->>RELAY: Publishes kind:18888 event<br/>(PROMOTION request)
-    PROMOTION_VIEWER->>RELAY: Publishes kind:17888 event<br/>(viewing availability)
+    PROMOTION CREATOR->>RELAY: Publishes PROMOTION event
+    PROMOTION VIEWER->>RELAY: Publishes ATTENTION event
     
     Note over BILLBOARD: BILLBOARD collects data<br/>from multiple PROMOTION views
-    BILLBOARD->>RELAY: Publishes kind:28889 event<br/>(view confirmation 1)
-    BILLBOARD->>RELAY: Publishes kind:28889 event<br/>(view confirmation 2)
-    BILLBOARD->>RELAY: Publishes kind:28889 event<br/>(view confirmation n)
+    BILLBOARD->>RELAY: Publishes CONFIRMATION event
     
     Note over BILLBOARD: BILLBOARD aggregates metrics<br/>from multiple views during<br/>specified time period
     
-    BILLBOARD->>RELAY: Publishes kind:38891 event<br/>(anonymized PROMOTION metrics)
-    RELAY->>PROMOTER: Forwards metrics event
+    BILLBOARD->>RELAY: Publishes METRIC events
+    RELAY->>PROMOTION CREATOR: Forwards METRIC events
     
-    PROMOTER->>RELAY: Queries historical metrics<br/>via filter
-    RELAY->>PROMOTER: Returns matching kind:38891 events
+    PROMOTION CREATOR->>RELAY: Queries METRIC events<br/>via filter
+    RELAY->>PROMOTION CREATOR: Returns matching ETRIC events
 ```

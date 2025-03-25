@@ -3,7 +3,7 @@
 `draft` `optional`
 
 ## Abstract
-NIP-X5 defines a standardized mechanism for PROMOTERS to specify content topics for their PROMOTIONS using the standard Nostr topic tag within the PROMO PROTOCOL. By enhancing the PROMOTER event (kind:18888) with topic tags, this NIP complements NIP-X4 to create a bidirectional topic matching system between PROMOTERS and PROMOTION VIEWERS. This enhancement improves content relevance and engagement rates, creating a more efficient marketplace where participants can connect based on shared interests rather than economic considerations alone.
+NIP-X5 defines a standardized mechanism for PROMOTERS to specify content topics for their PROMOTIONS using the standard Nostr topic tag within the PROMO Protocol. By enhancing the PROMOTER event (kind:38188) with topic tags, this NIP complements NIP-X4 to create a bidirectional topic matching system between PROMOTERS and PROMOTION VIEWERS. This enhancement improves content relevance and engagement rates, creating a more efficient marketplace where participants can connect based on shared interests rather than economic considerations alone.
 
 ## Motivation
 
@@ -16,19 +16,17 @@ While [NIP-X4](./NIP-X4.md) enables PROMOTION VIEWERS to express content interes
 
 ## Implementation
 
-### NEW TAGS FOR KIND:18888
+### NEW TAGS FOR KIND:38188
 - `t` - Topic tag indicating content categories of the PROMOTION (can appear multiple times)
 
 ### Topic Tags in PROMOTER Events
 
-This NIP extends kind:18888 events to include the standard Nostr topic tag (`t`). No new tags are introduced, maintaining compatibility with existing Nostr conventions.
+This NIP extends kind:38188 events to include the standard Nostr topic tag (`t`). No new tags are introduced, maintaining compatibility with existing Nostr conventions.
 
 ```json
 {
-  "kind": 18888,
+  "kind": 38188,
   "pubkey": "<PROMOTER_pubkey>",
-  "content": "",
-  "created_at": UNIX_TIMESTAMP,
   "tags": [
     ["e", "<note_id>"],
     ["duration", "<value>", "seconds"],
@@ -45,7 +43,7 @@ This NIP extends kind:18888 events to include the standard Nostr topic tag (`t`)
 
 BILLBOARDs implementing this NIP SHOULD:
 
-1. Extract topic tags from both PROMOTER (kind:18888) and PROMOTION VIEWER (kind:17888) events
+1. Extract topic tags from both PROMOTER (kind:38188) and PROMOTION VIEWER (kind:38888) events
 2. Prioritize matches where PROMOTER and PROMOTION VIEWER topics overlap
 3. Implement case-insensitive topic matching (e.g., "bitcoin" matches "Bitcoin")
 4. Consider topic matching as a significant factor in the PROMOTION selection algorithm
@@ -65,7 +63,7 @@ When both [NIP-X4](./NIP-X4.md) and [NIP-X5](./NIP-X5.md) are implemented, BILLB
 
 ### Topic Inheritance
 
-BILLBOARDs SHOULD automatically extract topics from the promoted note content when possible, but explicitly tagged topics in the kind:18888 event take precedence. This allows PROMOTERS to specify the most relevant topics even when the note content covers multiple subjects.
+BILLBOARDs SHOULD automatically extract topics from the promoted note content when possible, but explicitly tagged topics in the kind:38188 event take precedence. This allows PROMOTERS to specify the most relevant topics even when the note content covers multiple subjects.
 
 ### Performance Considerations
 
@@ -100,7 +98,7 @@ Client developers SHOULD:
 
 ```json
 {
-  "kind": 18888,
+  "kind": 38188,
   "tags": [
     ["e", "<note_id>"],
     ["duration", "30", "seconds"],
@@ -116,7 +114,7 @@ Client developers SHOULD:
 
 ```json
 {
-  "kind": 18888,
+  "kind": 38188,
   "tags": [
     ["e", "<note_id>"],
     ["duration", "45", "seconds"],
@@ -164,8 +162,8 @@ sequenceDiagram
     participant PROMOTION_VIEWER
     participant PROMOTER
 
-    PROMOTER->>RELAY: Publishes kind:18888 event<br/>with topic tags (t)
-    PROMOTION_VIEWER->>RELAY: Publishes kind:17888 event<br/>with topic interests (t)
+    PROMOTER->>RELAY: Publishes kind:38188 event<br/>with topic tags (t)
+    PROMOTION_VIEWER->>RELAY: Publishes kind:38888 event<br/>with topic interests (t)
     RELAY->>BILLBOARD: Forwards both events
     
     Note over BILLBOARD: BILLBOARD analyzes topic overlap<br/>between PROMOTER and PROMOTION_VIEWER

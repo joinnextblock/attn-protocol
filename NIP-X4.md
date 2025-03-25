@@ -3,7 +3,7 @@
 `draft` `optional`
 
 ## Abstract
-NIP-X4 defines a standardized mechanism for PROMOTION VIEWERS to express content interests using the standard Nostr topic tag within the PROMO PROTOCOL. By enhancing the PROMOTION VIEWER event (kind:17888) with topic tags, BILLBOARD OPERATORS can more effectively match relevant PROMOTIONS with interested PROMOTION VIEWERS. This improvement increases content relevance for PROMOTION VIEWERS while enabling higher engagement rates for PROMOTERS, creating a more efficient marketplace based on content preferences rather than economic factors alone.
+NIP-X4 defines a standardized mechanism for PROMOTION VIEWERS to express content interests using the standard Nostr topic tag within the PROMO Protocol. By enhancing the PROMOTION VIEWER event (kind:38888) with topic tags, BILLBOARD OPERATORS can more effectively match relevant PROMOTIONS with interested PROMOTION VIEWERS. This improvement increases content relevance for PROMOTION VIEWERS while enabling higher engagement rates for PROMOTERS, creating a more efficient marketplace based on content preferences rather than economic factors alone.
 
 ## Motivation
 
@@ -16,19 +16,17 @@ In the current PROMOTED NOTES system ([NIP-X1](./NIP-X1.md)), PROMOTION VIEWERS 
 
 ## Implementation
 
-### NEW TAGS FOR KIND:17888
+### NEW TAGS FOR KIND:38888
 - `t` - Topic tag indicating content categories the PROMOTION VIEWER is interested in (can appear multiple times)
 
 ### Topic Tags in PROMOTION VIEWER Events
 
-This NIP extends kind:17888 events to include the standard Nostr topic tag (`t`). No new tags are introduced, maintaining compatibility with existing Nostr conventions.
+This NIP extends kind:38888 events to include the standard Nostr topic tag (`t`). No new tags are introduced, maintaining compatibility with existing Nostr conventions.
 
 ```json
 {
-  "kind": 17888,
+  "kind": 38888,
   "pubkey": "<PROMOTION_VIEWER_pubkey>",
-  "content": "",
-  "created_at": UNIX_TIMESTAMP,
   "tags": [
     ["max_duration", "<value>", "seconds"],
     ["sats_per_second", "<value>"],
@@ -52,7 +50,7 @@ BILLBOARDs implementing this NIP SHOULD:
 
 ### Integration with NIP-51 Interest Sets
 
-BILLBOARDs MAY additionally consult a PROMOTION VIEWER's Interest sets (kind:30015) defined in NIP-51 for enhanced matching, but MUST primarily rely on topics explicitly included in kind:17888 events as these represent the current active interests in the PROMOTION context.
+BILLBOARDs MAY additionally consult a PROMOTION VIEWER's Interest sets (kind:30015) defined in NIP-51 for enhanced matching, but MUST primarily rely on topics explicitly included in kind:38888 events as these represent the current active interests in the PROMOTION context.
 
 ## Technical Details
 
@@ -100,7 +98,7 @@ Client developers SHOULD:
 
 ```json
 {
-  "kind": 17888,
+  "kind": 38888,
   "tags": [
     ["sats_per_second", "5"],
     ["b", "<BILLBOARD_pubkey>", "<relay_url>"],
@@ -114,7 +112,7 @@ Client developers SHOULD:
 
 ```json
 {
-  "kind": 17888,
+  "kind": 38888,
   "tags": [
     ["sats_per_second", "6"],
     ["b", "<BILLBOARD_pubkey>", "<relay_url>"],
@@ -133,8 +131,8 @@ sequenceDiagram
     participant PROMOTION_VIEWER
     participant PROMOTER
 
-    PROMOTION_VIEWER->>RELAY: Publishes kind:17888 event<br/>with topic preferences (t tags)
-    PROMOTER->>RELAY: Publishes kind:18888 event<br/>(PROMOTION request)
+    PROMOTION_VIEWER->>RELAY: Publishes kind:38888 event<br/>with topic preferences (t tags)
+    PROMOTER->>RELAY: Publishes kind:38188 event<br/>(PROMOTION request)
     RELAY->>BILLBOARD: Forwards both events
     
     Note over BILLBOARD: BILLBOARD analyzes PROMOTION VIEWER's<br/>topic preferences

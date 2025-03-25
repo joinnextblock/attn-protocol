@@ -3,12 +3,12 @@
 `draft` `optional`
 
 ## Abstract
-NIP-X7 defines a standardized event kind (28890) and structure for BILLBOARDs to publish when creating a match between a PROMOTION and a PROMOTION VIEWER within the [PROMO PROTOCOL](./README.md). These match events represent an intermediate step in the protocol workflow, occurring after initial PROMOTION requests and viewing availability signals, but before actual content viewing and confirmation. By providing an explicit, transparent record of the match decision, including economic terms, content parameters, and optional topic relevance factors, the protocol enhances transparency in the matching process and enables better tracking, analysis, and optimization of the content PROMOTION ecosystem.
+NIP-X7 defines a standardized event kind (38388) and structure for BILLBOARDs to publish when creating a match between a PROMOTION and a PROMOTION VIEWER within the [PROMO Protocol](./README.md). These match events represent an intermediate step in the protocol workflow, occurring after initial PROMOTION requests and viewing availability signals, but before actual content viewing and confirmation. By providing an explicit, transparent record of the match decision, including economic terms, content parameters, and optional topic relevance factors, the protocol enhances transparency in the matching process and enables better tracking, analysis, and optimization of the content PROMOTION ecosystem.
 
 ## Protocol Components
 
 ### NEW EVENT KINDS
-- **kind:28890**: PROMOTION MATCH
+- **kind:38388**: PROMOTION MATCH
 
 ## Key Components
 
@@ -22,14 +22,12 @@ NIP-X7 defines a standardized event kind (28890) and structure for BILLBOARDs to
 ## Event Specifications
 
 ### Match Event
-Event kind:28890 creating a match between PROMOTER PROMOTION and PROMOTION VIEWER
+Event kind:38388 creating a match between PROMOTER PROMOTION and PROMOTION VIEWER
 
 ```json
 {
-    "kind": 28890,
+    "kind": 38388,
     "pubkey": "<BILLBOARD_pubkey>",
-    "content": "",
-    "created_at": UNIX_TIMESTAMP,
     "tags": [
         ["e", "<PROMOTER_event_id>", "<PROMOTER_relay_url>"],
         ["p", "<PROMOTER_pubkey>"],
@@ -44,7 +42,7 @@ Event kind:28890 creating a match between PROMOTER PROMOTION and PROMOTION VIEWE
 ```
 
 #### Required Tags
-- `e`: Event ID of the PROMOTER's kind:18888 PROMOTION request
+- `e`: Event ID of PROMOTION event
 - `p`: First occurrence is PROMOTER pubkey, second is PROMOTION VIEWER pubkey
 - `sats_per_second`: Agreed payment rate for the match
 - `duration`: Required viewing duration
@@ -59,9 +57,9 @@ Event kind:28890 creating a match between PROMOTER PROMOTION and PROMOTION VIEWE
 1. BILLBOARD identifies potential PROMOTION VIEWER(s) for a PROMOTION
 2. BILLBOARD evaluates economic match (bid ≥ ask)
 3. BILLBOARD evaluates topic match (if implemented from [NIP-X4](./NIP-X4.md) and [NIP-X5](./NIP-X5.md))
-4. BILLBOARD publishes kind:28890 match event
+4. BILLBOARD publishes kind:38388 match event
 5. Match remains valid until:
-   - PROMOTION VIEWER completes the view (resulting in kind:28889 confirmation)
+   - PROMOTION VIEWER completes the view (resulting in kind:38488 confirmation)
    - Match expires (if expiration timestamp is reached)
    - BILLBOARD publishes a kind:5 event referencing the match
 
@@ -73,7 +71,7 @@ Event kind:28890 creating a match between PROMOTER PROMOTION and PROMOTION VIEWE
 - MUST specify a reasonable expiration time if the match is time-limited
 
 ### Client Requirements
-- PROMOTION VIEWER clients MAY subscribe to kind:28890 events referencing their pubkey
+- PROMOTION VIEWER clients MAY subscribe to kind:38388 events referencing their pubkey
 - PROMOTION VIEWER clients MAY display pending matches to users
 - Client implementations SHOULD verify match validity before processing
 - Client implementations MAY display matched topics to provide transparency
@@ -95,20 +93,20 @@ sequenceDiagram
     participant PROMOTION_VIEWER
     participant PROMOTER
 
-    PROMOTER->>RELAY: Publishes kind:18888 event<br/>(PROMOTION request with t tags)
-    PROMOTION_VIEWER->>RELAY: Publishes kind:17888 event<br/>(viewing parameters with t tags)
+    PROMOTER->>RELAY: Publishes kind:38188 event<br/>(PROMOTION request with t tags)
+    PROMOTION_VIEWER->>RELAY: Publishes kind:38888 event<br/>(viewing parameters with t tags)
     RELAY->>BILLBOARD: Forwards PROMOTER event
     RELAY->>BILLBOARD: Forwards PROMOTION_VIEWER event
     
     Note over BILLBOARD: BILLBOARD evaluates:<br/>1) Economic match (bid ≥ ask)<br/>2) Topic match (if implemented)<br/>3) Block list compatibility
     
-    BILLBOARD->>RELAY: Publishes kind:28890 event<br/>(explicit match record with matched topics)
+    BILLBOARD->>RELAY: Publishes kind:38388 event<br/>(explicit match record with matched topics)
     RELAY->>PROMOTER: Forwards match event
     RELAY->>PROMOTION_VIEWER: Forwards match event
     
     PROMOTION_VIEWER->>BILLBOARD: Views matched PROMOTION
     
-    BILLBOARD->>RELAY: Publishes kind:28889 event<br/>(view confirmation)
+    BILLBOARD->>RELAY: Publishes kind:38488 event<br/>(view confirmation)
 ```
 
 ## Example Implementation
@@ -116,7 +114,7 @@ sequenceDiagram
 ### Basic Match Event
 ```json
 {
-    "kind": 28890,
+    "kind": 38388,
     "pubkey": "BILLBOARD_pubkey",
     "created_at": 1718734400,
     "tags": [

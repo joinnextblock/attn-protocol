@@ -2,12 +2,12 @@
 `draft` `optional`
 
 ## Abstract
-NIP-X3 defines a standardized mechanism for PROMOTION VIEWERS to express preferences about which PROMOTIONS they do not wish to view within the PROMO PROTOCOL. This enhancement allows PROMOTION VIEWERS to block specific PROMOTIONS via event ID or specific PROMOTERS via their pubkey using an addressable NIP-51 list, giving them greater control over their experience. By implementing content filtering capabilities, this NIP strengthens user sovereignty while maintaining the decentralized nature of the protocol.
+NIP-X3 defines a standardized mechanism for PROMOTION VIEWERS to express preferences about which PROMOTIONS they do not wish to view within the PROMO Protocol. This enhancement allows PROMOTION VIEWERS to block specific PROMOTIONS via event ID or specific PROMOTERS via their pubkey using an addressable NIP-51 list, giving them greater control over their experience. By implementing content filtering capabilities, this NIP strengthens user sovereignty while maintaining the decentralized nature of the protocol.
 
 ## Protocol Components
 
-### NEW TAGS FOR KIND:17888
-- `global_block_list` - Event ID of a NIP-51 list (kind:30003) containing blocked PROMOTIONS and PROMOTERS
+### NEW TAGS FOR KIND:38888
+- `block_list` - Event ID of a NIP-51 list (kind:30003) containing blocked PROMOTIONS and PROMOTERS
 - `k` - Specifies event kinds the PROMOTION VIEWER is willing to view as PROMOTED CONTENT
 
 ## Key Components
@@ -18,7 +18,7 @@ NIP-X3 defines a standardized mechanism for PROMOTION VIEWERS to express prefere
 - **Kind Preferences**: Filter by event kinds the PROMOTION VIEWER is willing to view
 
 ### Implementation Approach
-This NIP extends the existing kind:17888 PROMOTION VIEWER event from [NIP-X1](./NIP-X1.md) with additional tags to express content blocking preferences and content type preferences. The block list is implemented as an addressable [NIP-51](https://github.com/nostr-protocol/nips/blob/master/51.md) list.
+This NIP extends the existing kind:38888 PROMOTION VIEWER event from [NIP-X1](./NIP-X1.md) with additional tags to express content blocking preferences and content type preferences. The block list is implemented as an addressable [NIP-51](https://github.com/nostr-protocol/nips/blob/master/51.md) list.
 
 ## Enhanced Event Specifications
 
@@ -31,13 +31,15 @@ A parameterized replaceable list of kind:30003 containing blocked PROMOTION even
   "pubkey": "<PROMOTION_VIEWER_pubkey>",
   "created_at": 1677647210,
   "tags": [
-    ["d", "promotions-block-list"],
+    ["d", "<BILLBOARD_pubkey>"],
     ["e", "<objectionable_promotion_1>"],
     ["e", "<objectionable_promotion_2>"],
     ["e", "<objectionable_promotion_3>"],
     ["p", "<objectionable_promoter_1>"],
     ["p", "<objectionable_promoter_2>"],
-    ["summary", "Blocked PROMOTIONS"]
+    ["t", "<topic>"],
+    ["t", "<topic>"],
+    ["summary", "PROMO Protocol Block List"]
   ],
   "content": "",
   "id": "<list_event_id>",
@@ -45,18 +47,19 @@ A parameterized replaceable list of kind:30003 containing blocked PROMOTION even
 }
 ```
 
-### PROMOTION VIEWER Event with Preferences
-Extended kind:17888 from PROMOTION VIEWERS setting view parameters and referencing the block list:
+### ATTENTION Event with Preferences
+Extended kind:38888 from PROMOTION VIEWERS setting view parameters and referencing the block list:
 
 ```json
 {
-  "kind": 17888,
+  "kind": 38888,
   "pubkey": "<PROMOTION_VIEWER_pubkey>",
   "created_at": 1677647250,
   "tags": [
+    ["d", "<BILLBOARD_pubkey>"],
     ["sats_per_second", "5"],
     ["b", "<BILLBOARD_pubkey>", "<relay_url>"],
-    ["global_block_list", "<list_event_id>"],
+    ["block_list", "<list_event_id>"],
     ["k", "22"],
     ["k", "20"]
   ],
@@ -74,7 +77,7 @@ Extended kind:17888 from PROMOTION VIEWERS setting view parameters and referenci
 - `max_duration`: Maximum viewing duration - upper limit on how long the PROMOTION VIEWER will watch
 
 #### New Optional Preference Tags
-- `global_block_list`: Event ID of a NIP-51 list (kind:30003) containing the PROMOTION VIEWER's block list - specifies content the PROMOTION VIEWER refuses to see
+- `block_list`: Event ID of a NIP-51 list (kind:30003) containing the PROMOTION VIEWER's block list - specifies content the PROMOTION VIEWER refuses to see
 - `k`: Event kinds the PROMOTION VIEWER is willing to view as PROMOTED CONTENT - can appear multiple times to specify multiple acceptable content types
   - Example: `["k", "22"]` indicates willingness to view kind:22 short vertical video ([NIP-71](https://github.
   com/nostr-protocol/nips/blob/master/71.md))
@@ -91,7 +94,7 @@ Extended kind:17888 from PROMOTION VIEWERS setting view parameters and referenci
 5. **Block List Priority**: If a PROMOTION is blocked, it must not be shown regardless of other factors
 
 ### BILLBOARD Requirements
-- MUST fetch and parse the [NIP-51](https://github.com/nostr-protocol/nips/blob/master/51.md) list referenced by `global_block_list` to determine blocked PROMOTIONS
+- MUST fetch and parse the [NIP-51](https://github.com/nostr-protocol/nips/blob/master/51.md) list referenced by `block_list` to determine blocked PROMOTIONS
 - MUST respect all PROMOTION VIEWER block list preferences when matching PROMOTIONS
 - MUST NOT show a blocked PROMOTION to a PROMOTION VIEWER under any circumstances
 - MUST NOT show PROMOTIONS from blocked PROMOTER pubkeys to a PROMOTION VIEWER
@@ -110,8 +113,8 @@ Extended kind:17888 from PROMOTION VIEWERS setting view parameters and referenci
 ## Preference Update Lifecycle
 1. To update preferences, PROMOTION VIEWERS:
    - Publish a new or updated [NIP-51](https://github.com/nostr-protocol/nips/blob/master/51.md) list (kind:30003) with blocked PROMOTIONS
-   - Update their kind:17888 event with the new list ID if needed
-2. BILLBOARDs MUST use the most recent valid kind:17888 event for a PROMOTION VIEWER
+   - Update their kind:38888 event with the new list ID if needed
+2. BILLBOARDs MUST use the most recent valid kind:38888 event for a PROMOTION VIEWER
 3. BILLBOARDs MUST use the most recent valid [NIP-51](https://github.com/nostr-protocol/nips/blob/master/51.md) list referenced by the PROMOTION VIEWER
 4. Preference changes take effect as soon as the BILLBOARD processes the new events
 
@@ -124,10 +127,10 @@ sequenceDiagram
     participant PROMOTER
 
     PROMOTION_VIEWER->>Relay: Publishes kind:30003 NIP-51 list<br/>with blocked PROMOTIONS and PROMOTERS
-    PROMOTION_VIEWER->>Relay: Publishes kind:17888 event<br/>with preferences (k, global_block_list)
+    PROMOTION_VIEWER->>Relay: Publishes kind:38888 event<br/>with preferences (k, block_list)
     Relay->>BILLBOARD: Forwards events to BILLBOARD
-    PROMOTER->>Relay: Publishes kind:18888 event<br/>with PROMOTION request
-    Relay->>BILLBOARD: Forwards kind:18888 event
+    PROMOTER->>Relay: Publishes kind:38188 event<br/>with PROMOTION request
+    Relay->>BILLBOARD: Forwards kind:38188 event
     
     Note over BILLBOARD: BILLBOARD checks PROMOTION VIEWER's preferences<br/>(kinds, block list) before matching
     
@@ -139,7 +142,7 @@ sequenceDiagram
 ```
 
 ## Integration with Existing NIPs
-This NIP extends [NIP-X1](./NIP-X1.md) by enhancing the PROMOTION VIEWER event kind:17888 with PROMOTION block list and content type preference capabilities. It leverages [NIP-51](https://github.com/nostr-protocol/nips/blob/master/51.md) lists to provide a scalable and maintainable block list. It remains fully compatible with the metrics framework defined in [NIP-X2](./NIP-X2.md), as BILLBOARD OPERATORS will only match allowable PROMOTIONS based on PROMOTION VIEWER preferences.
+This NIP extends [NIP-X1](./NIP-X1.md) by enhancing the PROMOTION VIEWER event kind:38888 with PROMOTION block list and content type preference capabilities. It leverages [NIP-51](https://github.com/nostr-protocol/nips/blob/master/51.md) lists to provide a scalable and maintainable block list. It remains fully compatible with the metrics framework defined in [NIP-X2](./NIP-X2.md), as BILLBOARD OPERATORS will only match allowable PROMOTIONS based on PROMOTION VIEWER preferences.
 
 ## Future Extensions
 A future NIP may define a mechanism for BILLBOARD-specific block lists, allowing PROMOTION VIEWERS to maintain different blocking preferences for different BILLBOARDs by using the BILLBOARD pubkey as the `d` tag value.

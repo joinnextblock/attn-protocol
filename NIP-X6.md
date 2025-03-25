@@ -3,12 +3,12 @@
 `draft` `optional`
 
 ## Abstract
-NIP-X6 defines a standardized event kind and structure for BILLBOARDs to publish when confirming that a PROMOTION VIEWER has successfully viewed promoted content within the PROMO PROTOCOL. These confirmation events serve as the official record of completed promotional views, enabling transparent verification between all marketplace participants. By providing immutable proof of content viewing with precise timestamps, this NIP establishes trust in the protocol's economic model while supporting accurate metrics and reporting capabilities.
+NIP-X6 defines a standardized event kind and structure for BILLBOARDs to publish when confirming that a PROMOTION VIEWER has successfully viewed promoted content within the PROMO Protocol. These confirmation events serve as the official record of completed promotional views, enabling transparent verification between all marketplace participants. By providing immutable proof of content viewing with precise timestamps, this NIP establishes trust in the protocol's economic model while supporting accurate metrics and reporting capabilities.
 
 ## Protocol Components
 
 ### NEW EVENT KINDS
-- **kind:28889**: BILLBOARD PROMOTION CONFIRMATION event - published when a PROMOTION is successfully viewed
+- **kind:38488**: BILLBOARD PROMOTION CONFIRMATION event - published when a PROMOTION is successfully viewed
 
 ## Key Components
 
@@ -18,21 +18,19 @@ NIP-X6 defines a standardized event kind and structure for BILLBOARDs to publish
 - **Metrics Source**: Primary data source for analytics and reporting
 
 ### Event Schema Implementation
-- **kind:28889**: Published by BILLBOARD when view requirements are met
+- **kind:38488**: Published by BILLBOARD when view requirements are met
   - Links buyer PROMOTION, seller, and actual viewing details
   - Provides verification timestamps for calculating viewing duration
 
 ## Event Specifications
 
 ### View Confirmation Event
-Event kind:28889 confirming a successful promotional view
+Event kind:38488 confirming a successful promotional view
 
 ```json
 {
-    "kind": 28889,
+    "kind": 38488,
     "pubkey": "<BILLBOARD_pubkey>",
-    "content": "",
-    "created_at": UNIX_TIMESTAMP,
     "tags": [
         ["e", "<PROMOTION_event_id>", "<PROMOTER_relay_url>"],
         ["p", "<PROMOTER_pubkey>"],
@@ -44,7 +42,7 @@ Event kind:28889 confirming a successful promotional view
 ```
 
 #### Required Tags
-- `e`: Event ID of the PROMOTER's kind:18888 PROMOTION request - identifies which PROMOTION was viewed
+- `e`: Event ID of the PROMOTER's kind:38188 PROMOTION request - identifies which PROMOTION was viewed
 - `p`: First occurrence is PROMOTER pubkey, second is PROMOTION VIEWER pubkey - identifies participants in the verified view
 - `started_at`: Timestamp when viewing began - UNIX timestamp marking the start of the viewing session
 - `completed_at`: Timestamp when viewing was completed - UNIX timestamp marking when viewing requirements were met
@@ -54,7 +52,7 @@ Event kind:28889 confirming a successful promotional view
 ### View Confirmation Lifecycle
 1. PROMOTION VIEWER engages with PROMOTION on BILLBOARD
 2. BILLBOARD tracks viewing start and completion timestamps
-3. When PROMOTION view requirements are met, BILLBOARD publishes kind:28889 PROMOTION CONFIRMATION
+3. When PROMOTION view requirements are met, BILLBOARD publishes kind:38488 PROMOTION CONFIRMATION
 4. PROMOTER, PROMOTION VIEWER, and BILLBOARD all retain record of PROMOTION CONFIRMATION
 5. Actual viewing duration can be calculated as (completed_at - started_at)
 
@@ -85,8 +83,8 @@ sequenceDiagram
     participant PROMOTION_VIEWER
     participant PROMOTER
 
-    PROMOTER->>RELAY: Publishes kind:18888 event<br/>(PROMOTION request)
-    PROMOTION_VIEWER->>RELAY: Publishes kind:17888 event<br/>(viewing availability)
+    PROMOTER->>RELAY: Publishes kind:38188 event<br/>(PROMOTION request)
+    PROMOTION_VIEWER->>RELAY: Publishes kind:38888 event<br/>(viewing availability)
     RELAY->>BILLBOARD: Forwards both events
     Note over BILLBOARD: BILLBOARD matches PROMOTION<br/>with PROMOTION_VIEWER
     
@@ -97,11 +95,11 @@ sequenceDiagram
     Note over PROMOTION_VIEWER: Views PROMOTION for required duration
     Note over BILLBOARD: Records completed_at timestamp
     
-    BILLBOARD->>RELAY: Publishes kind:28889 event<br/>(PROMOTION CONFIRMATION with timestamps)
+    BILLBOARD->>RELAY: Publishes kind:38488 event<br/>(PROMOTION CONFIRMATION with timestamps)
     RELAY->>PROMOTER: Receives PROMOTION CONFIRMATION
     RELAY->>PROMOTION_VIEWER: Receives PROMOTION CONFIRMATION
     
-    BILLBOARD->>RELAY: Publishes kind:38891 event<br/>(BILLBOARD METRICS)
+    BILLBOARD->>RELAY: Publishes kind:38588 event<br/>(BILLBOARD METRICS)
 ```
 
 ## Example Implementation
@@ -109,7 +107,7 @@ sequenceDiagram
 ### Basic View Confirmation
 ```json
 {
-    "kind": 28889,
+    "kind": 38488,
     "pubkey": "<BILLBOARD_pubkey>",
     "created_at": 1718734510,
     "tags": [
