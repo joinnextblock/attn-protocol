@@ -3,11 +3,11 @@
 `draft` `optional`
 
 ## Abstract
-NIP-X5 defines a standardized mechanism for PROMOTERS to specify content topics for their PROMOTIONS using the standard Nostr topic tag within the PROMO Protocol. By enhancing the PROMOTER event (kind:38188) with topic tags, this NIP complements NIP-X4 to create a bidirectional topic matching system between PROMOTERS and PROMOTION VIEWERS. This enhancement improves content relevance and engagement rates, creating a more efficient marketplace where participants can connect based on shared interests rather than economic considerations alone.
+NIP-X5 defines a standardized mechanism for PROMOTERS to specify content topics for their PROMOTIONS using the standard Nostr topic tag within the PROMO Protocol. By enhancing the PROMOTER event (kind:38188) with topic tags, this NIP complements NIP-X4 to create a bidirectional topic matching system between PROMOTERS and PROMOTION Viewers. This enhancement improves content relevance and engagement rates, creating a more efficient marketplace where participants can connect based on shared interests rather than economic considerations alone.
 
 ## Motivation
 
-While [NIP-X4](./NIP-X4.md) enables PROMOTION VIEWERS to express content interests, PROMOTERS currently have no standardized way to categorize their promoted content. This NIP creates a bidirectional topic matching system that:
+While [NIP-X4](./NIP-X4.md) enables PROMOTION Viewers to express content interests, PROMOTERS currently have no standardized way to categorize their promoted content. This NIP creates a bidirectional topic matching system that:
 
 1. Increases PROMOTION relevance and effectiveness
 2. Improves conversion and engagement rates
@@ -130,7 +130,7 @@ Client developers SHOULD:
 ## Benefits and Outcomes
 
 - **For PROMOTERS**: Improved targeting and higher engagement rates
-- **For PROMOTION VIEWERS**: More relevant content matching their interests
+- **For PROMOTION Viewers**: More relevant content matching their interests
 - **For BILLBOARDs**: Enhanced matching capabilities and value proposition
 - **For Ecosystem**: More efficient marketplace with relevance-based incentives
 

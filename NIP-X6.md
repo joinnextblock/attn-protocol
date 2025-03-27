@@ -65,7 +65,7 @@ Event kind:38488 confirming a successful promotional view
 ### Privacy Considerations
 - PROMOTION CONFIRMATION events are public and link PROMOTER and PROMOTION VIEWER pubkeys
 - BILLBOARDs MUST NOT include payment or other sensitive information
-- PROMOTION VIEWERS SHOULD be aware that their viewing activity becomes public
+- PROMOTION Viewers SHOULD be aware that their viewing activity becomes public
 
 ## Integration with Existing NIPs
 
@@ -132,5 +132,5 @@ sequenceDiagram
 1. Provides transparent verification of promotional views
 2. Creates clear audit trails for completed views with minimal data
 3. Enables accurate metrics and reporting
-4. Establishes trust between PROMOTERS, PROMOTION VIEWERS, and BILLBOARDs
+4. Establishes trust between PROMOTERS, PROMOTION Viewers, and BILLBOARDs
 5. Keeps event payload minimal while maintaining all necessary information

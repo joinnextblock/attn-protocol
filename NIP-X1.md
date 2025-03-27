@@ -2,7 +2,7 @@
 `draft` `mandatory`
 
 ## Abstract
-NIP-X1 defines the core PROMO Protocol for content promotion on Nostr, establishing standardized event kinds and communication patterns between participants. The protocol establishes a market-driven system connecting PROMOTION CREATORS who wish to promote content with PROMOTION VIEWERS who are willing to view it, facilitated by BILLBOARD OPERATORS. This foundation enables a transparent, decentralized alternative to traditional advertising systems while preserving Nostr's core principles of user sovereignty and decentralization.
+NIP-X1 defines the core PROMO Protocol for content promotion on Nostr, establishing standardized event kinds and communication patterns between participants. The protocol establishes a market-driven system connecting PROMOTION Creators who wish to promote content with PROMOTION Viewers who are willing to view it, facilitated by BILLBOARD OPERATORS. This foundation enables a transparent, decentralized alternative to traditional advertising systems while preserving Nostr's core principles of user sovereignty and decentralization.
 
 > For a user-friendly overview of the protocol and its benefits, see the [README.md](./README.md).
 
@@ -14,22 +14,22 @@ NIP-X1 defines the core PROMO Protocol for content promotion on Nostr, establish
 - **kind:38888**: ATTENTION event
 
 ### NEW TAGS
-- `b` - pubkey of trusted BILLBOARD OPERATOR
+- `b` - pubkey of trusted BILLBOARD Operator
 - `sats_per_second` - unit of account for payment calculation per second of viewing time
-- `duration` - amount of time BILLBOARD OPERATOR must verify PROMOTION VIEWER viewed PROMOTION
+- `duration` - amount of time BILLBOARD Operator must verify PROMOTION VIEWER viewed PROMOTION
 - `max_duration` - maximum allowed viewing duration for a PROMOTION or ATTENTION event in seconds
 - `min_duration` - minimum required viewing duration for a PROMOTION or ATTENTION event in seconds
-- `interval` - how often the BILLBOARD OPERATOR tries to match PROMOTION VIEWERS to PROMOTIONS
-- `fee` - BILLBOARD OPERATOR service fee expressed as percentage
-- `min_fee` - minimum service fee in sats that BILLBOARD OPERATOR will accept regardless of percentage calculation
-- `nip` - list of nips the BILLBOARD OPERATOR has implemented to indicate PROMO Protocol compatibility
+- `interval` - how often the BILLBOARD Operator tries to match PROMOTION Viewers to PROMOTIONS
+- `fee` - BILLBOARD Operator service fee expressed as percentage
+- `min_fee` - minimum service fee in sats that BILLBOARD Operator will accept regardless of percentage calculation
+- `nip` - list of nips the BILLBOARD Operator has implemented to indicate PROMO Protocol compatibility
 ## Key Components
 
 ### Protocol Participants
 - **RELAY**: Standard Nostr relay that propagate events between participants
-- **PROMOTION CREATORS**: Nostr identity that publishes PROMOTION events
-- **PROMOTION VIEWERS**: Nostr identity that publishes ATTENTION events
-- **BILLBOARD OPERATORS**: Nostr identity that PROMOTION CREATORS and PROMOTION VIEWERS signal they trust
+- **PROMOTION Creators**: Nostr identity that publishes PROMOTION events
+- **PROMOTION Viewer**: Nostr identity that publishes ATTENTION events
+- **BILLBOARD Operator**: Nostr identity that PROMOTION Creators and PROMOTION Viewers signal they trust
 
 > For detailed information about participant roles and responsibilities, see the [README.md](./README.md#who-are-the-main-actors-in-the-promo-protocol).
 
@@ -59,7 +59,7 @@ NIP-X1 defines the core PROMO Protocol for content promotion on Nostr, establish
 - `interval`: Update frequency in seconds - how often the BILLBOARD updates PROMOTION matching
 - `fee`: BILLBOARD commission (percentage) - payment the BILLBOARD takes for services
 - `min_fee`: Minimum commission in sats - floor value for BILLBOARD fees regardless of percentage
-- `u`: List of BILLBOARD endpoint URLs - service endpoints where PROMOTION VIEWERS can view PROMOTIONS
+- `u`: List of BILLBOARD endpoint URLs - service endpoints where PROMOTION Viewers can view PROMOTIONS
 - `nip`: List of PROMO Protocol implemented NIP versions - indicates which protocol features are supported
 
 #### Optional Tags
@@ -112,7 +112,7 @@ NIP-X1 defines the core PROMO Protocol for content promotion on Nostr, establish
 ## PROMO Protocol Behavior
 
 ### PROMOTION Lifecycle
-- PROMOTIONS are initiated by PROMOTION CREATORS
+- PROMOTIONS are initiated by PROMOTION Creators
 - A PROMOTION remains active until one of:
   1. The PROMOTION CREATOR publishes a kind:5 event referencing the PROMOTION event ID
   2. The BILLBOARD OPERATOR terminates the PROMOTION based on its criteria
@@ -137,24 +137,24 @@ NIP-X1 defines the core PROMO Protocol for content promotion on Nostr, establish
 ```mermaid
 sequenceDiagram
     participant RELAY
-    participant BILLBOARD OPERATOR
-    participant PROMOTION VIEWER
-    participant PROMOTION CREATOR
+    participant BILLBOARD Operator
+    participant PROMOTION Viewer
+    participant PROMOTION Creator
 
-    BILLBOARD OPERATOR->>RELAY: Writes BILLBOARD event 
-    Note over BILLBOARD OPERATOR: BILLBOARD OPERATOR subscribes to all PROMOTION & ATTENTION events
-    PROMOTION CREATOR->>RELAY: Writes PROMOTION event
-    RELAY->>BILLBOARD OPERATOR: Forwards PROMOTION event
-    PROMOTION VIEWER->>RELAY: Writes ATTENTION event
-    RELAY->>BILLBOARD OPERATOR: Forwards ATTENTION event
-    PROMOTION VIEWER->>BILLBOARD OPERATOR: Navigates to BILLBOARD event 'primary' `u` tag
-    BILLBOARD OPERATOR->>PROMOTION VIEWER: BILLBOARD OPERATOR displays best PROMOTION for PROMOTION VIEWER
-    Note over RELAY,PROMOTION CREATOR: Confirmation flows defined in NIP-X6
-    Note over RELAY,PROMOTION CREATOR: Payment flows defined in future NIP
+    BILLBOARD Operator->>RELAY: Writes BILLBOARD event 
+    Note over BILLBOARD Operator: BILLBOARD Operator subscribes to all PROMOTION & ATTENTION events
+    PROMOTION Creator->>RELAY: Writes PROMOTION event
+    RELAY->>BILLBOARD Operator: Forwards PROMOTION event
+    PROMOTION Viewer->>RELAY: Writes ATTENTION event
+    RELAY->>BILLBOARD Operator: Forwards ATTENTION event
+    PROMOTION Viewer->>BILLBOARD Operator: Navigates to BILLBOARD event 'primary' `u` tag
+    BILLBOARD Operator->>PROMOTION Viewer: BILLBOARD Operator displays best PROMOTION for PROMOTION Viewer
+    Note over RELAY,PROMOTION Creator: Confirmation flows defined in NIP-X6
+    Note over RELAY,PROMOTION Creator: Payment flows defined in future NIP  
 ```
 
 ### Trust Model
-- Trust is established when PROMOTION CREATORS and PROMOTION VIEWERS include a BILLBOARD_OPERATOR_pubkey in their `b` tags
+- Trust is established when PROMOTION Creators and PROMOTION Viewers include a BILLBOARD_OPERATOR_pubkey in their `b` tags
 - The decision to trust a BILLBOARD OPERATOR is made independently by each participant
 - Each participant is sovereign in choosing which BILLBOARD OPERATORS to trust
 - Multiple BILLBOARD OPERATORS can be trusted simultaneously via multiple `b` tags
@@ -166,7 +166,7 @@ sequenceDiagram
 
 1. **BILLBOARD**: BILLBOARD OPERATORS `write` BILLBOARD(kind:38088) event(s) to RELAY LIST(kind:10002)
 2. **PROMOTION**: PROMOTION CREATOR `write` PROMOTION(kind:38188) event(s) to RELAY LIST(kind:10002)
-3. **ATTENTION**: PROMOTION VIEWERS `write` ATTENTION(kind:38888) event(s) to RELAY LIST(kind:10002)
+3. **ATTENTION**: PROMOTION Viewers `write` ATTENTION(kind:38888) event(s) to RELAY LIST(kind:10002)
 4. **DISPLAY**: BILLBOARD OPERATOR displays 'best' PROMOTION event to PROMOTION VIEWER
 
 ## References

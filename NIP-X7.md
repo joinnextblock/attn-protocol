@@ -133,7 +133,7 @@ sequenceDiagram
 ## Benefits for Ecosystem
 1. Creates explicit record of PROMOTER-PROMOTION VIEWER matches
 2. Enables better tracking of PROMOTION flow
-3. Allows PROMOTION VIEWERS to see pending match opportunities
+3. Allows PROMOTION Viewers to see pending match opportunities
 4. Provides transparency around topic-based matching
 5. Creates foundation for advanced matching algorithms
 6. Helps optimize topic selection by recording successful matches

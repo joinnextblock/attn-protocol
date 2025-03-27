@@ -3,11 +3,11 @@
 `draft` `optional`
 
 ## Abstract
-NIP-X4 defines a standardized mechanism for PROMOTION VIEWERS to express content interests using the standard Nostr topic tag within the PROMO Protocol. By enhancing the PROMOTION VIEWER event (kind:38888) with topic tags, BILLBOARD OPERATORS can more effectively match relevant PROMOTIONS with interested PROMOTION VIEWERS. This improvement increases content relevance for PROMOTION VIEWERS while enabling higher engagement rates for PROMOTERS, creating a more efficient marketplace based on content preferences rather than economic factors alone.
+NIP-X4 defines a standardized mechanism for PROMOTION Viewers to express content interests using the standard Nostr topic tag within the PROMO Protocol. By enhancing the PROMOTION VIEWER event (kind:38888) with topic tags, BILLBOARD OPERATORS can more effectively match relevant PROMOTIONS with interested PROMOTION Viewers. This improvement increases content relevance for PROMOTION Viewers while enabling higher engagement rates for PROMOTERS, creating a more efficient marketplace based on content preferences rather than economic factors alone.
 
 ## Motivation
 
-In the current PROMOTED NOTES system ([NIP-X1](./NIP-X1.md)), PROMOTION VIEWERS have no standardized way to signal content preferences, leading to random or purely economic-based content matching. This NIP introduces content relevance as a matching criterion, enabling:
+In the current PROMOTED NOTES system ([NIP-X1](./NIP-X1.md)), PROMOTION Viewers have no standardized way to signal content preferences, leading to random or purely economic-based content matching. This NIP introduces content relevance as a matching criterion, enabling:
 
 1. Better PROMOTION VIEWER experience through relevant content
 2. Improved engagement rates for PROMOTERS
@@ -147,7 +147,7 @@ sequenceDiagram
 
 ## Benefits and Outcomes
 
-- **For PROMOTION VIEWERS**: More engaging and relevant content viewing experience
+- **For PROMOTION Viewers**: More engaging and relevant content viewing experience
 - **For PROMOTERS**: Better targeting and higher engagement rates
 - **For BILLBOARDs**: Enhanced matching capability and value proposition
 - **For Ecosystem**: More efficient marketplace with quality-based incentives

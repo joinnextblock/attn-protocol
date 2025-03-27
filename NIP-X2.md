@@ -75,7 +75,7 @@ Event kind:38588 providing anonymized metrics for PROMOTERS
 
 ### Privacy Requirements
 - BILLBOARDs MUST NOT include PROMOTION VIEWER pubkeys in PROMOTER-facing metrics
-- BILLBOARDs MUST NOT provide data that could be used to identify individual PROMOTION VIEWERS
+- BILLBOARDs MUST NOT provide data that could be used to identify individual PROMOTION Viewers
 - BILLBOARDs MUST ensure minimum thresholds (e.g., n≥5) before reporting subgroup metrics
 - Aggregated metrics MUST be constructed to prevent de-anonymization through correlation attacks
 
@@ -93,7 +93,7 @@ Event kind:38588 providing anonymized metrics for PROMOTERS
 
 ### Client Requirements
 - PROMOTER clients SHOULD subscribe to kind:38588 events for their PROMOTIONS
-- ALL clients MUST respect the privacy boundaries between PROMOTERS and PROMOTION VIEWERS
+- ALL clients MUST respect the privacy boundaries between PROMOTERS and PROMOTION Viewers
 
 ## Metric Query Methods
 
@@ -121,7 +121,7 @@ BILLBOARD OPERATORS should:
 2. Implement reasonable retention policies for sensitive metric data
 3. Publish aggregated metrics regularly to provide timely feedback
 4. Use defensive programming to prevent metric manipulation
-5. Establish clear data policies communicated to both PROMOTERS and PROMOTION VIEWERS
+5. Establish clear data policies communicated to both PROMOTERS and PROMOTION Viewers
 
 ## Flow Diagram
 ```mermaid
