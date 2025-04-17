@@ -1,36 +1,20 @@
-# Hex public key:   0002bb00b8e64bb2a03388209b6b9a25c8d745e059abca9b83d166a3fe1edf2c
-# Hex private key:  01267001b76ea0da087f9fbffd89e682ade0c6f43b206d8ad6bb2d3462813877
-# Npub public key:  npub1qqptkq9cue9m9gpn3qsfk6u6yhydw30qtx4u4xur69n28ls7mukq8sgnt3
-# Nsec private key: nsec1qyn8qqdhd6sd5zrln7llmz0xs2k7p3h58vsxmzkkhvkngc5p8pmsynw4ct
-
-# Nostr Configuration
 nostr:
-  # Your private key in hex format (32-byte hex string)
   privateKey: 01267001b76ea0da087f9fbffd89e682ade0c6f43b206d8ad6bb2d3462813877
-  # List of relay URLs (must start with ws:// or wss://)
   relayUrls:
-    - "ws://localhost:10547"
-
-# MCP Service Configuration
+    - ws://localhost:10547
 mcp:
-  # Service information
-  name: "BILLBOARD DVM"
-  about: "An MCP-enabled DVM for the BILLBOARD Server"
-  # Required client information
-  clientName: "DVM MCP Bridge Client"
-  clientVersion: "1.0.0"
-  # optional metadata
-  picture: "https://image.nostr.build/5bf2e2eb3b858bf72c23e53ed1f41ed0f65b2c8a805eaa48dd506b7cfec4ab88.png"
-  website: "https://github.com/joinnextblock/billboard-dvm"
-  # MCP Servers Configuration accepts multiple servers
+  version: 0.0.0
+  name: "NextBlock: BILLBOARD DVMCP"
+  about: An MCP-enabled DVM for the BILLBOARD Server
+  clientName: DVM MCP Bridge Client
+  clientVersion: 1.0.0
+  picture: https://image.nostr.build/5bf2e2eb3b858bf72c23e53ed1f41ed0f65b2c8a805eaa48dd506b7cfec4ab88.png
+  website: https://github.com/joinnextblock/promo-protocol/tree/main/packages/promo-dvmcp
   servers:
-    - name: "BILLBOARD: DVM"
-      command: "bun"
-      args: 
-        - "run"
-        - "src/server.ts"
-
-# Optional: Whitelist Configuration
-# whitelist:
-  # List of allowed public keys (leave empty for no restrictions)
-  # allowedPubkeys: []
+    - name: "BILLBOARD: DVMCP"
+      command: bun
+      args:
+        - run
+        - src/index.ts
+whitelist:
+  allowedDVMs: []

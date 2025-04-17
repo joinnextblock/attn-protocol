@@ -1,3 +1,6 @@
+environment:
+  log_level: "debug | info | warn | error | fatal"
+
 # Nostr Configuration
 nostr:
   # Your private key in hex format (32-byte hex string)
@@ -8,13 +11,11 @@ nostr:
     - "wss://relay2.net"
 
 # Billboard Service Configuration
-mcp:
-  # Service information
+billboard:
   name: "Example Billboard"
   description: "Example Billboard description"
-  # optional metadata
-  picture: "https://image.nostr.build/5bf2e2eb3b858bf72c23e53ed1f41ed0f65b2c8a805eaa48dd506b7cfec4ab88.png"
-  website: "https://github.com/gzuuus/dvmcp"
+  image: "https://promo-protocol.org/logo.png"
+  url: "https://promo-protocol.org"
   kinds:
     - 1
     - 20

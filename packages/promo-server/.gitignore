@@ -1,5 +1,6 @@
 billboard-service
 billboard.config.yaml
+config.dvmcp.yml
 
 # dependencies (bun install)
 node_modules

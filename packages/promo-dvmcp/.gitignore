@@ -1,3 +1,5 @@
+config.dvmcp.yml
+
 # Based on https://raw.githubusercontent.com/github/gitignore/main/Node.gitignore
 node_modules
 # Logs
