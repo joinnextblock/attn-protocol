@@ -1,6 +1,0 @@
-export const BILLBOARD_ANNOUNCEMENT_KIND = 38088;
-export const BILLBOARD_REFRESH_KIND = 28888;
-export const ATTENTION_KIND = 38888;
-export const PROMOTION_KIND = 38188;
-export const MATCH_KIND = 38388;
-

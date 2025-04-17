@@ -1,4 +1,5 @@
-# PROMO Protocol
+![The PROMO Protocol](./assets/banner.png)
+
 A decentralized framework enabling paid content promotion within the Nostr ecosystem. By establishing standardized communication methods for promotional content, the protocol creates new economic opportunities while preserving Nostr's core principles of decentralization and privacy.
 
 ## Packages
@@ -48,4 +49,4 @@ MIT License
 - [Nostr Protocol](https://github.com/nostr-protocol/nips)
 - [AppleSauce](https://github.com/hzrd149/applesauce)
 - [DVMCP](https://github.com/gzuuus/dvmcp)
-- [Model Context Protocol](https://modelcontextprotocol.io/introduction)
+- [Model Context Protocol](https://modelcontextprotocol.io/introduction)  

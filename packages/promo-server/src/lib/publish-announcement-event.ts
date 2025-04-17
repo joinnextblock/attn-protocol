@@ -1,4 +1,4 @@
-import { BILLBOARD_ANNOUNCEMENT_KIND } from "../constants";
+import { ANNOUNCEMENT_KIND } from "../../../promo-commons/constants";
 import type { RelayHandler } from "@dvmcp/commons/nostr/relay-handler";
 import type pino from 'pino';
 import type { KeyManager } from "@dvmcp/commons/nostr/key-manager";
@@ -19,13 +19,13 @@ export type PublishAnnouncementEventDependencies = {
 export async function publish_announcement_event(
   { name, description, image, url, kinds }: PublishAnnouncementEventParams,
   { key_manager, relay_handler, logger }: PublishAnnouncementEventDependencies
-) {
+): Promise<string> {
   logger.trace('publishing announcement event');
 
   const pubkey = key_manager.getPublicKey();
 
   const unsigned_event = {
-    kind: BILLBOARD_ANNOUNCEMENT_KIND,
+    kind: ANNOUNCEMENT_KIND,
     "pubkey": pubkey,
     "created_at": Math.floor(Date.now() / 1000),
     "content": "",
@@ -46,4 +46,5 @@ export async function publish_announcement_event(
   // publish event to relay 
   await relay_handler.publishEvent(signed_event);
   logger.trace('announcement event published');
+  return signed_event.id
 }

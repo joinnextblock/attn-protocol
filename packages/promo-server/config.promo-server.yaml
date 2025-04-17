@@ -1,0 +1,15 @@
+environment:
+  log_level: "trace"
+
+nostr:
+  private_key: "2bee41196d3c931c28df64f27ae8f3c15fb535fb3aefe3ef0eeb55ba1cc93ee2"
+  relays:
+    - ws://localhost:10547
+
+server:
+  name: "NextBlock: Billboard"
+  description: "NextBlock: Billboard"
+  image: "https://primal.b-cdn.net/media-cache?s=o&a=1&u=https%3A%2F%2Fm.primal.net%2FNNtW.png"
+  url: "https://billboard.nextblock.app"
+  kinds:
+    - 22
