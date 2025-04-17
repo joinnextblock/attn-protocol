@@ -2,7 +2,7 @@
 import { publish_refresh_event } from "./lib/publish-refresh-event";
 import type { Logger } from 'pino';
 import type { RelayHandler } from "@dvmcp/commons/nostr/relay-handler";
-import type { KeyManager } from "../../promo-commons/nostr/key-manager";
+import type { KeyManager } from "@dvmcp/commons/nostr/key-manager";
 
 export type HandlerParams = {
 }

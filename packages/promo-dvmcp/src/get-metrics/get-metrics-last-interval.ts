@@ -1,4 +1,4 @@
-import type { RelayHandler } from "../../../promo-commons/nostr/relay-handler";
+import type { RelayHandler } from "@dvmcp/commons/nostr/relay-handler";
 import type pino from 'pino';
 import { ATTENTION_KIND, PROMOTION_KIND, MATCH_KIND } from "../../../promo-commons/constants";
 import type { Filter } from "nostr-tools";

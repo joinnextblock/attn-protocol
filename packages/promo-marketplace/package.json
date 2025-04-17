@@ -6,34 +6,31 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/joinnextblock/promo-protocol.git"
-  },  
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
     "preview": "vite preview"
   },
   "dependencies": {
-    "@dotenvx/dotenvx": "^1.39.0",
-    "@noble/hashes": "^1.7.1",
-    "@nostr-dev-kit/ndk": "2.13.0-rc2",
+    "@dotenvx/dotenvx": "^1.40.1",
+    "@noble/hashes": "^1.7.2",
+    "@nostr-dev-kit/ndk": "^2.13.3",
     "@solidjs/router": "^0.15.3",
-    "@types/node": "^22.13.14",
+    "@types/node": "^22.14.1",
     "applesauce-accounts": "^0.12.0",
     "applesauce-core": "^0.12.1",
     "applesauce-loaders": "^0.12.0",
     "applesauce-signers": "^0.12.0",
-    "express": "^4.18.3",
-    "nostr-tools": "^2.11.0",
-    "rx-nostr": "^3.5.0",
-    "rxjs": "^7.8.2",
+    "nostr-tools": "^2.12.0",
     "solid-js": "^1.9.5",
     "uuid": "^11.1.0",
     "ws": "^8.18.1"
   },
   "devDependencies": {
-    "@types/ws": "^8.18.0",
-    "typescript": "~5.7.2",
-    "vite": "^6.2.0",
-    "vite-plugin-solid": "^2.11.2"
+    "@types/ws": "^8.18.1",
+    "typescript": "^5.8.3",
+    "vite": "^6.3.1",
+    "vite-plugin-solid": "^2.11.6"
   }
 }

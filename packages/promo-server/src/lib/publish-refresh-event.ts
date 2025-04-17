@@ -1,7 +1,7 @@
 import { BILLBOARD_REFRESH_KIND } from "../constants";
 import type { RelayHandler } from "@dvmcp/commons/nostr/relay-handler";
 import type pino from 'pino';
-import type { KeyManager } from "../../../promo-commons/nostr/key-manager";
+import type { KeyManager } from "@dvmcp/commons/nostr/key-manager";
 export type PublishRefreshEventParams = {
   metrics: any;
 }

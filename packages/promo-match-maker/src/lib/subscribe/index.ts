@@ -1,7 +1,6 @@
 import { RelayHandler } from "@dvmcp/commons/nostr/relay-handler";
-import { KeyManager } from "../../../../promo-commons/nostr/key-manager";
+import { KeyManager } from "@dvmcp/commons/nostr/key-manager";
 import { SubCloser } from "nostr-tools/pool";
-// import { publish_delete_event } from "../publish_delete_event";
 import { publish_match_event } from "../publish_match_event";
 import { Event } from "nostr-tools";
 export type SubscribeArgs = {

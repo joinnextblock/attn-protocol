@@ -1,6 +1,6 @@
 import { subscribe } from './lib/subscribe';
 import { RelayHandler } from '@dvmcp/commons/nostr/relay-handler';
-import { createKeyManager, KeyManager } from '../../promo-commons/nostr/key-manager'
+import { createKeyManager, type KeyManager } from '@dvmcp/commons/nostr/key-manager';
 import fs from 'fs';
 import yaml from 'js-yaml';
 import { logger } from '@dvmcp/commons/logger';

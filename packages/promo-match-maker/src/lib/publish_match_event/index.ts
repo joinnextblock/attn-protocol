@@ -1,5 +1,5 @@
-import { v4 as uuidv4, v5 as uuidv5 } from "uuid";
-import { KeyManager } from "../../../../promo-commons/nostr/key-manager";
+import { v5 as uuidv5 } from "uuid";
+import { KeyManager } from "@dvmcp/commons/nostr/key-manager";
 import { RelayHandler } from "@dvmcp/commons/nostr/relay-handler";
 
 export type PublishMatchEventParams = {

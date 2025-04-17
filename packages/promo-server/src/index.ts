@@ -3,10 +3,9 @@ import yaml from 'js-yaml';
 import fs from 'fs';
 import { CronJob } from 'cron';
 import { RelayHandler } from "@dvmcp/commons/nostr/relay-handler";
-import { createKeyManager } from "@dvmcp/commons/nostr/key-manager";
+import { createKeyManager, type KeyManager } from "@dvmcp/commons/nostr/key-manager";
 import { handler } from './handler'; 
 import { publish_announcement_event } from './lib/publish-announcement-event';
-import type { KeyManager } from "../../promo-commons/nostr/key-manager";
 
 
 let logger: pino.Logger;

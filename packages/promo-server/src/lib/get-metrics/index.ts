@@ -1,7 +1,7 @@
 import type { RelayHandler } from "@dvmcp/commons/nostr/relay-handler";
 import type pino from 'pino';
 import type { Event } from "nostr-tools";
-import type { createKeyManager } from "../../../../promo-commons/nostr/key-manager";
+import type { KeyManager } from "@dvmcp/commons/nostr/key-manager";
 export type GetMetricsParams = {
   since: number;
   until: number;
@@ -10,7 +10,7 @@ export type GetMetricsParams = {
 export type GetMetricsDependencies = {
   relay_handler: RelayHandler;
   logger: pino.Logger;
-  key_manager: ReturnType<typeof createKeyManager>;
+  key_manager: KeyManager;
 }
 
 export const get_metrics = async (

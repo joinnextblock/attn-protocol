@@ -1,6 +1,6 @@
 import { Event } from "nostr-tools";
 import { RelayHandler } from "@dvmcp/commons/nostr/relay-handler";
-import { KeyManager } from "../../../../promo-commons/nostr/key-manager";
+import { KeyManager } from "@dvmcp/commons/nostr/key-manager";
 
 export type PublishDeleteEventParams = {
     event: Event

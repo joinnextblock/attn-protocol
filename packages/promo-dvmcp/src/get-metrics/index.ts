@@ -1,7 +1,7 @@
 import { get_metrics_all_time, type MetricsAllTime } from "./get-metrics-all-time";
 import { get_metrics_last_interval, type MetricsLastInterval } from "./get-metrics-last-interval";
-import { RelayHandler } from "../../../promo-commons/nostr/relay-handler";
-import { logger_dvmcp } from "../../../promo-commons/logger";
+import { RelayHandler } from "@dvmcp/commons/nostr/relay-handler";
+import { logger } from "../../../promo-commons/logger";
 import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import pino from "pino";
 
