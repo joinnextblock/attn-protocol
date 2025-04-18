@@ -1,8 +1,3 @@
-# Hex public key:   0002bb00b8e64bb2a03388209b6b9a25c8d745e059abca9b83d166a3fe1edf2c
-# Hex private key:  01267001b76ea0da087f9fbffd89e682ade0c6f43b206d8ad6bb2d3462813877
-# Npub public key:  npub1qqptkq9cue9m9gpn3qsfk6u6yhydw30qtx4u4xur69n28ls7mukq8sgnt3
-# Nsec private key: nsec1qyn8qqdhd6sd5zrln7llmz0xs2k7p3h58vsxmzkkhvkngc5p8pmsynw4ct
-
 # Nostr Configuration
 nostr:
   # Your private key in hex format (32-byte hex string)

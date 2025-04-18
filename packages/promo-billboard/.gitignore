@@ -1,6 +1,4 @@
-billboard-service
-billboard.config.yaml
-config.dvmcp.yml
+config.api.yml
 config.billboard.yaml
 
 # dependencies (bun install)

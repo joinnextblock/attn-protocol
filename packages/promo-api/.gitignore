@@ -1,4 +1,5 @@
-config.dvmcp.yml
+config.api.yml
+config.billboard.yaml
 
 # Based on https://raw.githubusercontent.com/github/gitignore/main/Node.gitignore
 node_modules
