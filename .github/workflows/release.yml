@@ -12,6 +12,9 @@ jobs:
     name: Release
     runs-on: ubuntu-latest
     steps:
+      - uses: oven-sh/setup-bun@v2
+        with:
+          version: "latest"
       - name: Checkout Repo
         uses: actions/checkout@v3
 
