@@ -12,20 +12,21 @@ jobs:
     name: Release
     runs-on: ubuntu-latest
     steps:
-      - uses: oven-sh/setup-bun@v2
-        with:
-          version: "latest"
+      # Setup Bun
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+      # Checkout Repo
       - name: Checkout Repo
         uses: actions/checkout@v3
-
-      - name: Setup Node.js 20
+      # Setup Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version-file: '.nvmrc'
-
+      # Install Dependencies      
       - name: Install Dependencies
         run: bun install
-
+      # Create Release Pull Request
       - name: Create Release Pull Request
         uses: changesets/action@v1
         env:
