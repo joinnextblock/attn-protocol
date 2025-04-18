@@ -22,6 +22,7 @@ NIP-X1 defines the core PROMO Protocol for content promotion on Nostr, establish
 - **kind:38388**: MATCH Event
 - **kind:38488**: PROMOTION ACCEPTANCE Event
 - **kind:38588**: PROMOTION COMPLETION Event
+- **kind:38688**: PROMOTION REJECTTION Event
 
 ### EXISTING EVENT KINDS
 - **kind:30000**: Trusted BILLBOARD list
@@ -285,7 +286,55 @@ NIP-X1 defines the core PROMO Protocol for content promotion on Nostr, establish
     ["a", "kind:<32-bytes lowercase hex of a pubkey>:<d tag value>"], 
     ["p", "<BROKER_pubkey>"],
     ["match_id", "<MATCH_EVENT_ID>"],
-    ["BROKER_pubkey", "<BROKER_pubkey>"],
+    ["broker_pubkey", "<BROKER_pubkey>"],
+  ]
+}
+```
+
+#### Required Tags
+- `d`: uuid
+- `e`: ID of promoted envet
+- `a`: Events involed witht the MATCH event
+- `p`: Pubkeys involved in the MATCH event
+- `billboard_id`: ID of BILLBOARD event
+- `promotion_id`: ID of PROMOTION event
+- `attention_id`: ID of ATTENTION event
+- `match_id`: ID of MATCH event
+- `billboard_pubkey`: Pubkey of publisher of BILLBOARD event
+- `promotion_pubkey`: Pubkey of publisher of PROMOTION event
+- `attention_pubkey`: Pubkey of publisher of ATTENTION event
+- `broker_pubkey`: Pubkey of publisher of MATCH event
+
+### PROMOTION REJECTION Event
+```json
+{
+  "kind": 38688,
+  "pubkey": "<PROMOTION_VIEWER_pubkey>",
+  "created_at": <unix_timestamp>,
+  "tags": [
+    ["d", "<uuid>"],
+    // Promoted Event
+    ["e", "<32-bytes lowercase hex of the id of promoted event>", "<recommended relay URL, optional>", "<32-bytes lowercase hex of the author's pubkey, optional>"]
+    // BILLBOARD
+    ["a", "kind:<32-bytes lowercase hex of a pubkey>:<d tag value>"],
+    ["p", "<BILLBOARD_pubkey>"],
+    ["billboard_id", "<BILLBOARD_EVENT_ID>"],
+    ["billboard_pubkey", "<BILLBOARD_pubkey>"],
+    // PROMOTION
+    ["a", "kind:<32-bytes lowercase hex of a pubkey>:<d tag value>"], 
+    ["p", "<PROMOTION_Creator_pubkey>"],
+    ["promotion_id", "<PROMOTION_EVENT_ID>"],
+    ["promotion_pubkey", "<PROMOTION_pubkey>"],
+    // ATTENTION
+    ["a", "kind:<32-bytes lowercase hex of a pubkey>:<d tag value>"], 
+    ["p", "<PROMOTION_Viewer_pubkey>"],
+    ["attention_id", "<ATTENTION_EVENT_ID>"], 
+    ["attention_pubkey", "<PROMOTION_VIEWER_pubkey>"],
+    // MATCH
+    ["a", "kind:<32-bytes lowercase hex of a pubkey>:<d tag value>"], 
+    ["p", "<BROKER_pubkey>"],
+    ["match_id", "<MATCH_EVENT_ID>"],
+    ["broker_pubkey", "<BROKER_pubkey>"],
   ]
 }
 ```
