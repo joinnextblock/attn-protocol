@@ -12,7 +12,7 @@ NIP-X1 defines the core PROMO Protocol for content promotion on Nostr, establish
 - **PROMOTION Creators**: Nostr identity that publishes PROMOTION events
 - **PROMOTION Viewer**: Nostr identity that publishes ATTENTION events
 - **BILLBOARD Operator**: Nostr identity that PROMOTION Creators and PROMOTION Viewers signal they trust via trusted BILLBOAD list []()
-- **MATCH MAKER Operator**: Nostr identity that publishes MATCH events
+- **BROKER**: Nostr identity that publishes MATCH events
 
 ### NEW EVENT KINDS
 - **kind:38088**: BILLBOARD Announcement Event
@@ -24,7 +24,8 @@ NIP-X1 defines the core PROMO Protocol for content promotion on Nostr, establish
 - **kind:38588**: PROMOTION COMPLETION Event
 
 ### EXISTING EVENT KINDS
-- **kind:30003**: Trusted BILLBOARD list
+- **kind:30000**: Trusted BILLBOARD list
+- **kind:30003**: Blocked PROMO list
 
 > For detailed information about participant roles and responsibilities, see the [README.md](./README.md#who-are-the-main-actors-in-the-promo-protocol).
 
@@ -206,7 +207,7 @@ NIP-X1 defines the core PROMO Protocol for content promotion on Nostr, establish
 ```json
 {
     "kind": 38388,
-    "pubkey": "<MATCH_MAKER_pubkey>",
+    "pubkey": "<BROKER_pubkey>",
     "created_at": <unix_timestamp>,
     "content": "",
     "tags": [
@@ -282,9 +283,9 @@ NIP-X1 defines the core PROMO Protocol for content promotion on Nostr, establish
     ["attention_pubkey", "<PROMOTION_VIEWER_pubkey>"],
     // MATCH
     ["a", "kind:<32-bytes lowercase hex of a pubkey>:<d tag value>"], 
-    ["p", "<MATCH_MAKER_pubkey>"],
+    ["p", "<BROKER_pubkey>"],
     ["match_id", "<MATCH_EVENT_ID>"],
-    ["match_maker_pubkey", "<MATCH_MAKER_pubkey>"],
+    ["BROKER_pubkey", "<BROKER_pubkey>"],
   ]
 }
 ```
@@ -301,7 +302,7 @@ NIP-X1 defines the core PROMO Protocol for content promotion on Nostr, establish
 - `billboard_pubkey`: Pubkey of publisher of BILLBOARD event
 - `promotion_pubkey`: Pubkey of publisher of PROMOTION event
 - `attention_pubkey`: Pubkey of publisher of ATTENTION event
-- `match_maker_pubkey`: Pubkey of publisher of MATCH event
+- `broker_pubkey`: Pubkey of publisher of MATCH event
 
 ### PROMOTION COMPLETION Event
 ```json
@@ -330,9 +331,9 @@ NIP-X1 defines the core PROMO Protocol for content promotion on Nostr, establish
     ["attention_pubkey", "<PROMOTION_VIEWER_pubkey>"]
     // MATCH
     ["a", "kind:<32-bytes lowercase hex of a pubkey>:<d tag value>"], 
-    ["p", "<MATCH_MAKER_pubkey>"],
+    ["p", "<BROKER_pubkey>"],
     ["match_id", "<MATCH_EVENT_ID>"], 
-    ["match_maker_pubkey", "<MATCH_MAKER_pubkey>"]
+    ["BROKER_pubkey", "<BROKER_pubkey>"]
     // PROMOTION ACCEPTANCE
     ["a", "kind:<32-bytes lowercase hex of a pubkey>:<d tag value>"], 
     ["promotion_acceptance_id", "<PROMOTION_ACCEPTANCE_EVENT_ID>"],
@@ -354,26 +355,65 @@ NIP-X1 defines the core PROMO Protocol for content promotion on Nostr, establish
 - `billboard_pubkey`: Pubkey of publisher of BILLBOARD event
 - `promotion_pubkey`: Pubkey of publisher of PROMOTION event
 - `attention_pubkey`: Pubkey of publisher of ATTENTION event
-- `match_maker_pubkey`: Pubkey of publisher of MATCH event
+- `broker_pubkey`: Pubkey of publisher of MATCH event
 - `promotion_acceptance_pubkey`: Pubkey of publisher of PROMOTION ACCEPTANCE event
 
 ### TRUSTED BILLBOARD LIST EVENT
 ```json
 {
-  "kind": 30003,
-  "pubkey": "<PROMOTION_VIEWER_pubkey | PROMOTION_CREATOR_pubkey>",
+  "kind": 30000,
+  "pubkey": "<PROMOTION_VIEWER_pubkey | PROMOTION_CREATOR_pubkey | BROKER_pubkey> ",
   "created_at": <unix_timestamp>,
   "tags": [
-    ["d", "<uuid>"],
-    ["p", "<BILLBOARD_pubkey>", "<relay>"]
-    ["p", "<BILLBOARD_pubkey>", "<relay>"]
+    ["d", "promo-protocol:trusted-billboards"],
+    ["title", ""],
+    ["image", ""],
+    ["description", ""],
+    ["p", "<BILLBOARD_pubkey>", "<relay>"],
+    ["p", "<BILLBOARD_pubkey>", "<relay>"],
   ]
 }
 ```
 
-#### Required Tags
-- `d`: uuid
-- `p`: Pubkey of trusted BILLBOARD
+#### Required Tags:
+- `d`: 
+- `p`: 
+
+#### Optional Tags:
+- `title`: 
+- `image`: 
+- `description`: 
+
+
+### BLOCKED PROMO LIST EVENT
+```json
+{
+  "kind": 30003,
+  "pubkey": "<PROMOTION_VIEWER_pubkey | BROKER_pubkey> ",
+  "created_at": <unix_timestamp>,
+  "tags": [
+    ["d", "promo-protocol:blocked-promo"],
+    ["title", ""],
+    ["image", ""],
+    ["description", ""],
+    ["p", "<PROMOTION_CREATOR_pubkey>", "<relay>"],
+    ["p", "<PROMOTION_CREATOR_pubkey>", "<relay>"],
+    ["e", "<PROMOTION_EVENT_ID>", "<relay>"],
+    ["e", "<PROMOTION_EVENT_ID>", "<relay>"],
+  ]
+}
+```
+
+#### Required Tags:
+- `d`: 
+- `p`: 
+or
+- `e`:
+
+#### Optional Tags:
+- `title`: 
+- `image`: 
+- `description`: 
 
 ## PROMO Protocol Behavior
 
@@ -433,7 +473,7 @@ sequenceDiagram
 1. **BILLBOARD**: BILLBOARD OPERATORS `write` BILLBOARD(kind:38088) event(s) to RELAY LIST(kind:10002)
 2. **PROMOTION**: PROMOTION CREATOR `write` PROMOTION(kind:38188) event(s) to RELAY LIST(kind:10002)
 3. **ATTENTION**: PROMOTION Viewers `write` ATTENTION(kind:38888) event(s) to RELAY LIST(kind:10002)
-4. **MATCH**: MATCH MAKERS `write` MATCH(kind:38388) event(s) to RELAY LIST(kind:10002)
+4. **MATCH**: BROKERS `write` MATCH(kind:38388) event(s) to RELAY LIST(kind:10002)
 4. **DISPLAY**: BILLBOARD displays promoted EVENT in PROMOTION event to PROMOTION VIEWER based on 'best' MATCH event
 
 ## References
