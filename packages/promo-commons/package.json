@@ -1,8 +1,11 @@
 {
   "name": "@promo-protocol/commons",
-  "version": "0.0.0",
-  "description": "Shared utilities for promo protocol packages",
+  "version": "0.0.1",
+  "description": "Shared utilities for The PROMO Protocol packages",
   "type": "module",
+  "publishConfig": {
+    "access": "public"
+  },
   "exports": {
     "./*": "./*.ts",
     "./*/*": "./*/*.ts"
@@ -23,8 +26,5 @@
   },
   "dependencies": {
     "debug": "^4.4.0"
-  },
-  "publishConfig": {
-    "access": "public"
   }
 }

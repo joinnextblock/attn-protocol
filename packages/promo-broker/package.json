@@ -1,7 +1,6 @@
 {
-  "name": "@promo-protocol/match-maker",
-  "private": true,
-  "version": "0.0.0",
+  "name": "@promo-protocol/brokerage",
+  "description": "Brokerage service for The PROMO Protocol",
   "type": "module",
   "scripts": {
     "start": "bun run ./src/index.ts"

@@ -3,13 +3,7 @@
   "repository": "https://github.com/joinnextblock/promo-protocol",
   "scripts": {
     "format": "prettier --write \"packages/**/*.{ts,tsx,js,jsx,json,md}\"",
-    "publish:commons": "cd packages/promo-commons && npm publish --access public",
-    "publish:dvmcp": "cd packages/promo-dvmcp && npm publish --access public",
-    "publish:indexer": "cd packages/promo-indexer && npm publish --access public",
-    "publish:marketplace": "cd packages/promo-marketplace && npm publish --access public",
-    "publish:match-maker": "cd packages/promo-match-maker && npm publish --access public",
-    "publish:server": "cd packages/promo-server && npm publish --access public",
-    "publish:all": "npm run publish:commons && npm run publish:dvmcp && npm run publish:indexer && npm run publish:marketplace && npm run publish:match-maker && npm run publish:server"
+    "release": "changeset publish"
   },
   "workspaces": [
     "packages/*"

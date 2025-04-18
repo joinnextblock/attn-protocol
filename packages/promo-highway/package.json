@@ -1,8 +1,30 @@
 {
-  "name": "@promo-protocol/indexer",
-  "private": true,
-  "version": "0.0.0",
+  "name": "@promo-protocol/highway",
+  "description": "Highway service for The PROMO Protocol",
+  "module": "src/index.ts",
   "type": "module",
+  "license": "MIT",
+  "keywords": [
+    "dvmcp",
+    "promo-protocol",
+    "promo",
+    "protocol",
+    "highway"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "exports": {
+    "./*": "./*.ts",
+    "./*/*": "./*/*.ts"
+  },
+  "files": [
+    "**/*.ts",
+    "**/*.js",
+    "!**/*.test.ts",
+    "!**/*.test.js",
+    "config.example.yml"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/joinnextblock/promo-protocol.git"
