@@ -1,7 +1,7 @@
 {
   "name": "@promo-protocol/commons",
-  "version": "0.0.2",
-  "description": "Shared utilities for The PROMO Protocol packages",
+  "version": "0.0.1",
+  "description": "Common files for The PROMO Protocol packages",
   "type": "module",
   "publishConfig": {
     "access": "public"

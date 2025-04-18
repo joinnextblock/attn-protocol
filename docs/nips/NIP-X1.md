@@ -12,7 +12,7 @@ NIP-X1 defines the core PROMO Protocol for content promotion on Nostr, establish
 - **PROMOTION Creators**: Nostr identity that publishes PROMOTION events
 - **PROMOTION Viewer**: Nostr identity that publishes ATTENTION events
 - **BILLBOARD Operator**: Nostr identity that PROMOTION Creators and PROMOTION Viewers signal they trust via trusted BILLBOAD list []()
-- **BROKER**: Nostr identity that publishes MATCH events
+- **BROKERAGE Operator**: Nostr identity that publishes MATCH events
 
 ### NEW EVENT KINDS
 - **kind:38088**: BILLBOARD Announcement Event
@@ -208,7 +208,7 @@ NIP-X1 defines the core PROMO Protocol for content promotion on Nostr, establish
 ```json
 {
     "kind": 38388,
-    "pubkey": "<BROKER_pubkey>",
+    "pubkey": "<BROKERAGE_pubkey>",
     "created_at": <unix_timestamp>,
     "content": "",
     "tags": [
@@ -284,9 +284,9 @@ NIP-X1 defines the core PROMO Protocol for content promotion on Nostr, establish
     ["attention_pubkey", "<PROMOTION_VIEWER_pubkey>"],
     // MATCH
     ["a", "kind:<32-bytes lowercase hex of a pubkey>:<d tag value>"], 
-    ["p", "<BROKER_pubkey>"],
+    ["p", "<BROKERAGE_pubkey>"],
     ["match_id", "<MATCH_EVENT_ID>"],
-    ["broker_pubkey", "<BROKER_pubkey>"],
+    ["brokerage_pubkey", "<BROKERAGE_pubkey>"],
   ]
 }
 ```
@@ -303,7 +303,7 @@ NIP-X1 defines the core PROMO Protocol for content promotion on Nostr, establish
 - `billboard_pubkey`: Pubkey of publisher of BILLBOARD event
 - `promotion_pubkey`: Pubkey of publisher of PROMOTION event
 - `attention_pubkey`: Pubkey of publisher of ATTENTION event
-- `broker_pubkey`: Pubkey of publisher of MATCH event
+- `brokerage_pubkey`: Pubkey of publisher of MATCH event
 
 ### PROMOTION REJECTION Event
 ```json
@@ -332,9 +332,9 @@ NIP-X1 defines the core PROMO Protocol for content promotion on Nostr, establish
     ["attention_pubkey", "<PROMOTION_VIEWER_pubkey>"],
     // MATCH
     ["a", "kind:<32-bytes lowercase hex of a pubkey>:<d tag value>"], 
-    ["p", "<BROKER_pubkey>"],
+    ["p", "<BROKERAGE_pubkey>"],
     ["match_id", "<MATCH_EVENT_ID>"],
-    ["broker_pubkey", "<BROKER_pubkey>"],
+    ["brokerage_pubkey", "<BROKERAGE_pubkey>"],
   ]
 }
 ```
@@ -351,7 +351,7 @@ NIP-X1 defines the core PROMO Protocol for content promotion on Nostr, establish
 - `billboard_pubkey`: Pubkey of publisher of BILLBOARD event
 - `promotion_pubkey`: Pubkey of publisher of PROMOTION event
 - `attention_pubkey`: Pubkey of publisher of ATTENTION event
-- `broker_pubkey`: Pubkey of publisher of MATCH event
+- `brokerage_pubkey`: Pubkey of publisher of MATCH event
 
 ### PROMOTION COMPLETION Event
 ```json
@@ -380,9 +380,9 @@ NIP-X1 defines the core PROMO Protocol for content promotion on Nostr, establish
     ["attention_pubkey", "<PROMOTION_VIEWER_pubkey>"]
     // MATCH
     ["a", "kind:<32-bytes lowercase hex of a pubkey>:<d tag value>"], 
-    ["p", "<BROKER_pubkey>"],
+    ["p", "<BROKERAGE_pubkey>"],
     ["match_id", "<MATCH_EVENT_ID>"], 
-    ["BROKER_pubkey", "<BROKER_pubkey>"]
+    ["brokerage_pubkey", "<BROKERAGE_pubkey>"]
     // PROMOTION ACCEPTANCE
     ["a", "kind:<32-bytes lowercase hex of a pubkey>:<d tag value>"], 
     ["promotion_acceptance_id", "<PROMOTION_ACCEPTANCE_EVENT_ID>"],
@@ -404,14 +404,14 @@ NIP-X1 defines the core PROMO Protocol for content promotion on Nostr, establish
 - `billboard_pubkey`: Pubkey of publisher of BILLBOARD event
 - `promotion_pubkey`: Pubkey of publisher of PROMOTION event
 - `attention_pubkey`: Pubkey of publisher of ATTENTION event
-- `broker_pubkey`: Pubkey of publisher of MATCH event
+- `brokerage_pubkey`: Pubkey of publisher of MATCH event
 - `promotion_acceptance_pubkey`: Pubkey of publisher of PROMOTION ACCEPTANCE event
 
 ### TRUSTED BILLBOARD LIST EVENT
 ```json
 {
   "kind": 30000,
-  "pubkey": "<PROMOTION_VIEWER_pubkey | PROMOTION_CREATOR_pubkey | BROKER_pubkey> ",
+  "pubkey": "<PROMOTION_VIEWER_pubkey | PROMOTION_CREATOR_pubkey | BROKERAGE_pubkey> ",
   "created_at": <unix_timestamp>,
   "tags": [
     ["d", "promo-protocol:trusted-billboards"],
@@ -438,7 +438,7 @@ NIP-X1 defines the core PROMO Protocol for content promotion on Nostr, establish
 ```json
 {
   "kind": 30003,
-  "pubkey": "<PROMOTION_VIEWER_pubkey | BROKER_pubkey> ",
+  "pubkey": "<PROMOTION_VIEWER_pubkey | BROKERAGE_pubkey> ",
   "created_at": <unix_timestamp>,
   "tags": [
     ["d", "promo-protocol:blocked-promo"],

@@ -11,7 +11,7 @@ A poc of a service that controls the refresh rate of a billboard
 ### [`@promo-protocol/api`](./packages/promo-api)
 A poc of a DVMCP server as the compute layer for promo protocol services
 
-### [`@promo-protocol/broker`](./packages/promo-broker)
+### [`@promo-protocol/brokerage`](./packages/promo-brokerage)
 A poc of a service that matches attention to promotions
 
 ### [`@promo-protocol/passport`](./packages/promo-passport)
@@ -31,7 +31,7 @@ Common package for common functions and constants
 
 - [Billboard Package](./packages/promo-billboard/README.md)
 - [API Package](./packages/promo-api/README.md)
-- [Broker Package](./packages/promo-broker/README.md)
+- [Brokerage Package](./packages/promo-brokerage/README.md)
 - [Integrity Package](./packages/promo-integrity/README.md)
 - [Highway Package](./packages/promo-highway/README.md)
 - [Marketplace Package](./packages/promo-marketplace/README.md)

@@ -11,6 +11,7 @@
     "protocol",
     "billboard"
   ],
+  "private": true,
   "publishConfig": {
     "access": "public"
   },

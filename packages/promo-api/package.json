@@ -11,6 +11,7 @@
     "protocol",
     "api"
   ],
+  "private": true,
   "publishConfig": {
     "access": "public"
   },
