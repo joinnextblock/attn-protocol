@@ -53,25 +53,27 @@ title: The PROMO Protocol
 2. PROMOTION Viewers
    - Create ATTENTION events
    - Create BLOCK LIST events
-3. BILLBOARD Servers
+   - Create PROMOTION ACCEPTED events
+   - Create PROMOTION REJECTED events
+3. BILLBOARD Operators
    - Create BILLBOARD events
    - Create REFRESH events
-   - Create PROMOTION ACCEPTED events
    - Create PROMOTION COMPLETED events
-4. BILLBOARD DVMs
+4. Brokerage Operators
    - create MATCH events
 
 <!-- This is a note for this slide -->
 ---
 
 # Technical Implementation
-- Kind:31990 - BILLBOARD event
+- Kind:38088 - BILLBOARD event
 - Kind:38188 - PROMOTION event
 - Kind:38888 - ATTENTION event
 - Kind:38388 - MATCH event
 - Kind:28888 - REFRESH event
 - Kind:38488 - PROMOTION ACCEPTED event
 - Kind:38588 - PROMOTION COMPLETED event
+- Kind:38588 - PROMOTION REJECTED event
 
 Supporting Events:
 - Kind:30003 - BLOCK LIST events

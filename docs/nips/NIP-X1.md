@@ -15,7 +15,7 @@ NIP-X1 defines the core PROMO Protocol for content promotion on Nostr, establish
 - **BROKERAGE Operator**: Nostr identity that publishes MATCH events
 
 ### NEW EVENT KINDS
-- **kind:38088**: BILLBOARD Announcement Event
+- **kind:38088**: BILLBOARD ANNOUNCEMENT Event
 - **kind:28888**: BILLBOARD REFRESH Event
 - **kind:38188**: PROMOTION Event
 - **kind:38888**: ATTENTION Event
@@ -32,7 +32,7 @@ NIP-X1 defines the core PROMO Protocol for content promotion on Nostr, establish
 
 ## Event Specifications
 
-### BILLBOARD Event
+### BILLBOARD ANNOUNCEMENT Event
 ```json
 {
     "kind": 38088,
@@ -41,13 +41,15 @@ NIP-X1 defines the core PROMO Protocol for content promotion on Nostr, establish
     "content": "",
     "tags": [
         // required
-        ["d", "<BILLBOARD_pubkey"], // Pubkey for individual BILLBOARD
+        ["d", "<BILLBOARD_pubkey>"], // Pubkey for individual BILLBOARD
         ["k", "1"],
         ["k", "20"],
         ["k", "21"],
         ["k", "22"],
         ["name", "<value>"],
         ["u", "<url>", "primary"],
+        ["nip", "X1"],
+        ["nip", "X2"]
         // optional
         ["description", "<value>"]
         ["max_duration", "<value>"],
@@ -68,11 +70,10 @@ NIP-X1 defines the core PROMO Protocol for content promotion on Nostr, establish
 - `nip`: List of PROMO Protocol implemented NIP versions - indicates which protocol features are supported
 
 #### Optional Tags
-- `u`:
-- `billboard_url`:
-- `name`:
-- `description`:
-- `image`: 
+- `u`: URL for viewing promotions on billboard
+- `name`: BILLBOARD name for identification in lists
+- `description`: BILLBOARD description
+- `image`: BILLBOARD image for branding
 - `max_duration`: Maximum allowed view duration - upper limit on how long PROMOTIONS can be
 - `min_duration`: Minimum allowed view duration - lower limit on how long PROMOTIONS must be
 
@@ -84,11 +85,10 @@ NIP-X1 defines the core PROMO Protocol for content promotion on Nostr, establish
     "created_at": <unix_timestamp>,
     "content": "<metrics>",
     "tags": [
-        ["d", "<BILLBOARD_pubkey>"]
         // BILLBOARD event
         ["a", "kind:<32-bytes lowercase hex of a pubkey>:<d tag value>"],
         ["p", "<BILLBOARD_pubkey>"],
-        ["billboard_id", "<BILLBOARD_EVENT_ID>"], // BILLBOARD_ANNOUNCTMENT_EVENT_ID
+        ["billboard_id", "<BILLBOARD_ANNOUNCEMENT_EVENT_ID>"],
         ["billboard_pubkey", "<BILLBOARD_pubkey>"]   
     ]
 }
@@ -153,13 +153,18 @@ NIP-X1 defines the core PROMO Protocol for content promotion on Nostr, establish
     "created_at": <unix_timestamp>,
     "content": "",
     "tags": [
+        // PROMOTION event
         ["d", "<uuid>"]
         ["e", "<note_id>"],
         ["duration", "<value>", "seconds"],
         ["sats_per_second", "<value>"],
-        ["billboard_pubkey", "<BILLBOARD_pubkey>"],
         // optional
         ["expiration", "<unix_timestamp>"],
+        // BILLBOARD event reference
+        ["a", "kind:<32-bytes lowercase hex of a pubkey>:<d tag value>"],
+        ["p", "<BILLBOARD_pubkey>"],
+        ["billboard_id", "<BILLBOARD_ANNOUNCEMENT_EVENT_ID>"], 
+        ["billboard_pubkey", "<BILLBOARD_pubkey>"]
     ]
 }
 ```
@@ -177,28 +182,32 @@ NIP-X1 defines the core PROMO Protocol for content promotion on Nostr, establish
     "created_at": <unix_timestamp>,
     "content": "",
     "tags": [
-        ["d", "<BILLBOARD_pubkey>"]
-        // BILLBOARD event
-        ["a", "kind:<32-bytes lowercase hex of a pubkey>:<d tag value>"],
-        ["p", "<BILLBOARD_pubkey>"],
-        ["billboard_id", "<BILLBOARD_EVENT_ID>"], // BILLBOARD_ANNOUNCTMENT_EVENT_ID
-        ["billboard_pubkey", "<BILLBOARD_pubkey>"]
         // ATTENTION EVENT
+        ["d", "<BILLBOARD_pubkey>"]
         ["sats_per_second", "<value>"],
         ["k", "1"],
         ["k", "20"],
         ["k", "21"],
         ["k", "22"],
         // optional
-        ["max_duration", "<value>", "seconds"],
+        ["max_duration", "<value>"],
         ["expiration", "<unix_timestamp>"],
+        // BILLBOARD event reference
+        ["a", "kind:<32-bytes lowercase hex of a pubkey>:<d tag value>"],
+        ["p", "<BILLBOARD_pubkey>"],
+        ["billboard_id", "<BILLBOARD_ANNOUNCEMENT_EVENT_ID>"],
+        ["billboard_pubkey", "<BILLBOARD_pubkey>"]
+        
+        // BLOCK LIST event reference
+        ["a", "kind:<32-bytes lowercase hex of a pubkey>:<d tag value>"],
+        ["block_list", "<list_event_id>"]
     ]
 }
 ```
 
 #### Required Tags:
-- `sats_per_second`: Payment rate in sats per second
-- `k`: 
+- `sats_per_second`: PROMOTION Viewer requested payment rate in sats per second
+- `k`: Event kinds the PROMOTION Viewer is willing to watch 
 
 #### Optional Tags:
 - `max_duration`: Maximum viewing duration in seconds
@@ -218,7 +227,7 @@ NIP-X1 defines the core PROMO Protocol for content promotion on Nostr, establish
         // BILLBOARD_ANNOUNCTMENT_EVENT
         ["a", "kind:<32-bytes lowercase hex of a pubkey>:<d tag value>"],
         ["p", "<BILLBOARD_pubkey>"],
-        ["billboard_id", "<BILLBOARD_EVENT_ID>"], // BILLBOARD_ANNOUNCTMENT_EVENT_ID
+        ["billboard_id", "<BILLBOARD_ANNOUNCEMENT_EVENT_ID>"], // BILLBOARD_ANNOUNCTMENT_EVENT_ID
         ["billboard_pubkey", "<BILLBOARD_pubkey>"]
         // PROMOTION_EVENT
         ["a", "kind:<32-bytes lowercase hex of a pubkey>:<d tag value>"], 
@@ -231,7 +240,7 @@ NIP-X1 defines the core PROMO Protocol for content promotion on Nostr, establish
         ["attention_id", "<ATTENTION_EVENT_ID>"], // ATTENTION_EVENT_ID
         ["attention_pubkey", "<ATTENTION_pubkey>"]
         // MATCH_EVENT
-        ["p", "<MATCHER_pubkey>"],
+        ["p", "<BROKERAGE_pubkey>"],
         ["sats_per_second", "<value>"],
         ["duration", "<value>"],
         // optional
@@ -270,7 +279,7 @@ NIP-X1 defines the core PROMO Protocol for content promotion on Nostr, establish
     // BILLBOARD
     ["a", "kind:<32-bytes lowercase hex of a pubkey>:<d tag value>"],
     ["p", "<BILLBOARD_pubkey>"],
-    ["billboard_id", "<BILLBOARD_EVENT_ID>"],
+    ["billboard_id", "<BILLBOARD_ANNOUNCEMENT_EVENT_ID>"],
     ["billboard_pubkey", "<BILLBOARD_pubkey>"],
     // PROMOTION
     ["a", "kind:<32-bytes lowercase hex of a pubkey>:<d tag value>"], 
@@ -318,7 +327,7 @@ NIP-X1 defines the core PROMO Protocol for content promotion on Nostr, establish
     // BILLBOARD
     ["a", "kind:<32-bytes lowercase hex of a pubkey>:<d tag value>"],
     ["p", "<BILLBOARD_pubkey>"],
-    ["billboard_id", "<BILLBOARD_EVENT_ID>"],
+    ["billboard_id", "<BILLBOARD_ANNOUNCEMENT_EVENT_ID>"],
     ["billboard_pubkey", "<BILLBOARD_pubkey>"],
     // PROMOTION
     ["a", "kind:<32-bytes lowercase hex of a pubkey>:<d tag value>"], 
@@ -366,7 +375,7 @@ NIP-X1 defines the core PROMO Protocol for content promotion on Nostr, establish
     // BILLBOARD
     ["a", "kind:<32-bytes lowercase hex of a pubkey>:<d tag value>"],
     ["p", "<BILLBOARD_pubkey>"],
-    ["billboard_id", "<BILLBOARD_EVENT_ID>"],
+    ["billboard_id", "<BILLBOARD_ANNOUNCEMENT_EVENT_ID>"],
     ["billboard_pubkey", "<BILLBOARD_pubkey>"]
     // PROMOTION
     ["a", "kind:<32-bytes lowercase hex of a pubkey>:<d tag value>"], 
@@ -425,13 +434,13 @@ NIP-X1 defines the core PROMO Protocol for content promotion on Nostr, establish
 ```
 
 #### Required Tags:
-- `d`: 
-- `p`: 
+- `d`: `promo-protocol:trusted-billboards`
+- `p`: Pubkey of BILLBOARD that the list creator wants BILLBOARD REFRESH events from
 
 #### Optional Tags:
-- `title`: 
-- `image`: 
-- `description`: 
+- `title`: Title of list for better display purposes
+- `image`: Image of list for better display purposes
+- `description`: Description of list for better display purposes
 
 
 ### BLOCKED PROMO LIST EVENT
@@ -454,15 +463,16 @@ NIP-X1 defines the core PROMO Protocol for content promotion on Nostr, establish
 ```
 
 #### Required Tags:
-- `d`: 
-- `p`: 
+- `d`: `promo-protocol:blocked-promo`
+- `p`: Pubkey that list doesn't want to see promotions from
 or
-- `e`:
+- `e`: Event id of PROMOTION that list doesn't want to see
 
 #### Optional Tags:
-- `title`: 
-- `image`: 
-- `description`: 
+- `title`: Title of list for better display purposes
+- `image`: Image of list for better display purposes
+- `description`: Description of list for better display purposes
+
 
 ## PROMO Protocol Behavior
 
