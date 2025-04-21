@@ -11,7 +11,11 @@ import { ToolRegistry } from '@dvmcp/discovery/src/tool-registry';
 import assert from 'assert';
 import path from 'path';
 import type { PROMO_BILLBOARD } from '../index';
-import type { PROMO_API } from '@promo-api/index';
+import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
+import { ToolExecutor } from '@dvmcp/discovery/src/tool-executor';
+import { get_metrics } from './lib/get-metrics';
+import { z } from 'zod';
+import type { Tool } from '@modelcontextprotocol/sdk/types.js';
 
 let relay_handler: RelayHandler;
 let key_manager: KeyManager;
@@ -47,11 +51,27 @@ let logger: Logger;
     key_manager = createKeyManager(api_config.nostr.privateKey);
     logger.debug({ api_config }, 'api_config');
     const mcp_server = new McpServer(api_config.mcp);
+    
     logger.trace('creating tool registry');
     const tool_registry = new ToolRegistry(mcp_server);
-    logger.trace('listing tools');
-    const tools = tool_registry.listTools();
-    logger.debug({ tools }, 'tools');
+
+    const tool: Tool = {
+      name: "get-metrics-by-billboard-id",
+      description: "Get metrics for a specific billboard by billboard id",
+      inputSchema: {
+        type: 'object',
+        properties: {
+          billboard_id: { type: 'string' },
+          since: { type: 'number' },
+          until: { type: 'number' },
+        },
+      },
+    };
+    tool_registry.registerTool('get-metrics-by-billboard-id', tool, key_manager.getPublicKey());
+
+    mcp_server.connect(new StdioServerTransport());
+    
+    const tool_executor = new ToolExecutor(relay_handler, key_manager, tool_registry);
 
     // Publish the announcement event to the billboard
     logger.trace('calling publish_announcement_event');
@@ -73,19 +93,19 @@ let logger: Logger;
     // Refresh the billboard every 60 seconds
     const since = Date.now();
     const until = Date.now() + 60 * 1000;
-    // const job = CronJob.from({
-    //   cronTime: '0 * * * * *',
-    //   runOnInit: true,
-    //   onTick: () => handler({ since, until }, { tool_registry, key_manager, relay_handler, logger }),
-    //   onComplete: () => {
-    //     logger.info('Cron job completed');
-    //   },
-    //   errorHandler: (error) => {
-    //     logger.error('Cron job error:', error);
-    //   },
-    //   start: true,
-    //   timeZone: 'America/New_York'
-    // });
+    const job = CronJob.from({
+      cronTime: '0 * * * * *',
+      runOnInit: true,
+      onTick: () => handler({ billboard_id: key_manager.getPublicKey(), since, until }, { tool_executor, key_manager, relay_handler, logger }),
+      onComplete: () => {
+        logger.info('Cron job completed');
+      },
+      errorHandler: (error) => {
+        logger.error('Cron job error:', error);
+      },
+      start: true,
+      timeZone: 'America/New_York'
+    });
   }
   catch (err: any) {
     default_logger.error({ err });

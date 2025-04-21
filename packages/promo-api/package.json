@@ -24,8 +24,8 @@
     "**/*.js",
     "!**/*.test.ts",
     "!**/*.test.js",
-     "config.example.yml"
-  ],  
+    "config.example.yml"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/joinnextblock/promo-protocol.git"
@@ -39,6 +39,7 @@
   "dependencies": {
     "@dvmcp/commons": "^0.1.9",
     "@modelcontextprotocol/sdk": "^1.9.0",
+    "@promo-protocol/commons": "^0.0.2",
     "js-yaml": "^4.1.0",
     "pino": "^9.6.0",
     "zod": "^3.24.3"

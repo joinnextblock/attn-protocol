@@ -10,22 +10,25 @@ import type { Tool } from '@modelcontextprotocol/sdk/types.js';
  * @returns The metrics from the BILLBOARD Server
  */
 export const get_metrics = async (
-  { since, until }: GetMetricsParams,
+  { billboard_id, since, until }: GetMetricsParams,
   { tool_executor, logger }: GetMetricsDependencies
 ) => {
 
   const tool: Tool = {
-    name: "get-metrics",
+    name: "get-metrics-by-billboard-id",
+
     description: 'Get metrics from the BILLBOARD Server',
     inputSchema: {
       type: 'object',
       properties: {
+        billboard_id: { type: 'string' },
         since: { type: 'number' },
         until: { type: 'number' }
       }
     }
   };
-  const metrics = await tool_executor.executeTool('get-metrics', tool, { since, until });
+
+  const metrics = await tool_executor.executeTool('get-metrics-by-billboard-id', tool, { billboard_id, since, until });
   logger.debug({ metrics }, 'metrics');
   return metrics;
 
@@ -110,6 +113,7 @@ export const get_metrics = async (
 };
 
 export type GetMetricsParams = {
+  billboard_id: string;
   since: number;
   until: number;
 }

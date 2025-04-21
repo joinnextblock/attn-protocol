@@ -1,41 +1,37 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { z } from 'zod';
-import { get_metrics_handler } from './get-metrics/index.js';
+import { get_metrics_by_billboard_id_handler } from './get-metrics-by-billboard-id/index.js';
 import fs from 'fs';
 import yaml from 'js-yaml';
-
-
 
 if (!fs.existsSync('config.dvmcp.yml')) {
   throw new Error('config.dvmcp.yml does not exist');
 }
 // Load the config file
-const dvmcp_config = yaml.load(fs.readFileSync('config.dvmcp.yml', 'utf8')) as DvmcpConfig;
+const api_config = yaml.load(fs.readFileSync('config.dvmcp.yml', 'utf8')) as ApiConfig;
 
-console.log(dvmcp_config);
+console.log(api_config);
 
-const server = new McpServer(dvmcp_config.mcp);
+const server = new McpServer(api_config.mcp);
 
 server.tool(
-  'get-metrics',
-  'returns set of all metrics for all time',
+  'get-metrics-by-billboard-id',
+  'returns metrics for a billboard',
   {
-    pubkey: z.string(),
-    since: z.number(),
-    until: z.number(),
+    billboard_id: z.string()
   },
-  async ({ pubkey, since, until }) => get_metrics_handler({ pubkey, since, until }, { relays: dvmcp_config.nostr.relayUrls })
+  async ({ billboard_id }) => get_metrics_by_billboard_id_handler({ billboard_id }, { relays: api_config.nostr.relayUrls })
 );
 
 const transport = new StdioServerTransport();
 await server.connect(transport);
 
-type DvmcpConfig = {
+type ApiConfig = {
   nostr: {
     privateKey: string;
     relayUrls: string[];
-  };
+      };
   mcp: {
     version: string;
     name: string;

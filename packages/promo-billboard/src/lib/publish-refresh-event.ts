@@ -1,4 +1,4 @@
-import { REFRESH_KIND } from "../../../promo-commons/constants";
+import { BILLBOARD_REFRESH_KIND } from "@promo-protocol/commons/constants";
 import type { RelayHandler } from "@dvmcp/commons/nostr/relay-handler";
 import type pino from 'pino';
 import type { KeyManager } from "@dvmcp/commons/nostr/key-manager";
@@ -21,7 +21,7 @@ export async function publish_refresh_event(
   const pubkey = key_manager.getPublicKey();
 
   const unsigned_event = {
-    kind: REFRESH_KIND,
+    kind: BILLBOARD_REFRESH_KIND,
     "pubkey": pubkey,
     "created_at": Math.floor(Date.now() / 1000),
     "tags": [],

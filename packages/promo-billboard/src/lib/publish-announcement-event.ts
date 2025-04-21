@@ -1,4 +1,4 @@
-import { ANNOUNCEMENT_KIND } from "../../../promo-commons/constants";
+import { BILLBOARD_ANNOUNCEMENT_KIND } from "@promo-protocol/commons/constants";
 import type { RelayHandler } from "@dvmcp/commons/nostr/relay-handler";
 import type pino from 'pino';
 import type { KeyManager } from "@dvmcp/commons/nostr/key-manager";
@@ -25,7 +25,7 @@ export async function publish_announcement_event(
   const pubkey = key_manager.getPublicKey();
 
   const unsigned_event = {
-    kind: ANNOUNCEMENT_KIND,
+    kind: BILLBOARD_ANNOUNCEMENT_KIND,
     "pubkey": pubkey,
     "created_at": Math.floor(Date.now() / 1000),
     "content": "",

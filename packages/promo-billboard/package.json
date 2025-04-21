@@ -48,6 +48,7 @@
     "@dvmcp/commons": "^0.1.9",
     "@dvmcp/discovery": "^0.1.28",
     "@modelcontextprotocol/sdk": "^1.9.0",
+    "@promo-protocol/commons": "^0.0.2",
     "cron": "^4.1.4",
     "js-yaml": "^4.1.0",
     "nostr-tools": "^2.12.0",
