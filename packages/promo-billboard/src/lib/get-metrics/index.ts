@@ -16,19 +16,16 @@ export const get_metrics = async (
 
   const tool: Tool = {
     name: "get-metrics-by-billboard-id",
-
-    description: 'Get metrics from the BILLBOARD Server',
+    description: 'Get metrics for a specific BILLBOARD',
     inputSchema: {
       type: 'object',
       properties: {
-        billboard_id: { type: 'string' },
-        since: { type: 'number' },
-        until: { type: 'number' }
+        billboard_id: { type: 'string' }
       }
     }
   };
 
-  const metrics = await tool_executor.executeTool('get-metrics-by-billboard-id', tool, { billboard_id, since, until });
+  const metrics = await tool_executor.executeTool('get-metrics-by-billboard-id', tool, { billboard_id });
   logger.debug({ metrics }, 'metrics');
   return metrics;
 
