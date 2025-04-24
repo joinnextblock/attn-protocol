@@ -10,7 +10,9 @@ if (!fs.existsSync('config.dvmcp.yml')) {
   throw new Error('config.dvmcp.yml does not exist');
 }
 // Load the config file
-const api_config = yaml.load(fs.readFileSync('config.dvmcp.yml', 'utf8')) as PROMO_PROTOCOL.API.ApiConfig;
+const api_config = yaml.load(
+  fs.readFileSync('config.dvmcp.yml', 'utf8')
+) as PROMO_PROTOCOL.API.ApiConfig;
 
 console.log(api_config);
 
@@ -23,7 +25,7 @@ server.tool(
     billboard_id: z.string(),
   },
   async ({ billboard_id }) =>
-    get_metrics_by_billboard_id_handler({ billboard_id }, { relays: api_config.nostr.relayUrls })
+    get_metrics_by_billboard_id_handler({ billboard_id }, { relays: api_config.nostr.relays })
 );
 
 const transport = new StdioServerTransport();

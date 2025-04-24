@@ -8,7 +8,7 @@ import { ToolExecutor } from '@dvmcp/discovery/src/tool-executor';
 import type { PROMO_PROTOCOL } from '../../..';
 import { publish_kind_38088_event } from '../nostr/publish-kind-38088-event';
 import { publish_kind_1_event } from '../nostr/publish-kind-1-event';
-
+import { publish_kind_10002_event } from '../nostr/publish-kind-10002-event';
 /**
  * This function publishes the startup events for the billboard.
  */
@@ -48,10 +48,22 @@ export const publish_startup_events = async (
   logger.debug({ kind_1_event_id }, 'kind_1_event_id');
 
   // TODO: publish kind 10002 event
+  const { event_id: kind_10002_event_id } = await publish_kind_10002_event(
+    {
+      relays: billboard_config.nostr.relays,
+    },
+    {
+      key_manager,
+      relay_handler,
+      logger,
+    }
+  );
+  logger.debug({ kind_10002_event_id }, 'kind_10002_event_id');
 
   return {
     kind_38088_event_id,
     kind_1_event_id,
+    kind_10002_event_id,
   };
 };
 
@@ -68,4 +80,5 @@ export type PublishStartupEventsDependencies = {
 export type PublishStartupEventsResponse = {
   kind_38088_event_id: string;
   kind_1_event_id: string;
+  kind_10002_event_id: string;
 };
