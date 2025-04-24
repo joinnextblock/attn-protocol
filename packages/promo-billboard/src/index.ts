@@ -9,11 +9,10 @@ import { CronJob } from 'cron';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import type { Tool } from '@modelcontextprotocol/sdk/types.js';
-import { RelayHandler } from "@dvmcp/commons/nostr/relay-handler";
-import { createKeyManager, type KeyManager } from "@dvmcp/commons/nostr/key-manager";
+import { RelayHandler } from '@dvmcp/commons/nostr/relay-handler';
+import { createKeyManager, type KeyManager } from '@dvmcp/commons/nostr/key-manager';
 import { ToolRegistry } from '@dvmcp/discovery/src/tool-registry';
 import { ToolExecutor } from '@dvmcp/discovery/src/tool-executor';
-
 
 import { handler, type HandlerParams, type HandlerDependencies } from './handler';
 import { publish_kind_38088_event } from './lib/nostr/publish-kind-38088-event';
@@ -27,8 +26,6 @@ let key_manager: KeyManager;
 let default_logger: Logger;
 let logger: Logger;
 
-
-
 /**
  * This function is the main entry point for the promo server.
  * It loads the config file, creates the MCP server, and publishes the announcement event.
@@ -39,11 +36,13 @@ let logger: Logger;
 
   default_logger = pino({
     level: 'info',
-    redact: ['billboard_config.nostr.privateKey']
+    redact: ['billboard_config.nostr.privateKey'],
   });
   try {
     default_logger.trace('loading ./config.billboard.yml');
-    const billboard_config = yaml.load(fs.readFileSync('config.billboard.yml', 'utf8')) as PROMO_BILLBOARD.BillboardConfig;
+    const billboard_config = yaml.load(
+      fs.readFileSync('config.billboard.yml', 'utf8')
+    ) as PROMO_BILLBOARD.BillboardConfig;
 
     logger = default_logger.child({});
     logger.level = billboard_config.environment.log_level;
@@ -55,10 +54,13 @@ let logger: Logger;
 
     const mcp_server = new McpServer(billboard_config.mcp);
 
-    const { tool_executor } = await get_tool_executor({ mcp_server, api_public_key: billboard_config.api.public_key }, { logger, relay_handler, key_manager });
+    const { tool_executor } = await get_tool_executor(
+      { mcp_server, api_public_key: billboard_config.api.public_key },
+      { logger, relay_handler, key_manager }
+    );
 
     mcp_server.connect(new StdioServerTransport());
-    
+
     // Publish the announcement event to the billboard
     logger.trace('publishing startup events');
     const publish_startup_events_response = await publish_startup_events(
@@ -70,17 +72,18 @@ let logger: Logger;
     const job = CronJob.from({
       cronTime: '0 * * * * *',
       runOnInit: true,
-      onTick: () => handler(
-        {
-          billboard_id: key_manager.getPublicKey()
-        } as HandlerParams,
-        {
-          tool_executor,
-          key_manager,
-          relay_handler,
-          logger
-        } as HandlerDependencies
-      ),
+      onTick: () =>
+        handler(
+          {
+            billboard_id: key_manager.getPublicKey(),
+          } as HandlerParams,
+          {
+            tool_executor,
+            key_manager,
+            relay_handler,
+            logger,
+          } as HandlerDependencies
+        ),
       onComplete: () => {
         logger.info('Cron job completed');
       },
@@ -88,10 +91,9 @@ let logger: Logger;
         logger.error('Cron job error:', error);
       },
       start: true,
-      timeZone: 'America/New_York'
+      timeZone: 'America/New_York',
     });
-  }
-  catch (err: any) {
+  } catch (err: any) {
     default_logger.error({ err });
   }
 })();

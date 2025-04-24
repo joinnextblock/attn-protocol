@@ -7,6 +7,7 @@ Retrieves metrics for a specific billboard, including both all-time and interval
 - `billboard_id` (string): BILLBOARD pubkey
 
 ## Dependencies
+
 - `relays` (string[]): Array of Nostr relay URLs
 
 ## Example Call
@@ -57,4 +58,3 @@ Returns a JSON object containing:
 ## Error Handling
 
 Returns error message if metrics retrieval fails.
-

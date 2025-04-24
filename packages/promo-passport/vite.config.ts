@@ -1,10 +1,10 @@
-import { defineConfig } from 'vite'
-import solid from 'vite-plugin-solid'
-import { fileURLToPath } from 'url'
-import { dirname, resolve } from 'path'
+import { defineConfig } from 'vite';
+import solid from 'vite-plugin-solid';
+import { fileURLToPath } from 'url';
+import { dirname, resolve } from 'path';
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = dirname(__filename)
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 export default defineConfig({
   plugins: [solid()],
@@ -19,8 +19,8 @@ export default defineConfig({
       output: {
         entryFileNames: '[name].js',
         chunkFileNames: '[name].js',
-        assetFileNames: '[name].[ext]'
-      }
+        assetFileNames: '[name].[ext]',
+      },
     },
     sourcemap: 'inline',
     minify: process.env.NODE_ENV === 'production',
@@ -29,6 +29,6 @@ export default defineConfig({
   // Optimize deps handling
   optimizeDeps: {
     // Exclude any extension APIs from optimization
-    exclude: ['chrome-types']
-  }
-})
+    exclude: ['chrome-types'],
+  },
+});

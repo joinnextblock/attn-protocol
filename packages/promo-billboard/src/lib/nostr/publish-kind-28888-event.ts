@@ -1,8 +1,8 @@
 // project dependencies
 import type pino from 'pino';
-import { BILLBOARD_REFRESH_KIND } from "@promo-protocol/commons/constants";
-import type { RelayHandler } from "@dvmcp/commons/nostr/relay-handler";
-import type { KeyManager } from "@dvmcp/commons/nostr/key-manager";
+import { BILLBOARD_REFRESH_KIND } from '@promo-protocol/commons/constants';
+import type { RelayHandler } from '@dvmcp/commons/nostr/relay-handler';
+import type { KeyManager } from '@dvmcp/commons/nostr/key-manager';
 import type { PROMO_PROTOCOL } from '../../..';
 import * as PROMO_COMMON from '../../../../packages/promo-commons/index';
 
@@ -21,23 +21,23 @@ export async function publish_kind_28888_event(
   logger.debug({ unsigned_kind_28888_event });
   // Sign event with private key
   const signed_kind_28888_event = key_manager.signEvent(unsigned_kind_28888_event);
-  // publish event to relay 
+  // publish event to relay
   await relay_handler.publishEvent(signed_kind_28888_event);
   logger.trace('refresh event published');
   return {
     event_id: signed_kind_28888_event.id,
-  }
+  };
 }
 
 export type PublishKind28888EventResponse = {
   event_id: string;
-}
+};
 export type PublishKind28888EventParams = {
   metrics: PROMO_COMMON.COMMONS.BillboardMetrics;
-}
+};
 
 export type PublishKind28888EventDependencies = {
   relay_handler: RelayHandler;
   logger: pino.Logger;
   key_manager: KeyManager;
-}
+};

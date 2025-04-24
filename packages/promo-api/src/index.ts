@@ -4,12 +4,13 @@ import { z } from 'zod';
 import { get_metrics_by_billboard_id_handler } from './get-metrics-by-billboard-id/index.js';
 import fs from 'fs';
 import yaml from 'js-yaml';
+import type { PROMO_PROTOCOL } from '../index.js';
 
 if (!fs.existsSync('config.dvmcp.yml')) {
   throw new Error('config.dvmcp.yml does not exist');
 }
 // Load the config file
-const api_config = yaml.load(fs.readFileSync('config.dvmcp.yml', 'utf8')) as ApiConfig;
+const api_config = yaml.load(fs.readFileSync('config.dvmcp.yml', 'utf8')) as PROMO_PROTOCOL.API.ApiConfig;
 
 console.log(api_config);
 
@@ -19,9 +20,10 @@ server.tool(
   'get-metrics-by-billboard-id',
   'returns metrics for a billboard',
   {
-    billboard_id: z.string()
+    billboard_id: z.string(),
   },
-  async ({ billboard_id }) => get_metrics_by_billboard_id_handler({ billboard_id }, { relays: api_config.nostr.relayUrls })
+  async ({ billboard_id }) =>
+    get_metrics_by_billboard_id_handler({ billboard_id }, { relays: api_config.nostr.relayUrls })
 );
 
 const transport = new StdioServerTransport();

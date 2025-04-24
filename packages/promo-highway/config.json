@@ -1,5 +1,3 @@
 {
-  "relays": [
-    "ws://localhost:10547"
-  ]
-} 
+  "relays": ["ws://localhost:10547"]
+}

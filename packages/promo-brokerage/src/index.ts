@@ -14,8 +14,8 @@ export type PromoMatchMakerConfig = {
   nostr: {
     privateKey: string;
     relayUrls: string[];
-  }
-}
+  };
+};
 
 /**
  * This is the main entry point for the match maker.
@@ -31,10 +31,7 @@ export type PromoMatchMakerConfig = {
     logger({ config }, 'promo-match-maker');
 
     const {
-      nostr: {
-        privateKey,
-        relayUrls: relays,
-      }
+      nostr: { privateKey, relayUrls: relays },
     } = config;
 
     console.log({ privateKey, relays });
@@ -43,8 +40,7 @@ export type PromoMatchMakerConfig = {
     key_manager = createKeyManager(privateKey);
 
     subscriptions = subscribe({ relay_handler, key_manager });
-  }
-  catch (error) {
+  } catch (error) {
     console.error('Error:', error);
 
     for (const subscription of subscriptions) {

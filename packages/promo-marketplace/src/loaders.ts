@@ -1,6 +1,6 @@
-import { ReplaceableLoader, TimelineLoader } from "applesauce-loaders";
-import { rxNostr } from "./nostr";
-import { eventStore } from "./stores";
+import { ReplaceableLoader, TimelineLoader } from 'applesauce-loaders';
+import { rxNostr } from './nostr';
+import { eventStore } from './stores';
 
 const BILLBOARD_RELAY = import.meta.env.VITE_BILLBOARD_RELAY;
 
@@ -12,10 +12,7 @@ replaceableLoader.subscribe((packet) => {
 
 export const attentionLoader = new TimelineLoader(
   rxNostr,
-  TimelineLoader.simpleFilterMap(
-    [BILLBOARD_RELAY],
-    [{ kinds: [38888] }],
-  ),
+  TimelineLoader.simpleFilterMap([BILLBOARD_RELAY], [{ kinds: [38888] }])
 );
 
 // start the loader by subscribing to it

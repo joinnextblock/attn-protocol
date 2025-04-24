@@ -1,10 +1,10 @@
-import type { RelayHandler } from "@dvmcp/commons/nostr/relay-handler";
+import type { RelayHandler } from '@dvmcp/commons/nostr/relay-handler';
 import type pino from 'pino';
-import { ATTENTION_KIND, PROMOTION_KIND, MATCH_KIND } from "@promo-protocol/commons/constants";
-import type { Event, Filter } from "nostr-tools";
-import { get_attention_metrics } from "./lib/get-attention-metrics";
-import { get_promotion_metrics } from "./lib/get-promotion-metrics";
-import { get_match_metrics } from "./lib/get-match-metrics";
+import { ATTENTION_KIND, PROMOTION_KIND, MATCH_KIND } from '@promo-protocol/commons/constants';
+import type { Event, Filter } from 'nostr-tools';
+import { get_attention_metrics } from './lib/get-attention-metrics';
+import { get_promotion_metrics } from './lib/get-promotion-metrics';
+import { get_match_metrics } from './lib/get-match-metrics';
 
 export type MetricsAllTime = {
   attention: {
@@ -24,16 +24,16 @@ export type MetricsAllTime = {
   match: {
     count: number;
   };
-}
+};
 
 export type GetMetricsAllTimeParams = {
   billboard_id: string;
-}
+};
 
 export type GetMetricsAllTimeDependencies = {
   relay_handler: RelayHandler;
   logger: pino.Logger;
-}
+};
 
 export const get_metrics_all_time = async (
   { billboard_id }: GetMetricsAllTimeParams,
@@ -41,7 +41,7 @@ export const get_metrics_all_time = async (
 ): Promise<MetricsAllTime> => {
   const filter: Filter = {
     kinds: [ATTENTION_KIND, PROMOTION_KIND, MATCH_KIND],
-    "#p": [billboard_id],
+    '#p': [billboard_id],
   };
   logger.debug({ filter });
   console.time('queryEvents');
@@ -49,9 +49,9 @@ export const get_metrics_all_time = async (
   console.timeEnd('queryEvents');
   console.log({ events });
 
-  const attention_events = events.filter((event) => event.kind === ATTENTION_KIND);
-  const promotion_events = events.filter((event) => event.kind === PROMOTION_KIND);
-  const match_events = events.filter((event) => event.kind === MATCH_KIND);
+  const attention_events = events.filter(event => event.kind === ATTENTION_KIND);
+  const promotion_events = events.filter(event => event.kind === PROMOTION_KIND);
+  const match_events = events.filter(event => event.kind === MATCH_KIND);
 
   const attention_metrics = get_attention_metrics(attention_events);
   const promotion_metrics = get_promotion_metrics(promotion_events);
@@ -63,7 +63,3 @@ export const get_metrics_all_time = async (
   };
   return metrics;
 };
-
-
-
-

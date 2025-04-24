@@ -1,8 +1,7 @@
-import type { Event, UnsignedEvent } from "nostr-tools";
-import type { RelayHandler } from "@dvmcp/commons/nostr/relay-handler";
+import type { Event, UnsignedEvent } from 'nostr-tools';
+import type { RelayHandler } from '@dvmcp/commons/nostr/relay-handler';
 import type pino from 'pino';
-import type { KeyManager } from "@dvmcp/commons/nostr/key-manager";
-
+import type { KeyManager } from '@dvmcp/commons/nostr/key-manager';
 
 export async function publish_kind_1_event(
   { name, about, picture, display_name, website, banner }: PublishKind1EventParams,
@@ -26,12 +25,12 @@ export async function publish_kind_1_event(
   logger.debug({ unsigned_kind_1_event });
   // Sign event with private key
   const signed_kind_1_event = key_manager.signEvent(unsigned_kind_1_event);
-  // publish event to relay 
+  // publish event to relay
   await relay_handler.publishEvent(signed_kind_1_event);
   logger.trace('kind 1 event published');
   return {
-    event_id: signed_kind_1_event.id, 
-  }
+    event_id: signed_kind_1_event.id,
+  };
 }
 
 export type PublishKind1EventParams = {
@@ -41,14 +40,14 @@ export type PublishKind1EventParams = {
   display_name: string;
   website: string;
   banner: string;
-}
+};
 
 export type PublishKind1EventDependencies = {
   relay_handler: RelayHandler;
   logger: pino.Logger;
   key_manager: KeyManager;
-}
+};
 
 export type PublishKind1EventResponse = {
   event_id: string;
-}
+};

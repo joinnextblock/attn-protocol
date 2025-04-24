@@ -4,13 +4,7 @@
   "short_name": "nextblock",
   "version": "1.0",
   "description": "Participate in the attn marketplace while you browse the web",
-  "permissions": [
-    "windows",
-    "storage",
-    "activeTab",
-    "tabs",
-    "notifications"
-  ],
+  "permissions": ["windows", "storage", "activeTab", "tabs", "notifications"],
   "action": {
     "default_popup": "dist/index.html",
     "default_icon": {
@@ -21,12 +15,10 @@
   },
   "background": {
     "service_worker": "dist/background.js",
-     "type": "module"
+    "type": "module"
   },
-  "host_permissions": [
-    "wss://t-relay.nextblock.app/*"
-  ],
+  "host_permissions": ["wss://t-relay.nextblock.app/*"],
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'self'"
   }
-} 
+}

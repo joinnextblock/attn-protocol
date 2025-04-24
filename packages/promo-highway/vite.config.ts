@@ -1,9 +1,9 @@
-import { defineConfig } from 'vite'
-import solid from 'vite-plugin-solid'
+import { defineConfig } from 'vite';
+import solid from 'vite-plugin-solid';
 
 export default defineConfig({
   plugins: [solid()],
   server: {
-    allowedHosts: ['billboard-index.nextblock.app']
-  }
-})
+    allowedHosts: ['billboard-index.nextblock.app'],
+  },
+});

@@ -6,16 +6,16 @@ export namespace PROMO_PROTOCOL {
       billboard: BillboardServerConfig;
       api: BillboardApiConfig;
       mcp: BillboardMcpConfig;
-    }
+    };
 
     export type BillboardNostrConfig = {
       private_key: string;
       relays: string[];
-    }
+    };
 
     export type BillboardEnvironmentConfig = {
       log_level: string;
-    }
+    };
 
     export type BillboardServerConfig = {
       name: string;
@@ -23,11 +23,11 @@ export namespace PROMO_PROTOCOL {
       image: string;
       url: string;
       kinds: number[];
-    }
+    };
 
     export type BillboardApiConfig = {
       public_key: string;
-    }
+    };
 
     export type BillboardMcpConfig = {
       version: string;
@@ -37,6 +37,6 @@ export namespace PROMO_PROTOCOL {
       clientVersion: string;
       picture: string;
       website: string;
-    }
+    };
   }
 }
