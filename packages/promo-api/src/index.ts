@@ -31,7 +31,7 @@ type ApiConfig = {
   nostr: {
     privateKey: string;
     relayUrls: string[];
-      };
+  };
   mcp: {
     version: string;
     name: string;

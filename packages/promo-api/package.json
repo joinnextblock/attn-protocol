@@ -31,7 +31,8 @@
     "url": "git+https://github.com/joinnextblock/promo-protocol.git"
   },
   "scripts": {
-    "init": "npx @dvmcp/bridge",
+    "dvmcp:bridge": "npx @dvmcp/bridge",
+    "dvmcp:discovery": "npx @dvmcp/discovery",
     "start": "bun run src/index.ts",
     "dev": "bun --watch run src/index.ts",
     "test": "bun test",

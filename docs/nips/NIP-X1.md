@@ -35,30 +35,29 @@ NIP-X1 defines the core PROMO Protocol for content promotion on Nostr, establish
 ### BILLBOARD ANNOUNCEMENT Event
 ```json
 {
-    "kind": 38088,
-    "pubkey": "<BILLBOARD_operator_pubkey>", // Operator of more than one BILLBOARD
-    "created_at": <unix_timestamp>,
-    "content": "",
-    "tags": [
-        // required
-        ["d", "<BILLBOARD_pubkey>"], // Pubkey for individual BILLBOARD
-        ["k", "1"],
-        ["k", "20"],
-        ["k", "21"],
-        ["k", "22"],
-        ["name", "<value>"],
-        ["u", "<url>", "primary"],
-        ["nip", "X1"],
-        ["nip", "X2"]
-        // optional
-        ["description", "<value>"]
-        ["max_duration", "<value>"],
-        ["min_duration", "<value>"],
-        ["interval", "<value>", "seconds"],
-        ["u", "<url>", "backup"],
-        ["image", "<value>"]
-        
-    ]
+  "kind": 38088,
+  "pubkey": "<BILLBOARD_operator_pubkey>", // Operator of more than one BILLBOARD
+  "created_at": <unix_timestamp>,
+  "content": "",
+  "tags": [
+    // required
+    ["d", "<BILLBOARD_pubkey>"], // Pubkey for individual BILLBOARD
+    ["k", "1"],
+    ["k", "20"],
+    ["k", "21"],
+    ["k", "22"],
+    ["name", "<value>"],
+    ["u", "<url>", "primary"],
+    ["nip", "X1"],
+    ["nip", "X2"]
+    // optional
+    ["image", "<value>"],
+    ["description", "<value>"]
+    ["max_duration", "<value>"],
+    ["min_duration", "<value>"],
+    ["interval", "<value>"],
+    ["u", "<url>", "backup"],
+  ]
 }
 ```
 

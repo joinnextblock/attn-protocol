@@ -1,18 +1,15 @@
 import type { Logger } from 'pino';
 import { ToolExecutor } from "@dvmcp/discovery/src/tool-executor";
-import { z } from 'zod';
 import type { Tool } from '@modelcontextprotocol/sdk/types.js';
+
 /**
- * Get metrics from the BILLBOARD Server
- * 
- * @param params - The parameters for the get metrics job
- * @param dependencies - The dependencies for the get metrics job
- * @returns The metrics from the BILLBOARD Server
+ * Calls the promo-api function 'get-metrics-by-billboard-id' to get the metrics for the billboard.   
+ * The metrics are returned as a JSON object.
  */
-export const get_metrics = async (
-  { billboard_id, since, until }: GetMetricsParams,
-  { tool_executor, logger }: GetMetricsDependencies
-) => {
+export const get_metrics_by_billboard_id = async (
+  { billboard_id }: GetMetricsByBillboardIdParams,
+  { tool_executor, logger }: GetMetricsByBillboardIdDependencies
+): Promise<GetMetricsByBillboardIdResponse> => {
 
   const tool: Tool = {
     name: "get-metrics-by-billboard-id",
@@ -25,97 +22,23 @@ export const get_metrics = async (
     }
   };
 
-  const metrics = await tool_executor.executeTool('get-metrics-by-billboard-id', tool, { billboard_id });
+  const get_metrics_by_billboard_id_response = await tool_executor.executeTool('get-metrics-by-billboard-id', tool, { billboard_id }) as Object[];
+  logger.debug({ get_metrics_by_billboard_id_response }, 'get-metrics-by-billboard-id');
+  const { type, text } = get_metrics_by_billboard_id_response[0];
+  const metrics = JSON.parse(text);
   logger.debug({ metrics }, 'metrics');
-  return metrics;
-
-  // const pubkey = key_manager.getPublicKey();
-
-  // const unsigned_event = {
-  //   kind: 5910,
-  //   created_at: Math.floor(Date.now() / 1000),
-  //   pubkey: pubkey,
-  //   content: JSON.stringify({
-  //     name: 'get-metrics',
-  //     parameters: {
-  //       pubkey,
-  //       since,
-  //       until,
-  //     },
-  //   }),
-  //   tags: [
-  //     ['c', 'execute-tool'],
-  //     ['p', '0002bb00b8e64bb2a03388209b6b9a25c8d745e059abca9b83d166a3fe1edf2c'],
-  //     ['output', 'application/json'],
-  //   ],
-  // };
-
-  // logger.debug({ unsigned_event });
-  // const signed_event = key_manager.signEvent(unsigned_event);
-  // logger.debug({ signed_event });
-
-  // let status = 'processing';
-
-  // await relay_handler.publishEvent(signed_event);
-
-  // while (status === 'processing') {
-  //   // logger.debug({ status });
-
-  //   const job_events = await relay_handler.queryEvents({
-  //     kinds: [7000],
-  //     "#e": [signed_event.id],
-  //     // "#p": [pubkey],
-  //   });
-
-  //   if (job_events.length > 0) {
-  //     const event = job_events[0] as Event;
-  //     status = event.tags.find(tag => tag[0] === 'status')?.[1] ?? 'processing';
-  //     logger.debug({ status });
-  //   }
-
-  //   continue
-  // }
-
-  // if (status === 'error') {
-  //   throw new Error('Error getting metrics');
-  // }
-
-  // if (status === 'payment-required') {
-  //   throw new Error('Payment required');
-  // }
-
-  // if (['success', 'partial'].includes(status)) {
-  //   const [job_result_event] = await relay_handler.queryEvents({
-  //     kinds: [6910],
-  //     "#e": [signed_event.id],
-  //     "#p": [pubkey],
-  //   });
-
-  //   logger.debug({ job_result_event }, 'job_result_event');
-
-  //   const parsed_content = JSON.parse(job_result_event?.content ?? '{}');
-
-  //   logger.debug({ parsed_content }, 'parsed_content');
-
-  //   const { text } = parsed_content.content[0];
-
-  //   const metrics = JSON.parse(text);
-
-  //   logger.debug({ metrics }, 'metrics');
-
-  //   return metrics;
-  // }
-
-  // throw new Error('Unknown status');
+  return {metrics};
 };
 
-export type GetMetricsParams = {
+export type GetMetricsByBillboardIdParams = {
   billboard_id: string;
-  since: number;
-  until: number;
 }
 
-export type GetMetricsDependencies = {
+export type GetMetricsByBillboardIdDependencies = {
   tool_executor: ToolExecutor;
   logger: Logger;
+}
+
+export type GetMetricsByBillboardIdResponse = {
+  metrics: any;
 }
