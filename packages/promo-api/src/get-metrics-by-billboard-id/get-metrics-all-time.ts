@@ -47,7 +47,7 @@ export const get_metrics_all_time = async (
   console.time('queryEvents');
   const events = await relay_handler.queryEvents(filter);
   console.timeEnd('queryEvents');
-  logger.debug({ events });
+  console.log({ events });
 
   const attention_events = events.filter((event) => event.kind === ATTENTION_KIND);
   const promotion_events = events.filter((event) => event.kind === PROMOTION_KIND);
