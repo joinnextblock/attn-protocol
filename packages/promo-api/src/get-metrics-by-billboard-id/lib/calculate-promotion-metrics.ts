@@ -4,7 +4,7 @@ import type { Event } from 'nostr-tools';
 /**
  * Get the metrics for the promotion events
  */
-export const get_promotion_metrics = (events: Event[] = []) => {
+export const calculate_promotion_metrics = (events: Event[] = []) => {
   const promotion_events = events.filter((event: Event) => event.kind === PROMOTION_KIND);
   const total_promotion = promotion_events.reduce((acc, event: Event) => {
     const duration = event.tags.find(tag => tag[0] === 'duration')?.[1];

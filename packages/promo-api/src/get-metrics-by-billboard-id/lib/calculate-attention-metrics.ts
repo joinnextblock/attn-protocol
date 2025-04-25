@@ -1,7 +1,7 @@
 import { ATTENTION_KIND } from '@promo-protocol/commons/constants';
 import type { Event } from 'nostr-tools';
 
-export const get_attention_metrics = (events: Event[] = []) => {
+export const calculate_attention_metrics = (events: Event[] = []) => {
   const attention_events = events.filter((event: Event) => event.kind === ATTENTION_KIND);
   const total_attention = attention_events.reduce((acc, event: Event) => {
     const max_duration = event.tags.find(tag => tag[0] === 'max_duration')?.[1];
