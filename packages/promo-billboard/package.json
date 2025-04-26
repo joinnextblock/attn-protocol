@@ -32,9 +32,10 @@
   },
   "scripts": {
     "init": "cp config.example.yml config.billboard.yml",
-    "start": "bun run src/index.ts",
-    "dev": "bun --watch run src/index.ts",
-    "build": "bun build src/index.ts --outfile dist/billboard.js",
+    "start": "bun run ./src/index.ts",
+    "dev": "bun run --watch ./src/index.ts",
+    "test": "bun test",
+    "build": "bun build ./src/index.ts --outfile ./build/index.js",
     "compile": "bun build ./src/index.ts --compile --outfile ./bin/billboard"
   },
   "devDependencies": {
@@ -42,14 +43,14 @@
     "@types/js-yaml": "^4.0.9"
   },
   "peerDependencies": {
-    "typescript": "^5.8.2"
+    "typescript": "^5.8.3"
   },
   "dependencies": {
-    "@dvmcp/commons": "^0.1.9",
+    "@dvmcp/commons": "^0.1.10",
     "@dvmcp/discovery": "^0.1.28",
-    "@modelcontextprotocol/sdk": "^1.9.0",
+    "@modelcontextprotocol/sdk": "^1.10.2",
     "@promo-protocol/commons": "^0.0.2",
-    "cron": "^4.1.4",
+    "cron": "^4.3.0",
     "js-yaml": "^4.1.0",
     "nostr-tools": "^2.12.0",
     "pino": "^9.6.0",

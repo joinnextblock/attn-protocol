@@ -10,10 +10,10 @@ let relay_handler: RelayHandler;
 let key_manager: KeyManager;
 let subscriptions: SubCloser[] = [];
 
-export type PromoMatchMakerConfig = {
+export type BrokerageConfig = {
   nostr: {
-    privateKey: string;
-    relayUrls: string[];
+    private_key: string;
+    relays: string[];
   };
 };
 
@@ -22,22 +22,20 @@ export type PromoMatchMakerConfig = {
  */
 (async () => {
   try {
-    if (!fs.existsSync('promo-match-maker.config.yaml')) {
-      throw new Error('promo-match-maker.config.yaml does not exist');
+    if (!fs.existsSync('config.brokerage.yml')) {
+      throw new Error('config.brokerage.yml does not exist');
     }
     // Load the config file
-    const config = yaml.load(fs.readFileSync('promo-match-maker.config.yaml', 'utf8')) as PromoMatchMakerConfig;
+    const config = yaml.load(fs.readFileSync('config.brokerage.yml', 'utf8')) as BrokerageConfig;
 
-    logger({ config }, 'promo-match-maker');
+    logger({ config }, 'brokerage');
 
     const {
-      nostr: { privateKey, relayUrls: relays },
+      nostr: { private_key, relays },
     } = config;
 
-    console.log({ privateKey, relays });
-
     relay_handler = new RelayHandler(relays);
-    key_manager = createKeyManager(privateKey);
+    key_manager = createKeyManager(private_key);
 
     subscriptions = subscribe({ relay_handler, key_manager });
   } catch (error) {

@@ -31,11 +31,14 @@
     "url": "git+https://github.com/joinnextblock/promo-protocol.git"
   },
   "scripts": {
+    "init": "cp config.example.yml config.dvmcp.yml",
+    "start": "bun run ./src/index.ts",
+    "dev": "bun run --watch ./src/index.ts",
+    "test": "bun test",
+    "build": "bun build ./src/index.ts --outfile ./build/index.js",
+    "compile": "bun build ./src/index.ts --compile --outfile ./bin/api",
     "dvmcp:bridge": "npx @dvmcp/bridge",
     "dvmcp:discovery": "npx @dvmcp/discovery",
-    "start": "bun run src/index.ts",
-    "dev": "bun --watch run src/index.ts",
-    "test": "bun test",
     "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json}\""
   },
   "dependencies": {

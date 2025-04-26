@@ -1,12 +1,14 @@
 config.api.yml
 config.billboard.yml
 config.dvmcp.yml
+config.brokerage.yml
 
 .vscode
 # dependencies (bun install)
 node_modules
 
 # output
+bin
 build
 out
 dist

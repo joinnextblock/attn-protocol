@@ -21,10 +21,7 @@ import {
 /**
  * This function is the main handler for the billboard. It should be called every 60 seconds.
  */
-export const handler = async (
-  { billboard_id }: HandlerParams,
-  { tool_executor, key_manager, relay_handler, logger }: HandlerDependencies
-): Promise<void> => {
+export const handler = async ({ billboard_id }: HandlerParams, { tool_executor, key_manager, relay_handler, logger }: HandlerDependencies): Promise<void> => {
   logger.trace('getting metrics');
   const { metrics } = (await get_metrics_by_billboard_id(
     { billboard_id } as GetMetricsByBillboardIdParams,

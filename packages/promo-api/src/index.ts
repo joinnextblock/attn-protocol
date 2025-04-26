@@ -55,7 +55,7 @@ server.tool(
     billboard_id: z.string(),
   },
   async ({ billboard_id }) =>
-    get_metrics_by_billboard_id_handler({ billboard_id }, { relays: api_config.nostr.relays })
+    get_metrics_by_billboard_id_handler({ billboard_id }, { relays: api_config.nostr.relayUrls })
 );
 
 server.tool(
