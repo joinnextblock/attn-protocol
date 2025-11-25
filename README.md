@@ -30,31 +30,6 @@ It also functions as the Bitcoin-native attention interchange for block-synced m
 - **[@attn-protocol/framework](./packages/framework/)** – Hook-based runtime to build block-aware services (Bridge subscribers, relay emitters, tidal math).
 - **[@attn-protocol/sdk](./packages/sdk/)** – TypeScript toolkit for crafting, validating, and publishing ATTN events (billboard, marketplace, viewer confirmations, etc.).
 
-## Quick Start
-
-```bash
-# Install all dependencies
-npm install
-
-# Build all packages
-npm run build
-
-# Run tests
-npm test
-
-# Format code
-npm run format
-```
-
-## Development
-
-Each package functions as a city district:
-
-- **Protocol** → sets Lighthouse/Gallery metrics, defines how Reservoir resets each block.
-- **Framework** → wires Bridge events into service hooks so snapshots never drift.
-- **SDK** → gives clients snake_case builders and validation helpers for every event schema.
-
-These districts share tooling through the root workspace and can be developed independently; workspace dependencies stay linked via npm.
 
 ## Contributing
 
