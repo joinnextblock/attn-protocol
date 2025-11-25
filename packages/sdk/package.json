@@ -1,0 +1,36 @@
+{
+  "name": "@attn-protocol/sdk",
+  "version": "0.1.0",
+  "description": "TypeScript SDK for creating and publishing ATTN Protocol events",
+  "private": true,
+  "type": "module",
+  "main": "src/index.ts",
+  "module": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "lint": "eslint \"src/**/*.{ts,tsx}\"",
+    "check": "tsc --noEmit",
+    "build": "tsc --emitDeclarationOnly"
+  },
+  "keywords": [
+    "nextblock",
+    "attn-protocol",
+    "nostr",
+    "bitcoin",
+    "attention",
+    "sdk"
+  ],
+  "author": "NextBlock Inc.",
+  "license": "MIT",
+  "dependencies": {
+    "nostr-tools": "^2.4.0",
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.7.5",
+    "@types/ws": "^8.5.10",
+    "eslint": "^9.39.1",
+    "typescript": "^5.9.3"
+  }
+}
+

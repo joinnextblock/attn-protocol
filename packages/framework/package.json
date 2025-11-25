@@ -1,0 +1,35 @@
+{
+  "name": "@attn-protocol/framework",
+  "version": "0.1.0",
+  "description": "Hook-based ATTN Protocol framework for Bitcoin-native attention marketplaces",
+  "private": true,
+  "type": "module",
+  "main": "src/index.ts",
+  "module": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "lint": "eslint \"src/**/*.{ts,tsx}\"",
+    "check": "tsc --noEmit",
+    "build": "tsc --emitDeclarationOnly"
+  },
+  "keywords": [
+    "nextblock",
+    "attn-protocol",
+    "nostr",
+    "bitcoin",
+    "attention",
+    "hooks"
+  ],
+  "author": "NextBlock Inc.",
+  "license": "MIT",
+  "dependencies": {
+    "nostr-tools": "^2.4.0",
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.7.5",
+    "eslint": "^9.39.1",
+    "typescript": "^5.9.3"
+  }
+}
+

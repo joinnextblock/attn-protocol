@@ -1,19 +1,31 @@
 {
-  "name": "promo-protocol",
-  "repository": "https://github.com/joinnextblock/promo-protocol",
-  "scripts": {
-    "format": "prettier --write \"packages/**/*.{ts,tsx,js,jsx,json,md}\"",
-    "changeset": "changeset",
-    "version-packages": "changeset version",
-    "publish-packages": "changeset publish",
-    "release:commons": "changeset publish --scope=@promo-protocol/commons"
+  "name": "attn-protocol",
+  "version": "0.1.0",
+  "private": true,
+  "description": "ATTN Protocol monorepo - Protocol specification, framework, and SDK",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/joinnextblock/attn-protocol"
   },
   "workspaces": [
     "packages/*"
   ],
+  "scripts": {
+    "build": "npm run build --workspaces",
+    "lint": "npm run lint --workspaces",
+    "check": "npm run check --workspaces",
+    "format": "prettier --write \"packages/**/*.{ts,tsx,js,jsx,json,md}\"",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "publish-packages": "changeset publish"
+  },
   "devDependencies": {
     "@changesets/cli": "^2.29.2",
-    "prettier": "^3.5.1"
+    "@types/node": "^22.7.5",
+    "@types/ws": "^8.5.10",
+    "eslint": "^9.39.1",
+    "prettier": "^3.5.1",
+    "typescript": "^5.9.3"
   },
   "dependencies": {
     "@types/debug": "^4.1.12"

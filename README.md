@@ -1,52 +1,51 @@
-![The PROMO Protocol](./assets/banner.png)
+# ATTN Protocol
 
-A decentralized framework enabling paid content promotion within the Nostr ecosystem. By establishing standardized communication methods for promotional content, the protocol creates new economic opportunities while preserving Nostr's core principles of decentralization and privacy.
+This monorepo contains all packages related to the ATTN (Attention) Protocol for NextBlock's decentralized attention marketplace.
 
 ## Packages
-This monorepo contains the following packages:
 
-### [`@promo-protocol/billboard`](./packages/promo-billboard)
-A poc of a service that controls the refresh rate of a billboard
+- **[@attn-protocol/protocol](./packages/protocol/)** - Protocol specification and documentation
+- **[@attn-protocol/framework](./packages/framework/)** - Hook-based framework for building Bitcoin-native attention marketplace implementations
+- **[@attn-protocol/sdk](./packages/sdk/)** - TypeScript SDK for creating and publishing ATTN Protocol events
 
-### [`@promo-protocol/api`](./packages/promo-api)
-A poc of a DVMCP server as the compute layer for promo protocol services
+## Quick Start
 
-### [`@promo-protocol/brokerage`](./packages/promo-brokerage)
-A poc of a service that matches attention to promotions
+```bash
+# Install all dependencies
+npm install
 
-### [`@promo-protocol/passport`](./packages/promo-passport)
-A poc of a browser extension that notifies you when you can get paid to watch an ad
+# Build all packages
+npm run build
 
-### [`@promo-protocol/highway`](./packages/promo-highway)
-A PoC for listing all billboards that have been announced to a set of relays
+# Run tests
+npm test
 
-### [`@promo-protocol/marketplace`](./packages/promo-marketplace)
-A poc of an attention marketplace
+# Format code
+npm run format
+```
 
-### [`@promo-protocol/commons`](./packages/promo-commons)
-Common package for common functions and constants
+## Development
 
-# Documentation
-- [PROMO Protocl Specification](./docs/)
+Each package can be developed independently within the monorepo. Workspace dependencies are automatically linked.
 
-- [Billboard Package](./packages/promo-billboard/README.md)
-- [API Package](./packages/promo-api/README.md)
-- [Brokerage Package](./packages/promo-brokerage/README.md)
-- [Integrity Package](./packages/promo-integrity/README.md)
-- [Highway Package](./packages/promo-highway/README.md)
-- [Marketplace Package](./packages/promo-marketplace/README.md)
-- [Passport Package](./packages/promo-passport/README.md)
-- [Widget Package](./packages/promo-widget/README.md)
-- [Commons Package](./packages/promo-commons/README.md)
+### Protocol Specification
+See [packages/protocol/](./packages/protocol/) for the complete protocol specification and documentation.
 
-# Contributing
-Contributions are welcome! Please feel free to submit pull requests or create issues.
+### Framework
+The framework provides a hook-based system for building attention marketplace implementations. See [packages/framework/](./packages/framework/) for details.
 
-# License
+### SDK
+The SDK provides type-safe event creation and publishing. See [packages/sdk/](./packages/sdk/) for usage examples.
+
+## Contributing
+
+Contributions are welcome! Please see individual package READMEs for specific contribution guidelines.
+
+## License
+
 MIT License
 
-# Related Projects
+## Related Projects
+
 - [Nostr Protocol](https://github.com/nostr-protocol/nips)
-- [AppleSauce](https://github.com/hzrd149/applesauce)
-- [DVMCP](https://github.com/gzuuus/dvmcp)
-- [Model Context Protocol](https://modelcontextprotocol.io/introduction)  
+- [NextBlock City](https://github.com/joinnextblock)
