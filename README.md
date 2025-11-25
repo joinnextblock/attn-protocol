@@ -1,12 +1,34 @@
 # ATTN Protocol
 
-This monorepo contains all packages related to the ATTN (Attention) Protocol for NextBlock's decentralized attention marketplace.
+![The ATTN Protocol](./packages/protocol/assets/banner.png)
+
+ATTN Protocol is a decentralized framework enabling paid content promotion within the Nostr ecosystem. Standardized communication methods unlock new economic opportunities while preserving privacy, permissionless access, and user sovereignty.
+
+It also functions as the Bitcoin-native attention interchange for block-synced marketplaces. Bridge broadcasts each new block height (kind 30078), services react in lockstep, and marketplace state freezes so every snapshot stays truthful. Promotions, matches, confirmations, and payouts all ride Nostr events, which keeps independent services synchronized without trusting a central coordinator.
+
+## Why it exists
+
+- **Block-synchronized marketplaces**: Replace timestamp-based ad tech with deterministic block heights so Bridge, Billboard, and Brokerage never drift.
+- **Sovereign payments**: All value settles over Bitcoin/Lightning—no subscriptions, no rent extraction, instant exit between blocks.
+- **Composable services**: Because events are just Nostr kinds (38088–38888), anyone can build clients, billboards, or analytics without permission while still mapping to Reservoir/Aqueduct/Canal/Harbor flows.
+
+## Key features
+
+- Pay-per-view content promotion
+- Satoshi-based payment infrastructure
+- Market-driven pricing and bid/ask matching
+- Bitcoin block height (`t` tag) baked into every event for deterministic timing
+- User-controlled content filtering, block lists, and preferences
+
+## Documentation
+
+- [ATTN Protocol Specification](./packages/protocol/docs/)
 
 ## Packages
 
-- **[@attn-protocol/protocol](./packages/protocol/)** - Protocol specification and documentation
-- **[@attn-protocol/framework](./packages/framework/)** - Hook-based framework for building Bitcoin-native attention marketplace implementations
-- **[@attn-protocol/sdk](./packages/sdk/)** - TypeScript SDK for creating and publishing ATTN Protocol events
+- **[@attn-protocol/protocol](./packages/protocol/)** – Formal spec (ATTN-01+), docs, and assets that define each event type and city metric.
+- **[@attn-protocol/framework](./packages/framework/)** – Hook-based runtime to build block-aware services (Bridge subscribers, relay emitters, tidal math).
+- **[@attn-protocol/sdk](./packages/sdk/)** – TypeScript toolkit for crafting, validating, and publishing ATTN events (billboard, marketplace, viewer confirmations, etc.).
 
 ## Quick Start
 
@@ -26,16 +48,13 @@ npm run format
 
 ## Development
 
-Each package can be developed independently within the monorepo. Workspace dependencies are automatically linked.
+Each package functions as a city district:
 
-### Protocol Specification
-See [packages/protocol/](./packages/protocol/) for the complete protocol specification and documentation.
+- **Protocol** → sets Lighthouse/Gallery metrics, defines how Reservoir resets each block.
+- **Framework** → wires Bridge events into service hooks so snapshots never drift.
+- **SDK** → gives clients snake_case builders and validation helpers for every event schema.
 
-### Framework
-The framework provides a hook-based system for building attention marketplace implementations. See [packages/framework/](./packages/framework/) for details.
-
-### SDK
-The SDK provides type-safe event creation and publishing. See [packages/sdk/](./packages/sdk/) for usage examples.
+These districts share tooling through the root workspace and can be developed independently; workspace dependencies stay linked via npm.
 
 ## Contributing
 
@@ -48,4 +67,3 @@ MIT License
 ## Related Projects
 
 - [Nostr Protocol](https://github.com/nostr-protocol/nips)
-- [NextBlock City](https://github.com/joinnextblock)

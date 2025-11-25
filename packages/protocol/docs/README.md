@@ -41,12 +41,21 @@
 
 A decentralized framework enabling paid content promotion within the Nostr ecosystem. By establishing standardized communication methods for promotional content, the protocol creates new economic opportunities while preserving Nostr's core principles of decentralization and privacy.
 
+It also functions as the Bitcoin-native attention interchange for block-synced marketplaces. Every Bridge heartbeat (kind 30078) announces a new block height, services react in lockstep, and marketplace state freezes so Cityscape snapshots remain truthful. Promotions, matches, confirmations, and payouts all ride Nostr events, which keeps independent services synchronized without trusting a central coordinator.
+
+### Why it exists
+
+- **Block-synchronized marketplaces**: Replace timestamp-based ad tech with deterministic block heights so Bridge, Billboard, and Brokerage never drift.
+- **Sovereign payments**: All value settles over Bitcoin/Lightning—no subscriptions, no rent extraction, instant exit between blocks.
+- **Composable services**: Because events are just Nostr kinds (38088–38888), anyone can build clients, billboards, or analytics without permission while still mapping to Reservoir/Aqueduct/Canal/Harbor flows.
+
 > For detailed technical specifications, see [ATTN-01](./nips/ATTN-01.md).
 
 ### Key Features
 - Pay-per-view content promotion system
 - Satoshi-based payment infrastructure
 - Market-driven pricing mechanism
+- Bitcoin block height (`t` tag) baked into every event for deterministic timing
 - User-controlled content filtering and preferences
 
 ## Why is this better than centralized advertising?
