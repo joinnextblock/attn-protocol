@@ -1,5 +1,11 @@
 # @attn-protocol/framework
 
+## 0.2.1
+
+### Patch Changes
+
+- 334366d: Update documentation, protocol specification (ATTN-01), and framework connection improvements
+
 ## 0.2.0
 
 ### Minor Changes
