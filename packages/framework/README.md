@@ -19,25 +19,25 @@ import { Attn } from "@attn-protocol/framework";
 
 // Basic usage
 const attn = new Attn({
-  relays: ["wss://relay.nextblock.city"],
+  relays: ["wss://relay.attnprotocol.org"],
   private_key: myPrivateKey, // Uint8Array for NIP-42
-  node_pubkeys: [observatory_node_pubkey], // Trusted Bitcoin node services
+  node_pubkeys: [node_pubkey], // Trusted Bitcoin node services
 });
 
 // With marketplace filtering
 const filteredAttn = new Attn({
-  relays: ["wss://relay.nextblock.city"],
+  relays: ["wss://relay.attnprotocol.org"],
   private_key: myPrivateKey,
-  node_pubkeys: [observatory_node_pubkey],
-  marketplace_pubkeys: [nextblock_marketplace_pubkey],
+  node_pubkeys: [node_pubkey],
+  marketplace_pubkeys: [example_marketplace_pubkey],
 });
 
 // Multiple marketplaces
 const multiMarketplaceAttn = new Attn({
-  relays: ["wss://relay.nextblock.city"],
+  relays: ["wss://relay.attnprotocol.org"],
   private_key: myPrivateKey,
-  node_pubkeys: [observatory_node_pubkey],
-  marketplace_pubkeys: [nextblock_marketplace_pubkey, other_marketplace_pubkey],
+  node_pubkeys: [node_pubkey],
+  marketplace_pubkeys: [example_marketplace_pubkey, other_marketplace_pubkey],
 });
 
 // Register hooks for event processing

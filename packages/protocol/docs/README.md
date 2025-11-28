@@ -41,13 +41,13 @@
 
 A decentralized framework enabling paid content promotion within the Nostr ecosystem. By establishing standardized communication methods for promotional content, the protocol creates new economic opportunities while preserving Nostr's core principles of decentralization and privacy.
 
-It also functions as the Bitcoin-native attention interchange for block-synced marketplaces. Every Bridge heartbeat (kind 30078) announces a new block height, services react in lockstep, and marketplace state freezes so Cityscape snapshots remain truthful. Promotions, matches, confirmations, and payouts all ride Nostr events, which keeps independent services synchronized without trusting a central coordinator.
+It also functions as the Bitcoin-native attention interchange for block-synced marketplaces. Every Bitcoin node service heartbeat (kind 30078) announces a new block height, services react in lockstep, and marketplace state freezes so block-synchronized snapshots remain truthful. Promotions, matches, confirmations, and payouts all ride Nostr events, which keeps independent services synchronized without trusting a central coordinator.
 
 ### Why it exists
 
-- **Block-synchronized marketplaces**: Replace timestamp-based ad tech with deterministic block heights so Bridge, Billboard, and Brokerage never drift.
+- **Block-synchronized marketplaces**: Replace timestamp-based ad tech with deterministic block heights so block services, billboards, and marketplaces never drift.
 - **Sovereign payments**: All value settles over Bitcoin/Lightning—no subscriptions, no rent extraction, instant exit between blocks.
-- **Composable services**: Because events are just Nostr kinds (38088–38888), anyone can build clients, billboards, or analytics without permission while still mapping to Reservoir/Aqueduct/Canal/Harbor flows.
+- **Composable services**: Because events are just Nostr kinds (38088–38888), anyone can build clients, billboards, or analytics without permission while still mapping to marketplace inventory, user earnings, transfers, and settlement flows.
 
 > For detailed technical specifications, see [ATTN-01](./nips/ATTN-01.md).
 

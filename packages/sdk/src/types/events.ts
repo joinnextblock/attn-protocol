@@ -1,5 +1,5 @@
 /**
- * Type definitions for PROMO Protocol event parameters
+ * Type definitions for ATTN Protocol event parameters
  */
 
 import type { Event } from "nostr-tools";

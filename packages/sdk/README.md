@@ -36,11 +36,11 @@ const block_event = sdk.create_block({
   nonce: 1234567890,
   block_identifier: "node-service-alpha:block#862626",
 });
-await sdk.publish(block_event, "wss://relay.nextblock.city");
+await sdk.publish(block_event, "wss://relay.attnprotocol.org");
 
 // Create and publish a PROMOTION event that matches ATTN-01
 const promotion_event = sdk.create_promotion({
-  promotion_id: "promo-001", // d tag + content identifier
+  promotion_id: "promotion-001", // d tag + content identifier
   duration: 30_000, // milliseconds
   bid: 5_000, // sats for the full duration
   event_id: "video_event_id_here",
@@ -52,7 +52,7 @@ const promotion_event = sdk.create_promotion({
   billboard_coordinate: "38288:billboard_pubkey:billboard_001",
   marketplace_pubkey: "marketplace_pubkey_hex",
   promotion_pubkey: sdk.get_public_key(),
-  relays: ["wss://relay.nextblock.city"],
+  relays: ["wss://relay.attnprotocol.org"],
   kind: 34236, // promoted kind (k tag)
   url: "https://example.com/promotion",
   marketplace_id: "marketplace_001",
@@ -60,12 +60,12 @@ const promotion_event = sdk.create_promotion({
 });
 
 // Publish to a single relay
-await sdk.publish(promotion_event, "wss://relay.nextblock.city");
+await sdk.publish(promotion_event, "wss://relay.attnprotocol.org");
 
 // Or publish to multiple relays
 await sdk.publish_to_multiple(promotion_event, [
-  "wss://relay.nextblock.city",
-  "wss://relay.example.com",
+  "wss://relay.attnprotocol.org",
+  "wss://relay.attnprotocol.org",
 ]);
 ```
 
@@ -73,7 +73,7 @@ Every builder implements the schemas and tag layout defined in `@attn-protocol/p
 
 ## Event Types
 
-Each subsection restates the ATTN-01 content + tag requirements so builders stay in lockstep with the Cityscape snapshot model. When the SDK does not yet expose a specific field/tag (for example, `relay_list` inside the PROMOTION content), treat that as a TODO before publishing—extend the helper or compose the JSON manually so every required field lands on-chain of record.
+Each subsection restates the ATTN-01 content + tag requirements so builders stay in lockstep with the block-synchronized snapshot model. When the SDK does not yet expose a specific field/tag (for example, `relay_list` inside the PROMOTION content), treat that as a TODO before publishing—extend the helper or compose the JSON manually so every required field lands on-chain of record.
 
 ### BLOCK Event (kind 38088)
 
@@ -120,7 +120,7 @@ ATTN-01 tag requirements:
 
 ```typescript
 const promotion_event = sdk.create_promotion({
-  promotion_id: "promo-001",
+  promotion_id: "promotion-001",
   duration: 30_000,
   bid: 5_000,
   event_id: "video_event_id_here",
@@ -132,7 +132,7 @@ const promotion_event = sdk.create_promotion({
   billboard_coordinate: "38288:billboard_pubkey:billboard_001",
   marketplace_pubkey: "marketplace_pubkey_hex",
   promotion_pubkey: sdk.get_public_key(),
-  relays: ["wss://relay.nextblock.city"],
+  relays: ["wss://relay.attnprotocol.org"],
   kind: 34236,
   url: "https://example.com/promotion",
   marketplace_id: "marketplace_001",
@@ -164,7 +164,7 @@ const attention_event = sdk.create_attention({
   min_duration: 15_000,
   max_duration: 60_000,
   kind_list: [34236, 1, 30023],
-  relay_list: ["wss://relay.nextblock.city"],
+  relay_list: ["wss://relay.attnprotocol.org"],
   marketplace_coordinate: "38188:marketplace_pubkey:marketplace_001",
   blocked_promotions_coordinate: "30000:attention_pubkey:org.attnprotocol:promotion:blocked",
   blocked_promoters_coordinate: "30000:attention_pubkey:org.attnprotocol:promoter:blocked",
@@ -172,7 +172,7 @@ const attention_event = sdk.create_attention({
   blocked_promoters_id: "org.attnprotocol:promoter:blocked",
   attention_pubkey: sdk.get_public_key(),
   marketplace_pubkey: "marketplace_pubkey_hex",
-  relays: ["wss://relay.nextblock.city"],
+  relays: ["wss://relay.attnprotocol.org"],
   kinds: [34236, 1, 30023],
   marketplace_id: "marketplace_001",
   block_height: 862626,
@@ -200,7 +200,7 @@ const match_event = sdk.create_match({
   match_id: "match-001",
   marketplace_coordinate: "38188:marketplace_pubkey:marketplace_001",
   billboard_coordinate: "38288:billboard_pubkey:billboard_001",
-  promotion_coordinate: "38388:promotion_pubkey:promo_001",
+  promotion_coordinate: "38388:promotion_pubkey:promotion_001",
   attention_coordinate: "38488:attention_pubkey:attention_001",
   marketplace_pubkey: "marketplace_pubkey_hex",
   promotion_pubkey: "promotion_pubkey_hex",
@@ -208,14 +208,14 @@ const match_event = sdk.create_match({
   billboard_pubkey: "billboard_pubkey_hex",
   marketplace_id: "marketplace_001",
   billboard_id: "billboard_001",
-  promotion_id: "promo_001",
+  promotion_id: "promotion_001",
   attention_id: "attention_001",
   ask: 3_000,
   bid: 5_000,
   duration: 30_000,
   kind_list: [34236],
-  relay_list: ["wss://relay.nextblock.city"],
-  relays: ["wss://relay.nextblock.city"],
+  relay_list: ["wss://relay.attnprotocol.org"],
+  relays: ["wss://relay.attnprotocol.org"],
   block_height: 862626,
 });
 ```
@@ -238,16 +238,16 @@ ATTN-01 tag requirements:
 ```typescript
 const marketplace_event = sdk.create_marketplace({
   marketplace_id: "marketplace-001",
-  name: "NextBlock Marketplace",
+  name: "Example Marketplace",
   description: "Decentralized attention marketplace",
   kind_list: [34236, 1, 30023],
-  relay_list: ["wss://relay.nextblock.city"],
+  relay_list: ["wss://relay.attnprotocol.org"],
   admin_pubkey: sdk.get_public_key(),
   marketplace_pubkey: sdk.get_public_key(),
   image: "https://example.com/image.png",
-  url: "https://marketplace.nextblock.app",
-  website_url: "https://marketplace.nextblock.app",
-  admin_email: "admin@nextblock.app",
+  url: "https://marketplace.example.com",
+  website_url: "https://marketplace.example.com",
+  admin_email: "admin@example.com",
   min_duration: 15_000,
   max_duration: 60_000,
   block_height: 862626,
@@ -278,7 +278,7 @@ const billboard_event = sdk.create_billboard({
   marketplace_coordinate: "38188:marketplace_pubkey:marketplace_001",
   billboard_pubkey: sdk.get_public_key(),
   marketplace_pubkey: "marketplace_pubkey_hex",
-  relays: ["wss://relay.nextblock.city"],
+  relays: ["wss://relay.attnprotocol.org"],
   kind: 34236,
   url: "https://billboard.example.com",
   marketplace_id: "marketplace_001",
@@ -319,7 +319,7 @@ const billboard_confirmation = create_billboard_confirmation_event(
     attention_ref: "attention_event_id",
     match_ref: "match_event_id",
     marketplace_coordinate: "38188:marketplace_pubkey:marketplace_001",
-    promotion_coordinate: "38388:promotion_pubkey:promo_001",
+    promotion_coordinate: "38388:promotion_pubkey:promotion_001",
     attention_coordinate: "38488:attention_pubkey:attention_001",
     match_coordinate: "38888:marketplace_pubkey:match_001",
     marketplace_pubkey: "marketplace_pubkey_hex",
@@ -327,10 +327,10 @@ const billboard_confirmation = create_billboard_confirmation_event(
     attention_pubkey: "attention_pubkey_hex",
     billboard_pubkey: "billboard_pubkey_hex",
     marketplace_id: "marketplace_001",
-    promotion_id: "promo_001",
+    promotion_id: "promotion_001",
     attention_id: "attention_001",
     match_id: "match_001",
-    relays: ["wss://relay.nextblock.city"],
+    relays: ["wss://relay.attnprotocol.org"],
     url: "https://billboard.example.com/confirmation",
   }
 );
@@ -371,7 +371,7 @@ const viewer_confirmation = create_viewer_confirmation_event(
     attention_ref: "attention_event_id",
     match_ref: "match_event_id",
     marketplace_coordinate: "38188:marketplace_pubkey:marketplace_001",
-    promotion_coordinate: "38388:promotion_pubkey:promo_001",
+    promotion_coordinate: "38388:promotion_pubkey:promotion_001",
     attention_coordinate: "38488:attention_pubkey:attention_001",
     match_coordinate: "38888:marketplace_pubkey:match_001",
     marketplace_pubkey: "marketplace_pubkey_hex",
@@ -379,10 +379,10 @@ const viewer_confirmation = create_viewer_confirmation_event(
     attention_pubkey: "attention_pubkey_hex",
     billboard_pubkey: "billboard_pubkey_hex",
     marketplace_id: "marketplace_001",
-    promotion_id: "promo_001",
+    promotion_id: "promotion_001",
     attention_id: "attention_001",
     match_id: "match_001",
-    relays: ["wss://relay.nextblock.city"],
+    relays: ["wss://relay.attnprotocol.org"],
     url: "https://viewer.example.com/confirmation",
   }
 );
@@ -434,7 +434,7 @@ const marketplace_confirmation = create_marketplace_confirmation_event(
     billboard_confirmation_ref: "billboard_confirmation_event_id",
     viewer_confirmation_ref: "viewer_confirmation_event_id",
     marketplace_coordinate: "38188:marketplace_pubkey:marketplace_001",
-    promotion_coordinate: "38388:promotion_pubkey:promo_001",
+    promotion_coordinate: "38388:promotion_pubkey:promotion_001",
     attention_coordinate: "38488:attention_pubkey:attention_001",
     match_coordinate: "38888:marketplace_pubkey:match_001",
     marketplace_pubkey: "marketplace_pubkey_hex",
@@ -442,11 +442,11 @@ const marketplace_confirmation = create_marketplace_confirmation_event(
     attention_pubkey: "attention_pubkey_hex",
     billboard_pubkey: "billboard_pubkey_hex",
     marketplace_id: "marketplace_001",
-    promotion_id: "promo_001",
+    promotion_id: "promotion_001",
     attention_id: "attention_001",
     match_id: "match_001",
-    relays: ["wss://relay.nextblock.city"],
-    url: "https://marketplace.nextblock.city/confirmation",
+    relays: ["wss://relay.attnprotocol.org"],
+    url: "https://marketplace.example.com/confirmation",
   }
 );
 ```
@@ -458,7 +458,7 @@ const marketplace_confirmation = create_marketplace_confirmation_event(
 ### Single Relay
 
 ```typescript
-const result = await sdk.publish(event, "wss://relay.nextblock.city");
+const result = await sdk.publish(event, "wss://relay.attnprotocol.org");
 console.log(result.success); // true or false
 console.log(result.event_id); // Event ID
 console.log(result.error); // Error message if failed
@@ -468,8 +468,8 @@ console.log(result.error); // Error message if failed
 
 ```typescript
 const results = await sdk.publish_to_multiple(event, [
-  "wss://relay.nextblock.city",
-  "wss://relay.example.com",
+  "wss://relay.attnprotocol.org",
+  "wss://relay.attnprotocol.org",
 ]);
 
 console.log(results.success_count); // Number of successful publishes

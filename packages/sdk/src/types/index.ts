@@ -1,5 +1,5 @@
 /**
- * Type exports for PROMO SDK
+ * Type exports for ATTN Protocol SDK
  */
 
 export type {

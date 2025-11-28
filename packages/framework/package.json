@@ -1,6 +1,6 @@
 {
   "name": "@attn-protocol/framework",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Hook-based ATTN Protocol framework for Bitcoin-native attention marketplaces",
   "private": true,
   "type": "module",
@@ -13,14 +13,13 @@
     "build": "tsc --emitDeclarationOnly"
   },
   "keywords": [
-    "nextblock",
     "attn-protocol",
     "nostr",
     "bitcoin",
     "attention",
     "hooks"
   ],
-  "author": "NextBlock Inc.",
+  "author": "ATTN Protocol Contributors",
   "license": "MIT",
   "dependencies": {
     "nostr-tools": "^2.4.0",
@@ -32,4 +31,3 @@
     "typescript": "^5.9.3"
   }
 }
-

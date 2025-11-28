@@ -4,7 +4,7 @@ export default [
   ...root_config,
   {
     settings: {
-      nextblock_service: "attn-framework",
+      service_name: "attn-framework",
     },
   },
 ];

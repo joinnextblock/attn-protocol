@@ -1,6 +1,6 @@
 {
   "name": "@attn-protocol/sdk",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "TypeScript SDK for creating and publishing ATTN Protocol events",
   "private": true,
   "type": "module",
@@ -13,14 +13,13 @@
     "build": "tsc"
   },
   "keywords": [
-    "nextblock",
     "attn-protocol",
     "nostr",
     "bitcoin",
     "attention",
     "sdk"
   ],
-  "author": "NextBlock Inc.",
+  "author": "ATTN Protocol Contributors",
   "license": "MIT",
   "dependencies": {
     "nostr-tools": "^2.4.0",
@@ -33,4 +32,3 @@
     "typescript": "^5.9.3"
   }
 }
-

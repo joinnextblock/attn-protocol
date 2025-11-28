@@ -71,7 +71,7 @@ The ATTN Protocol uses only official Nostr tags. All custom data is stored in th
 **Notes:**
 - One event per block height per Bitcoin node service
 - Multiple Bitcoin node services can publish for the same block (clients verify consensus)
-- Published by services running Bitcoin nodes (like NextBlock's Observatory service)
+- Published by services running Bitcoin nodes (like block timestamp services)
 - Block height in `t` tag enables efficient filtering: `{ kinds: [38088], "#t": ["862626"] }`
 - All ATTN Protocol events reference block height via `["t", "<block_height>"]` tag
 - Block events are the timing primitive for the entire protocol
@@ -93,7 +93,7 @@ The ATTN Protocol uses only official Nostr tags. All custom data is stored in th
 - `marketplace_id` (string, required): Marketplace identifier (from `d` tag)
 
 **Tags:**
-- `["d", "<marketplace_identifier>"]` (required): Marketplace identifier (e.g., "city.nextblock.marketplace:city")
+- `["d", "<marketplace_identifier>"]` (required): Marketplace identifier (e.g., "example.marketplace:identifier")
 - `["t", "<block_height>"]` (required): Block height as topic tag for filtering
 - `["k", "<kind>"]` (required, multiple allowed): Event kinds that can be promoted in this marketplace (e.g., "34236" for addressable short video events per NIP-71)
 - `["p", "<marketplace_pubkey>"]` (required): Marketplace pubkey for indexing/filtering
@@ -341,8 +341,8 @@ Blocks specific promotion events by their coordinates.
   "created_at": 1234567890,
   "tags": [
     ["d", "org.attnprotocol:promotion:blocked"],
-    ["a", "38388:promoter_pubkey_1:promo-id-1"],
-    ["a", "38388:promoter_pubkey_2:promo-id-2"],
+    ["a", "38388:promoter_pubkey_1:promotion-id-1"],
+    ["a", "38388:promoter_pubkey_2:promotion-id-2"],
     ["t", "862626"]
   ],
   "content": ""

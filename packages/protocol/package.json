@@ -1,6 +1,6 @@
 {
   "name": "@attn-protocol/protocol",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "ATTN Protocol specification and documentation",
   "private": true,
   "type": "module",
@@ -9,17 +9,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/joinnextblock/attn-protocol"
+    "url": "https://github.com/attn-protocol/attn-protocol"
   },
   "keywords": [
-    "nextblock",
     "attn-protocol",
     "nostr",
     "bitcoin",
     "attention",
     "protocol"
   ],
-  "author": "NextBlock Inc.",
+  "author": "ATTN Protocol Contributors",
   "license": "MIT"
 }
-
