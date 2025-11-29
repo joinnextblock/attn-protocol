@@ -1,5 +1,11 @@
 # @attn-protocol/protocol
 
+## 0.2.3
+
+### Patch Changes
+
+- bbb5750: Update event kind descriptions in main README to align with ATTN-01 specification. Added "Published By" column to event kinds table and updated all descriptions with accurate details from the canonical spec.
+
 ## 0.2.2
 
 ### Patch Changes
