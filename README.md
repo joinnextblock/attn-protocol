@@ -30,17 +30,17 @@ See [`packages/README.md`](./packages/README.md) for a directory-level summary.
 
 ## Event kinds
 
-| Kind | Name | Description |
-| --- | --- | --- |
-| 38088 | BLOCK | Bitcoin block snapshot (timestamp + block data) |
-| 38188 | MARKETPLACE | Marketplace / available inventory |
-| 38288 | BILLBOARD | Billboards + verification |
-| 38388 | PROMOTION | Marketplace bids |
-| 38488 | ATTENTION | Viewer asks |
-| 38588 | BILLBOARD_CONFIRMATION | Billboard attestations |
-| 38688 | VIEWER_CONFIRMATION | Viewer attestations (user earnings) |
-| 38788 | MARKETPLACE_CONFIRMATION | Marketplace finalization |
-| 38888 | MATCH | Settlement flows to final destination |
+| Kind | Name | Description | Published By |
+| --- | --- | --- | --- |
+| 38088 | BLOCK | Bitcoin block arrival event. Timing primitive for the entire protocol. | Bitcoin node services |
+| 38188 | MARKETPLACE | Marketplace definition with parameters (min/max duration, supported event kinds, relay lists). References the official Bitcoin node pubkey for that marketplace. | Marketplace operators |
+| 38288 | BILLBOARD | Billboard definition within a marketplace. Billboards are where promotions are watched and verified. | Billboard operators |
+| 38388 | PROMOTION | Promotion request with bid (total satoshis for duration), duration (milliseconds), and content reference. | Promotion creators |
+| 38488 | ATTENTION | Viewer availability signal with ask (total satoshis for duration), duration range (min/max milliseconds), and content preferences. | Attention owners |
+| 38588 | BILLBOARD_CONFIRMATION | Billboard attestation of successful view. | Billboard operators |
+| 38688 | VIEWER_CONFIRMATION | Viewer attestation of receipt and payment. | Attention owners |
+| 38788 | MARKETPLACE_CONFIRMATION | Final settlement event published after both BILLBOARD_CONFIRMATION and VIEWER_CONFIRMATION are received. | Marketplace operators |
+| 38888 | MATCH | Match between promotion and attention. Created when bid ≥ ask and duration is compatible. | Marketplace operators |
 
 All builders stamp the canonical coordinate/tag layout (`["d", "<identifier>"]`, `["t", "<block_height>"]`) so relays and analytics can filter by block height only.
 
