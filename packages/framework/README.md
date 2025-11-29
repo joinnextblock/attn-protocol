@@ -6,6 +6,8 @@ Hook-based framework for building Bitcoin-native attention marketplace implement
 
 The ATTN Framework provides a Rely-style hook system for receiving and processing ATTN Protocol events. It handles Nostr relay connections, Bitcoin block synchronization, and event lifecycle management, allowing you to focus on implementing your marketplace logic.
 
+The framework depends on `@attn-protocol/core` for shared constants and type definitions. Event kind constants are available from the core package for consistency across the ATTN Protocol ecosystem.
+
 ## Installation
 
 ```bash
@@ -81,23 +83,34 @@ The framework handles Nostr relay connections, including:
 
 ### Bitcoin Block Synchronization
 
-- Subscribes to Bitcoin node block events (kind 38088)
+- Subscribes to Bitcoin node block events (kind `ATTN_EVENT_KINDS.BLOCK` / 38088)
 - Filters events by trusted `node_pubkeys` for security
 - Detects block gaps and surfaces them via hooks
 
 ### ATTN Protocol Event Subscriptions
 
 - Automatically subscribes to all ATTN Protocol event kinds:
-  - 38188 (MARKETPLACE)
-  - 38288 (BILLBOARD)
-  - 38388 (PROMOTION)
-  - 38488 (ATTENTION)
-  - 38588 (BILLBOARD_CONFIRMATION)
-  - 38688 (VIEWER_CONFIRMATION)
-  - 38788 (MARKETPLACE_CONFIRMATION)
-  - 38888 (MATCH)
+  - `ATTN_EVENT_KINDS.MARKETPLACE` (38188)
+  - `ATTN_EVENT_KINDS.BILLBOARD` (38288)
+  - `ATTN_EVENT_KINDS.PROMOTION` (38388)
+  - `ATTN_EVENT_KINDS.ATTENTION` (38488)
+  - `ATTN_EVENT_KINDS.BILLBOARD_CONFIRMATION` (38588)
+  - `ATTN_EVENT_KINDS.VIEWER_CONFIRMATION` (38688)
+  - `ATTN_EVENT_KINDS.MARKETPLACE_CONFIRMATION` (38788)
+  - `ATTN_EVENT_KINDS.MATCH` (38888)
 - Optional pubkey filtering via `marketplace_pubkeys`, `billboard_pubkeys`, or `advertiser_pubkeys`
 - Emits hooks for each event type automatically
+
+You can import event kind constants from `@attn-protocol/core`:
+
+```typescript
+import { ATTN_EVENT_KINDS } from "@attn-protocol/core";
+
+// Use constants instead of hardcoded numbers
+if (event.kind === ATTN_EVENT_KINDS.PROMOTION) {
+  // Handle promotion event
+}
+```
 
 ### Standard Nostr Event Subscriptions
 
@@ -306,6 +319,7 @@ This pattern ensures that:
 
 ## Related Projects
 
+- **@attn-protocol/core**: Core constants and types shared across all ATTN Protocol packages
 - **@attn-protocol/sdk**: TypeScript SDK for creating and publishing ATTN Protocol events
 - **@attn-protocol/protocol**: ATTN Protocol specification and documentation
 

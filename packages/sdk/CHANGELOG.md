@@ -1,5 +1,11 @@
 # @attn-protocol/sdk
 
+## 0.2.4
+
+### Patch Changes
+
+- Update README documentation to reference @attn-protocol/core constants instead of hardcoded event kind numbers. Added examples showing how to import and use ATTN_EVENT_KINDS from core package. Updated Related Projects sections to include core package.
+
 ## 0.2.3
 
 ### Patch Changes

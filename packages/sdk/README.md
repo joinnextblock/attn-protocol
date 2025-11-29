@@ -6,6 +6,8 @@ TypeScript SDK for creating and publishing ATTN Protocol events on Nostr.
 
 The ATTN SDK provides type-safe event creation and publishing for the ATTN Protocol. It complements the `attn` framework (which receives/processes events) by providing event creation and publishing capabilities.
 
+The SDK depends on `@attn-protocol/core` for shared constants and type definitions. Event kind constants are available from the core package and are used internally by all event builders to ensure consistency across the ATTN Protocol ecosystem.
+
 ## Installation
 
 ```bash
@@ -16,6 +18,7 @@ npm install @attn-protocol/sdk
 
 ```typescript
 import { AttnSdk } from "@attn-protocol/sdk";
+import { ATTN_EVENT_KINDS } from "@attn-protocol/core";
 
 // Initialize SDK with private key (hex or nsec format)
 const sdk = new AttnSdk({
@@ -71,6 +74,17 @@ await sdk.publish_to_multiple(promotion_event, [
 
 Every builder implements the schemas and tag layout defined in `@attn-protocol/packages/protocol/docs/ATTN-01.md`. Content fields live in the JSON payload, while routing/indexing values (identifiers, block height, coordinates) ride inside Nostr tags. Always pass the current Bitcoin `block_height` so the SDK can emit the `t` tag that powers block-synchronized filtering.
 
+**Note:** All event builders use constants from `@attn-protocol/core` internally. You can import `ATTN_EVENT_KINDS` to reference event kinds in your code:
+
+```typescript
+import { ATTN_EVENT_KINDS } from "@attn-protocol/core";
+
+// Check event kind
+if (event.kind === ATTN_EVENT_KINDS.PROMOTION) {
+  // Handle promotion event
+}
+```
+
 ## Type Reference
 
 ### Event Parameter Types
@@ -107,7 +121,7 @@ Every builder implements the schemas and tag layout defined in `@attn-protocol/p
 
 Each subsection restates the ATTN-01 content + tag requirements so builders stay in lockstep with the block-synchronized snapshot model. When the SDK does not yet expose a specific field/tag (for example, `relay_list` inside the PROMOTION content), treat that as a TODO before publishing—extend the helper or compose the JSON manually so every required field lands on-chain of record.
 
-### BLOCK Event (kind 38088)
+### BLOCK Event (kind `ATTN_EVENT_KINDS.BLOCK` / 38088)
 
 ATTN-01 content requirements:
 - `height`, `hash`, `time`
@@ -135,7 +149,7 @@ const block_event = sdk.create_block({
 });
 ```
 
-### PROMOTION Event (kind 38388)
+### PROMOTION Event (kind `ATTN_EVENT_KINDS.PROMOTION` / 38388)
 
 ATTN-01 content requirements:
 - `duration`, `bid`, `event_id`, `description?`, `call_to_action`, `call_to_action_url`
@@ -172,7 +186,7 @@ const promotion_event = sdk.create_promotion({
 });
 ```
 
-### ATTENTION Event (kind 38488)
+### ATTENTION Event (kind `ATTN_EVENT_KINDS.ATTENTION` / 38488)
 
 ATTN-01 content requirements:
 - `ask`, `min_duration`, `max_duration`, `kind_list`, `relay_list`
@@ -211,7 +225,7 @@ const attention_event = sdk.create_attention({
 });
 ```
 
-### MATCH Event (kind 38888)
+### MATCH Event (kind `ATTN_EVENT_KINDS.MATCH` / 38888)
 
 ATTN-01 content requirements:
 - `ask`, `bid`, `duration`, `kind_list`, `relay_list`
@@ -252,7 +266,7 @@ const match_event = sdk.create_match({
 });
 ```
 
-### MARKETPLACE Event (kind 38188)
+### MARKETPLACE Event (kind `ATTN_EVENT_KINDS.MARKETPLACE` / 38188)
 
 ATTN-01 content requirements:
 - `name`, `description`, `image?`, `kind_list`, `relay_list`, `url?`
@@ -286,7 +300,7 @@ const marketplace_event = sdk.create_marketplace({
 });
 ```
 
-### BILLBOARD Event (kind 38288)
+### BILLBOARD Event (kind `ATTN_EVENT_KINDS.BILLBOARD` / 38288)
 
 ATTN-01 content requirements:
 - `name`, `description?`
@@ -318,7 +332,7 @@ const billboard_event = sdk.create_billboard({
 });
 ```
 
-### BILLBOARD_CONFIRMATION Event (kind 38588)
+### BILLBOARD_CONFIRMATION Event (kind `ATTN_EVENT_KINDS.BILLBOARD_CONFIRMATION` / 38588)
 
 ATTN-01 content requirements:
 - `block`, `price`
@@ -368,7 +382,7 @@ const billboard_confirmation = create_billboard_confirmation_event(
 );
 ```
 
-### VIEWER_CONFIRMATION Event (kind 38688)
+### VIEWER_CONFIRMATION Event (kind `ATTN_EVENT_KINDS.VIEWER_CONFIRMATION` / 38688)
 
 ATTN-01 content requirements:
 - `block`, `price`, `sats_delivered`, optional `proof_payload`
@@ -420,7 +434,7 @@ const viewer_confirmation = create_viewer_confirmation_event(
 );
 ```
 
-### MARKETPLACE_CONFIRMATION Event (kind 38788)
+### MARKETPLACE_CONFIRMATION Event (kind `ATTN_EVENT_KINDS.MARKETPLACE_CONFIRMATION` / 38788)
 
 ATTN-01 content requirements:
 - `block`, `duration`, `ask`, `bid`, `price`, `sats_settled`
@@ -788,6 +802,7 @@ if (!result.success) {
 
 ## Related Projects
 
+- **@attn-protocol/core**: Core constants and types shared across all ATTN Protocol packages
 - **@attn-protocol/framework**: Hook-based framework for receiving and processing ATTN Protocol events
 - **@attn-protocol/protocol**: ATTN Protocol specification and documentation
 
