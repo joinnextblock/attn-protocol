@@ -1,6 +1,6 @@
 {
   "name": "@attn-protocol/sdk",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "TypeScript SDK for creating and publishing ATTN Protocol events",
   "private": true,
   "type": "module",
@@ -22,7 +22,7 @@
   "author": "ATTN Protocol Contributors",
   "license": "MIT",
   "dependencies": {
-    "@attn-protocol/core": "*",
+    "@attn-protocol/core": "file:../core",
     "nostr-tools": "^2.4.0",
     "ws": "^8.18.0"
   },

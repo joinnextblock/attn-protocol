@@ -1,5 +1,11 @@
 # @attn-protocol/sdk
 
+## 0.6.1
+
+### Patch Changes
+
+- Update build configuration: switch core package to use dist output, update dependency references to use file paths for local development
+
 ## 0.6.0
 
 ### Minor Changes

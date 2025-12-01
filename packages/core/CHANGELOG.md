@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.5.1
+
+### Patch Changes
+
+- Update build configuration: switch core package to use dist output, update dependency references to use file paths for local development
+
 ## 0.5.0
 
 ### Minor Changes

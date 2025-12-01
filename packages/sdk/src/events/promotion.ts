@@ -21,7 +21,7 @@ export function create_promotion_event(
   // Extract billboard_id from billboard coordinate
   // Format: 38288:<billboard_pubkey>:org.attnprotocol:billboard:<billboard_id>
   const billboard_id = params.billboard_id ??
-    params.billboard_coordinate.split(":").slice(-1)[0]?.replace("org.attnprotocol:billboard:", "") || "";
+    (params.billboard_coordinate.split(":").slice(-1)[0]?.replace("org.attnprotocol:billboard:", "") || "");
 
   // Build content object with required fields
   const content_object: Record<string, unknown> = {

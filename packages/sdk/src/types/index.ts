@@ -12,6 +12,7 @@ export type {
   MatchEventParams,
   BillboardConfirmationEventParams,
   AttentionConfirmationEventParams,
+  AttentionPaymentConfirmationEventParams,
   MarketplaceConfirmationEventParams,
   PublishResult,
   PublishResults,
