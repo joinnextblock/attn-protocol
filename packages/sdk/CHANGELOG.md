@@ -1,5 +1,11 @@
 # @attn-protocol/sdk
 
+## 0.7.0
+
+### Minor Changes
+
+- Add NIP-42 authentication support to relay publisher. The `publish_to_relay` and `publish_to_multiple` functions now support NIP-42 authentication with configurable timeout. SDK methods automatically pass private_key for authentication.
+
 ## 0.6.1
 
 ### Patch Changes
