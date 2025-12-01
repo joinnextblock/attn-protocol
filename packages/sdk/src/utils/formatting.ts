@@ -4,7 +4,7 @@
 
 /**
  * Format d-tag with org.attnprotocol: prefix
- * @param event_type - Event type (block, marketplace, billboard, promotion, attention, match)
+ * @param event_type - Event type (block, marketplace, billboard, promotion, attention, match, billboard-confirmation, attention-confirmation, marketplace-confirmation)
  * @param identifier - Unique identifier
  * @returns Formatted d-tag string
  */

@@ -148,6 +148,7 @@ export interface MatchEventParams extends BaseEventParams {
  */
 export interface BillboardConfirmationEventParams extends BaseEventParams {
   // block_height is required from BaseEventParams
+  confirmation_id: string; // Confirmation identifier (required, used for d tag per ATTN-01.md)
   match_event_id: string; // Match event ID (required, for e tag with "match" marker)
   marketplace_event_id?: string; // Marketplace event ID (optional, for e tag)
   billboard_event_id?: string; // Billboard event ID (optional, for e tag)
@@ -175,6 +176,7 @@ export interface BillboardConfirmationEventParams extends BaseEventParams {
  */
 export interface AttentionConfirmationEventParams extends BaseEventParams {
   // block_height is required from BaseEventParams
+  confirmation_id: string; // Confirmation identifier (required, used for d tag per ATTN-01.md)
   match_event_id: string; // Match event ID (required, for e tag with "match" marker)
   marketplace_event_id?: string; // Marketplace event ID (optional, for e tag)
   billboard_event_id?: string; // Billboard event ID (optional, for e tag)
@@ -202,9 +204,7 @@ export interface AttentionConfirmationEventParams extends BaseEventParams {
  */
 export interface MarketplaceConfirmationEventParams extends BaseEventParams {
   // block_height is required from BaseEventParams
-  inbound_id_list?: string[]; // Payment IDs for inbound payments (opaque to protocol, default: [])
-  viewer_id_list?: string[]; // Payment IDs for viewer payouts (opaque to protocol, default: [])
-  billboard_id_list?: string[]; // Payment IDs for billboard payouts (opaque to protocol, default: [])
+  confirmation_id: string; // Confirmation identifier (required, used for d tag per ATTN-01.md)
   match_event_id: string; // Match event ID (required, for e tag with "match" marker)
   billboard_confirmation_event_id: string; // Billboard confirmation event ID (required, for e tag with "billboard_confirmation" marker)
   attention_confirmation_event_id: string; // Attention confirmation event ID (required, for e tag with "attention_confirmation" marker)

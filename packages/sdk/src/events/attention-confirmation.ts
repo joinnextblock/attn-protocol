@@ -6,6 +6,7 @@ import { finalizeEvent } from "nostr-tools";
 import type { Event } from "nostr-tools";
 import { ATTN_EVENT_KINDS } from "@attn-protocol/core";
 import type { AttentionConfirmationEventParams } from "../types/index.js";
+import { format_d_tag } from "../utils/formatting.js";
 
 /**
  * Create ATTENTION_CONFIRMATION event
@@ -14,6 +15,9 @@ export function create_attention_confirmation_event(
   private_key: Uint8Array,
   params: AttentionConfirmationEventParams
 ): Event {
+  // Format d-tag with org.attnprotocol: prefix
+  const confirmation_d_tag = format_d_tag("attention-confirmation", params.confirmation_id);
+
   // Build content object - ONLY ref_* fields per ATTN-01
   const content_object: Record<string, unknown> = {
     ref_match_event_id: params.match_event_id,
@@ -29,6 +33,9 @@ export function create_attention_confirmation_event(
   };
 
   const tags: string[][] = [];
+
+  // Required d tag
+  tags.push(["d", confirmation_d_tag]);
 
   // Required t tag (block height) - per ATTN-01, every event must include this
   tags.push(["t", params.block_height.toString()]);

@@ -1,5 +1,30 @@
 # @attn-protocol/sdk
 
+## 0.5.0
+
+### Minor Changes
+
+- test
+- 064006d: - Fix: Ensure `block_height` is always present in event tags
+  - Fix: Update validation function to correctly check `t` tag instead of content
+  - Fix: Ensure `ref_node_pubkey`, `ref_block_id`, and `block_coordinate` are required in MARKETPLACE event
+  - Fix: Ensure `ref_*` fields are required in all confirmation events
+  - Fix: Ensure `kind_list` and `relay_list` are excluded from content in MARKETPLACE and ATTENTION events
+  - Fix: Ensure `kinds` and `relays` are excluded from content in ATTENTION event
+  - Fix: Ensure `bid`, `ask`, and `duration` are not stored in MATCH event
+
+## 0.4.0
+
+### Minor Changes
+
+- 064006d: - Fix: Ensure `block_height` is always present in event tags
+  - Fix: Update validation function to correctly check `t` tag instead of content
+  - Fix: Ensure `ref_node_pubkey`, `ref_block_id`, and `block_coordinate` are required in MARKETPLACE event
+  - Fix: Ensure `ref_*` fields are required in all confirmation events
+  - Fix: Ensure `kind_list` and `relay_list` are excluded from content in MARKETPLACE and ATTENTION events
+  - Fix: Ensure `kinds` and `relays` are excluded from content in ATTENTION event
+  - Fix: Ensure `bid`, `ask`, and `duration` are not stored in MATCH event
+
 ## 0.3.0
 
 ### Minor Changes

@@ -6,6 +6,7 @@ import { finalizeEvent } from "nostr-tools";
 import type { Event } from "nostr-tools";
 import { ATTN_EVENT_KINDS } from "@attn-protocol/core";
 import type { MarketplaceConfirmationEventParams } from "../types/index.js";
+import { format_d_tag } from "../utils/formatting.js";
 
 /**
  * Create MARKETPLACE_CONFIRMATION event
@@ -14,11 +15,11 @@ export function create_marketplace_confirmation_event(
   private_key: Uint8Array,
   params: MarketplaceConfirmationEventParams
 ): Event {
-  // Build content object - payment ID lists and ref_* fields only per ATTN-01
+  // Format d-tag with org.attnprotocol: prefix
+  const confirmation_d_tag = format_d_tag("marketplace-confirmation", params.confirmation_id);
+
+  // Build content object - ref_* fields only per ATTN-01
   const content_object: Record<string, unknown> = {
-    inbound_id_list: params.inbound_id_list ?? [],
-    viewer_id_list: params.viewer_id_list ?? [],
-    billboard_id_list: params.billboard_id_list ?? [],
     ref_match_event_id: params.match_event_id,
     ref_match_id: params.match_id,
     ref_billboard_confirmation_event_id: params.billboard_confirmation_event_id,
@@ -34,6 +35,9 @@ export function create_marketplace_confirmation_event(
   };
 
   const tags: string[][] = [];
+
+  // Required d tag
+  tags.push(["d", confirmation_d_tag]);
 
   // Required t tag (block height) - per ATTN-01, every event must include this
   tags.push(["t", params.block_height.toString()]);

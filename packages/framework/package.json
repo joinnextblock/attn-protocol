@@ -1,6 +1,6 @@
 {
   "name": "@attn-protocol/framework",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Hook-based ATTN Protocol framework for Bitcoin-native attention marketplaces",
   "private": true,
   "type": "module",

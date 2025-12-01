@@ -56,9 +56,9 @@ The ATTN Protocol uses only official Nostr tags. All custom data is stored in th
 | 38388 | PROMOTION | Promotion creators | `duration`, `bid`, `event_id`, `call_to_action`, `call_to_action_url`, `escrow_id_list` | `["d", "org.attnprotocol:promotion:<promotion_id>"]`, `["a", "<marketplace_coordinate>"]`, `["a", "<video_coordinate>"]`, `["a", "<billboard_coordinate>"]` |
 | 38488 | ATTENTION | Attention owners | `ask`, `min_duration`, `max_duration`, `blocked_promotions_id`, `blocked_promoters_id`, `trusted_marketplaces_id?`, `trusted_billboards_id?` | `["d", "org.attnprotocol:attention:<attention_id>"]`, `["a", "<marketplace_coordinate>"]`, `["a", "<blocked_promotions_coordinate>"]`, `["a", "<blocked_promoters_coordinate>"]`, `["a", "<trusted_marketplaces_coordinate>"]?`, `["a", "<trusted_billboards_coordinate>"]?` |
 | 38888 | MATCH | Marketplace operators | `ref_match_id`, `ref_promotion_id`, `ref_attention_id`, `ref_billboard_id`, `ref_marketplace_id`, `ref_*_pubkey` | `["d", "org.attnprotocol:match:<match_id>"]`, `["a", "<marketplace_coordinate>"]`, `["a", "<promotion_coordinate>"]`, `["a", "<attention_coordinate>"]`, `["a", "<billboard_coordinate>"]` |
-| 38588 | BILLBOARD_CONFIRMATION | Billboard operators | `ref_match_event_id`, `ref_match_id`, `ref_*_pubkey`, `ref_*_id` | `["t", "<block_height>"]`, `["e", "<match_event_id>"]`, `["e", "<marketplace_event_id>"]`, `["e", "<billboard_event_id>"]`, `["e", "<promotion_event_id>"]`, `["e", "<attention_event_id>"]`, `["a", "<marketplace_coordinate>"]`, `["a", "<billboard_coordinate>"]`, `["a", "<promotion_coordinate>"]`, `["a", "<attention_coordinate>"]`, `["a", "<match_coordinate>"]`, `["p", "<pubkey>"]`, `["r", "<relay_url>"]` |
-| 38688 | ATTENTION_CONFIRMATION | Attention owners | `ref_match_event_id`, `ref_match_id`, `ref_*_pubkey`, `ref_*_id` | `["t", "<block_height>"]`, `["e", "<match_event_id>"]`, `["e", "<marketplace_event_id>"]`, `["e", "<billboard_event_id>"]`, `["e", "<promotion_event_id>"]`, `["e", "<attention_event_id>"]`, `["a", "<marketplace_coordinate>"]`, `["a", "<billboard_coordinate>"]`, `["a", "<promotion_coordinate>"]`, `["a", "<attention_coordinate>"]`, `["a", "<match_coordinate>"]`, `["p", "<pubkey>"]`, `["r", "<relay_url>"]` |
-| 38788 | MARKETPLACE_CONFIRMATION | Marketplace operators | `inbound_id_list`, `viewer_id_list`, `billboard_id_list`, `ref_match_event_id`, `ref_*_confirmation_event_id`, `ref_*_pubkey`, `ref_*_id` | `["t", "<block_height>"]`, `["e", "<match_event_id>"]`, `["e", "<billboard_confirmation_event_id>"]`, `["e", "<attention_confirmation_event_id>"]`, `["e", "<marketplace_event_id>"]`, `["e", "<billboard_event_id>"]`, `["e", "<promotion_event_id>"]`, `["e", "<attention_event_id>"]`, `["a", "<marketplace_coordinate>"]`, `["a", "<billboard_coordinate>"]`, `["a", "<promotion_coordinate>"]`, `["a", "<attention_coordinate>"]`, `["a", "<match_coordinate>"]`, `["p", "<pubkey>"]`, `["r", "<relay_url>"]` |
+| 38588 | BILLBOARD_CONFIRMATION | Billboard operators | `ref_match_event_id`, `ref_match_id`, `ref_*_pubkey`, `ref_*_id` | `["d", "org.attnprotocol:billboard-confirmation:<confirmation_id>"]`, `["t", "<block_height>"]`, `["e", "<match_event_id>"]`, `["e", "<marketplace_event_id>"]`, `["e", "<billboard_event_id>"]`, `["e", "<promotion_event_id>"]`, `["e", "<attention_event_id>"]`, `["a", "<marketplace_coordinate>"]`, `["a", "<billboard_coordinate>"]`, `["a", "<promotion_coordinate>"]`, `["a", "<attention_coordinate>"]`, `["a", "<match_coordinate>"]`, `["p", "<pubkey>"]`, `["r", "<relay_url>"]` |
+| 38688 | ATTENTION_CONFIRMATION | Attention owners | `ref_match_event_id`, `ref_match_id`, `ref_*_pubkey`, `ref_*_id` | `["d", "org.attnprotocol:attention-confirmation:<confirmation_id>"]`, `["t", "<block_height>"]`, `["e", "<match_event_id>"]`, `["e", "<marketplace_event_id>"]`, `["e", "<billboard_event_id>"]`, `["e", "<promotion_event_id>"]`, `["e", "<attention_event_id>"]`, `["a", "<marketplace_coordinate>"]`, `["a", "<billboard_coordinate>"]`, `["a", "<promotion_coordinate>"]`, `["a", "<attention_coordinate>"]`, `["a", "<match_coordinate>"]`, `["p", "<pubkey>"]`, `["r", "<relay_url>"]` |
+| 38788 | MARKETPLACE_CONFIRMATION | Marketplace operators | `ref_match_event_id`, `ref_*_confirmation_event_id`, `ref_*_pubkey`, `ref_*_id` | `["d", "org.attnprotocol:marketplace-confirmation:<confirmation_id>"]`, `["t", "<block_height>"]`, `["e", "<match_event_id>"]`, `["e", "<billboard_confirmation_event_id>"]`, `["e", "<attention_confirmation_event_id>"]`, `["e", "<marketplace_event_id>"]`, `["e", "<billboard_event_id>"]`, `["e", "<promotion_event_id>"]`, `["e", "<attention_event_id>"]`, `["a", "<marketplace_coordinate>"]`, `["a", "<billboard_coordinate>"]`, `["a", "<promotion_coordinate>"]`, `["a", "<attention_coordinate>"]`, `["a", "<match_coordinate>"]`, `["p", "<pubkey>"]`, `["r", "<relay_url>"]` |
 
 ---
 
@@ -639,6 +639,7 @@ interface BillboardConfirmationContent {
 
 ```typescript
 [
+  ["d", "org.attnprotocol:billboard-confirmation:<confirmation_id>"],
   ["t", "<block_height>"],
   ["e", "<match_event_id>", "", "match"],  // With marker
   ["e", "<marketplace_event_id>"],
@@ -666,6 +667,7 @@ interface BillboardConfirmationContent {
   "pubkey": "billboard_pubkey_hex",
   "created_at": 1234567890,
   "tags": [
+    ["d", "org.attnprotocol:billboard-confirmation:confirmation-001"],
     ["t", "862626"],
     ["e", "match_event_id_hex", "", "match"],
     ["e", "marketplace_event_id_hex"],
@@ -734,6 +736,7 @@ interface AttentionConfirmationContent {
 
 ```typescript
 [
+  ["d", "org.attnprotocol:attention-confirmation:<confirmation_id>"],
   ["t", "<block_height>"],
   ["e", "<match_event_id>", "", "match"],  // With marker
   ["e", "<marketplace_event_id>"],
@@ -761,6 +764,7 @@ interface AttentionConfirmationContent {
   "pubkey": "attention_pubkey_hex",
   "created_at": 1234567890,
   "tags": [
+    ["d", "org.attnprotocol:attention-confirmation:confirmation-001"],
     ["t", "862626"],
     ["e", "match_event_id_hex", "", "match"],
     ["e", "marketplace_event_id_hex"],
@@ -801,7 +805,7 @@ interface AttentionConfirmationContent {
 
 ## MARKETPLACE_CONFIRMATION Event (kind 38788)
 
-**Purpose**: Final confirmation with payment settlement details
+**Purpose**: Final confirmation event
 
 **Published By**: Marketplace operators
 
@@ -811,11 +815,6 @@ interface AttentionConfirmationContent {
 
 ```typescript
 interface MarketplaceConfirmationContent {
-  // Payment IDs (opaque to protocol)
-  inbound_id_list: string[];
-  viewer_id_list: string[];
-  billboard_id_list: string[];
-
   // Reference fields (ref_ prefix)
   ref_match_event_id: string;
   ref_match_id: string;
@@ -836,6 +835,7 @@ interface MarketplaceConfirmationContent {
 
 ```typescript
 [
+  ["d", "org.attnprotocol:marketplace-confirmation:<confirmation_id>"],
   ["t", "<block_height>"],
   ["e", "<match_event_id>", "", "match"],
   ["e", "<billboard_confirmation_event_id>", "", "billboard_confirmation"],
@@ -865,6 +865,7 @@ interface MarketplaceConfirmationContent {
   "pubkey": "marketplace_pubkey_hex",
   "created_at": 1234567890,
   "tags": [
+    ["d", "org.attnprotocol:marketplace-confirmation:confirmation-001"],
     ["t", "862626"],
     ["e", "match_event_id_hex", "", "match"],
     ["e", "billboard_confirmation_event_id_hex", "", "billboard_confirmation"],
@@ -885,9 +886,6 @@ interface MarketplaceConfirmationContent {
     ["r", "wss://relay.nextblock.city"]
   ],
   "content": {
-    "inbound_id_list": ["strike_tx_abc123"],
-    "viewer_id_list": ["strike_tx_def456"],
-    "billboard_id_list": [],
     "ref_match_event_id": "match_event_id_hex",
     "ref_match_id": "match-001",
     "ref_billboard_confirmation_event_id": "billboard_confirmation_event_id_hex",
@@ -1049,7 +1047,7 @@ All events use these reference fields consistently (ref_ prefix):
 
 All events include:
 - `["t", "<block_height>"]` - Block height for synchronization
-- `["d", "org.attnprotocol:<event_type>:<identifier>"]` - For addressable events (38088, 38188, 38288, 38388, 38488, 38888). Format: `org.attnprotocol:` prefix, followed by event type (block, marketplace, billboard, promotion, attention, match), followed by unique identifier.
+- `["d", "org.attnprotocol:<event_type>:<identifier>"]` - For all protocol events (38088, 38188, 38288, 38388, 38488, 38588, 38688, 38788, 38888). Format: `org.attnprotocol:` prefix, followed by event type (block, marketplace, billboard, promotion, attention, billboard-confirmation, attention-confirmation, marketplace-confirmation, match), followed by unique identifier.
 - `["a", "kind:pubkey:org.attnprotocol:event_type:identifier"]` - For referencing ATTN Protocol events (format: `kind:pubkey:org.attnprotocol:event_type:identifier`). For non-protocol events (e.g., video content kind 34236), the format is `kind:pubkey:d_tag` without the `org.attnprotocol:` prefix.
 - `["p", "<pubkey>"]` - For all party pubkeys
 - `["r", "<relay_url>"]` - For relay hints (multiple allowed)
@@ -1059,9 +1057,6 @@ All events include:
 
 All arrays end with `_list`:
 - `escrow_id_list` (PROMOTION)
-- `inbound_id_list` (MARKETPLACE_CONFIRMATION)
-- `viewer_id_list` (MARKETPLACE_CONFIRMATION)
-- `billboard_id_list` (MARKETPLACE_CONFIRMATION)
 
 ### Fee Field Consistency
 
