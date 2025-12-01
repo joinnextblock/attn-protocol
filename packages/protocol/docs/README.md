@@ -872,12 +872,12 @@ This documentation is structured to help AI assistants understand and explain th
 
 ### Documentation Structure
 
-1. **Start Here**: This README provides overview, glossary, quick reference, and links to detailed docs
-2. **Protocol Spec**: `packages/protocol/docs/ATTN-01.md` contains complete event schemas with standardized format (Purpose, Published By, When, Content Schema table, Tag Schema table, Relationships, Example)
+1. **Start Here**: [`../README.md`](../README.md) provides protocol overview, event kinds, and links to all documentation
+2. **Protocol Spec**: [`ATTN-01.md`](./ATTN-01.md) contains complete event schemas with standardized format (Purpose, Published By, When, Content Schema table, Tag Schema table, Relationships, Example)
 3. **Implementation**:
-   - `packages/sdk/README.md` shows how to create events with type reference tables
-   - `packages/framework/README.md` shows how to receive/process events with hook system
-4. **User Guide**: `packages/protocol/docs/README.md` provides user-facing documentation
+   - [`../../sdk/README.md`](../../sdk/README.md) shows how to create events with type reference tables
+   - [`../../framework/README.md`](../../framework/README.md) shows how to receive/process events with hook system
+4. **User Guide**: This README (`packages/protocol/docs/README.md`) provides user-facing documentation, glossary, and quick reference
 
 ### Key Concepts
 
@@ -915,9 +915,9 @@ When helping developers implement:
 ## Technical Specifications & Documentation
 
 ### Protocol Specification
-- [ATTN-01](./nips/ATTN-01.md): ATTN Protocol - Core protocol specifications and event definitions
+- [ATTN-01](./ATTN-01.md): ATTN Protocol - Core protocol specifications and event definitions
 
-> For a complete technical overview of the protocol, including event schemas, tag specifications, content field definitions, and behavior, refer to [ATTN-01](./nips/ATTN-01.md).
+> For a complete technical overview of the protocol, including event schemas, tag specifications, content field definitions, and behavior, refer to [ATTN-01](./ATTN-01.md).
 
 ## How do I choose relays for promotions?
 

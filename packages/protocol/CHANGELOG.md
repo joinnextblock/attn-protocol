@@ -1,5 +1,11 @@
 # @attn-protocol/protocol
 
+## 0.4.2
+
+### Patch Changes
+
+- Refactor README information hierarchy: simplify root README, enhance protocol README with detailed content (event kinds, why it exists, key capabilities), and update cross-references in user guide.
+
 ## 0.4.1
 
 ### Patch Changes
