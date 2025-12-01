@@ -121,6 +121,8 @@ export class RelayConnection {
           this.auth_challenge_received = false;
           this.reconnect_attempts = 0;
 
+          console.log(`[attn] WebSocket opened to ${this.config.relay_url}, waiting for AUTH challenge...`);
+
           // Set up message handler first (before authentication)
           this.message_handler = (data: WebSocket.Data) => {
             try {
@@ -279,12 +281,13 @@ export class RelayConnection {
           this.ws!.on('message', this.message_handler);
 
           // Wait for AUTH challenge - do NOT subscribe until authentication completes
-          console.log('[attn] Private key provided, waiting for AUTH challenge...');
+          console.log(`[attn] Private key provided, waiting for AUTH challenge from ${this.config.relay_url} (timeout: ${this.auth_timeout_ms}ms)...`);
           // Set timeout: if no AUTH challenge received within timeout, reject connection
           this.auth_timeout = setTimeout(() => {
             if (!this.auth_challenge_received) {
-              console.log('[attn] No AUTH challenge received within timeout');
-              reject(new Error('No AUTH challenge received from relay - NIP-42 authentication required'));
+              console.error(`[attn] No AUTH challenge received from ${this.config.relay_url} within ${this.auth_timeout_ms}ms timeout`);
+              console.error(`[attn] Connection state: connected=${this.is_connected}, readyState=${this.ws?.readyState}`);
+              reject(new Error(`No AUTH challenge received from relay ${this.config.relay_url} within ${this.auth_timeout_ms}ms - NIP-42 authentication required`));
             }
           }, this.auth_timeout_ms);
           // Do NOT subscribe here - wait for authentication to complete
@@ -293,22 +296,60 @@ export class RelayConnection {
 
         this.ws.on('error', (error) => {
           clearTimeout(timeout);
-          const err = error instanceof Error ? error : new Error(String(error));
+          // Better error handling for ErrorEvent objects and other error types
+          let err: Error;
+          if (error instanceof Error) {
+            err = error;
+          } else if (error && typeof error === 'object') {
+            // Handle ErrorEvent-like objects (from WebSocket library)
+            const error_obj = error as Record<string, unknown>;
+            const error_message =
+              (typeof error_obj.message === 'string' && error_obj.message) ||
+              (typeof error_obj.type === 'string' && `WebSocket error: ${error_obj.type}`) ||
+              (error_obj.toString && typeof error_obj.toString === 'function' && error_obj.toString() !== '[object Object]' ? error_obj.toString() : null) ||
+              'Unknown WebSocket error';
+            err = new Error(error_message);
+            // Preserve original error properties if available
+            if (error_obj.code) {
+              (err as Error & { code?: unknown }).code = error_obj.code;
+            }
+            if (error_obj.type) {
+              (err as Error & { type?: unknown }).type = error_obj.type;
+            }
+          } else {
+            err = new Error(`WebSocket connection error: ${String(error)}`);
+          }
+          console.error(`[attn] WebSocket error for ${this.config.relay_url}:`, err.message);
           this.handle_disconnect('Connection error', err);
           reject(err);
         });
 
         this.ws.on('close', (code, reason) => {
           clearTimeout(timeout);
+          const reason_str = reason.toString();
+          const close_message = `Connection closed: code=${code}, reason=${reason_str || 'none'}`;
+          console.log(`[attn] ${close_message} for ${this.config.relay_url}`);
           if (this.is_connected) {
-            const reason_str = reason.toString();
-            this.handle_disconnect(`Connection closed: code=${code}, reason=${reason_str || 'none'}`);
+            this.handle_disconnect(close_message);
           }
           this.schedule_reconnect();
         });
       } catch (error) {
         clearTimeout(timeout);
-        const err = error instanceof Error ? error : new Error(String(error));
+        // Better error handling for catch blocks
+        let err: Error;
+        if (error instanceof Error) {
+          err = error;
+        } else if (error && typeof error === 'object') {
+          const error_obj = error as Record<string, unknown>;
+          const error_message =
+            (typeof error_obj.message === 'string' && error_obj.message) ||
+            `Failed to create WebSocket connection: ${String(error)}`;
+          err = new Error(error_message);
+        } else {
+          err = new Error(`Failed to create WebSocket: ${String(error)}`);
+        }
+        console.error(`[attn] Failed to create WebSocket for ${this.config.relay_url}:`, err.message);
         reject(err);
       }
     });
@@ -1134,7 +1175,19 @@ export class RelayConnection {
 
       await this.hooks.emit(HOOK_NAMES.RELAY_DISCONNECT, context);
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+      // Better error handling for disconnect errors
+      let err: Error;
+      if (error instanceof Error) {
+        err = error;
+      } else if (error && typeof error === 'object') {
+        const error_obj = error as Record<string, unknown>;
+        const error_message =
+          (typeof error_obj.message === 'string' && error_obj.message) ||
+          `Error during disconnect: ${String(error)}`;
+        err = new Error(error_message);
+      } else {
+        err = new Error(`Error during disconnect: ${String(error)}`);
+      }
 
       const context: RelayDisconnectContext = {
         relay_url: this.config.relay_url,
