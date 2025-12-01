@@ -123,25 +123,27 @@ export class AttnSdk {
   }
 
   /**
-   * Publish event to a single relay
+   * Publish event to a single relay with NIP-42 authentication
    */
   async publish(
     event: Event,
     relay_url: string,
-    timeout_ms?: number
+    timeout_ms?: number,
+    auth_timeout_ms?: number
   ): Promise<PublishResult> {
-    return publish_to_relay(relay_url, event, timeout_ms);
+    return publish_to_relay(relay_url, event, this.private_key, timeout_ms, auth_timeout_ms);
   }
 
   /**
-   * Publish event to multiple relays
+   * Publish event to multiple relays with NIP-42 authentication
    */
   async publish_to_multiple(
     event: Event,
     relay_urls: string[],
-    timeout_ms?: number
+    timeout_ms?: number,
+    auth_timeout_ms?: number
   ): Promise<PublishResults> {
-    return publish_to_multiple(relay_urls, event, timeout_ms);
+    return publish_to_multiple(relay_urls, event, this.private_key, timeout_ms, auth_timeout_ms);
   }
 }
 
