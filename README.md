@@ -21,17 +21,6 @@ It also functions as the Bitcoin-native attention interchange for block-synced m
 | [`packages/framework`](./packages/framework/) | Hook runtime and relay adapters |
 | [`packages/sdk`](./packages/sdk/) | Event builders and validators |
 
-See [`packages/README.md`](./packages/README.md) for details.
-
-## Development
-
-```bash
-npm install
-npm run build        # builds all packages
-npm run lint         # runs eslint across packages
-npm run check        # package-specific checks
-```
-
 ## License
 
 MIT License

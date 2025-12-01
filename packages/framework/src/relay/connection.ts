@@ -24,6 +24,7 @@ import type {
   BillboardConfirmContext,
   AttentionConfirmContext,
   MarketplaceConfirmedContext,
+  AttentionPaymentConfirmContext,
   NewProfileContext,
   NewRelayListContext,
   NewNip51ListContext,
@@ -439,6 +440,7 @@ export class RelayConnection {
         ATTN_EVENT_KINDS.BILLBOARD_CONFIRMATION,
         ATTN_EVENT_KINDS.ATTENTION_CONFIRMATION,
         ATTN_EVENT_KINDS.MARKETPLACE_CONFIRMATION,
+        ATTN_EVENT_KINDS.ATTENTION_PAYMENT_CONFIRMATION,
         ATTN_EVENT_KINDS.MATCH,
       ],
     };
@@ -592,6 +594,9 @@ export class RelayConnection {
           break;
         case ATTN_EVENT_KINDS.MARKETPLACE_CONFIRMATION:
           await this.handle_marketplace_confirmation_event(event);
+          break;
+        case ATTN_EVENT_KINDS.ATTENTION_PAYMENT_CONFIRMATION:
+          await this.handle_attention_payment_confirmation_event(event);
           break;
         case ATTN_EVENT_KINDS.MATCH:
           await this.handle_match_event(event);
@@ -840,6 +845,57 @@ export class RelayConnection {
       await this.hooks.emit(HOOK_NAMES.MARKETPLACE_CONFIRMED, context);
     } catch (error) {
       console.error(`[attn] Error handling marketplace confirmation event:`, error);
+    }
+  }
+
+  /**
+   * Handle ATTENTION_PAYMENT_CONFIRMATION event (kind 38988)
+   */
+  private async handle_attention_payment_confirmation_event(event: Event): Promise<void> {
+    try {
+      // Parse content
+      let payment_data: unknown;
+      try {
+        payment_data = JSON.parse(event.content);
+      } catch {
+        payment_data = event.content;
+      }
+
+      // Extract e tags
+      const e_tags = event.tags.filter((tag) => tag[0] === 'e');
+
+      // Extract marketplace confirmation event ID (should have "marketplace_confirmation" marker)
+      let marketplace_confirmation_event_id: string | undefined;
+      for (const e_tag of e_tags) {
+        if (e_tag[3] === 'marketplace_confirmation') {
+          marketplace_confirmation_event_id = e_tag[1];
+          break;
+        }
+      }
+
+      // Extract match event ID (fallback to first e tag if no marketplace_confirmation found)
+      const match_event_id = e_tags.length > 0 ? e_tags.find((tag) => tag[3] !== 'marketplace_confirmation')?.[1] || e_tags[0]?.[1] : undefined;
+
+      // Extract attention owner pubkey from event pubkey
+      const attention_pubkey = event.pubkey;
+
+      // Extract block height from t tag
+      const block_height_tag = event.tags.find((tag) => tag[0] === 't' && tag[1]);
+      const block_height = block_height_tag ? parseInt(block_height_tag[1]!, 10) : undefined;
+
+      const context: AttentionPaymentConfirmContext = {
+        confirmation_event_id: event.id,
+        marketplace_confirmation_event_id: marketplace_confirmation_event_id || '',
+        match_event_id: match_event_id || '',
+        attention_pubkey,
+        payment_data,
+        block_height,
+        event,
+      };
+
+      await this.hooks.emit(HOOK_NAMES.ATTENTION_PAYMENT_CONFIRM, context);
+    } catch (error) {
+      console.error(`[attn] Error handling attention payment confirmation event:`, error);
     }
   }
 

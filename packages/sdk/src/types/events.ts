@@ -230,6 +230,37 @@ export interface MarketplaceConfirmationEventParams extends BaseEventParams {
 }
 
 /**
+ * ATTENTION_PAYMENT_CONFIRMATION Event (kind 38988) parameters
+ */
+export interface AttentionPaymentConfirmationEventParams extends BaseEventParams {
+  // block_height is required from BaseEventParams
+  confirmation_id: string; // Confirmation identifier (required, used for d tag per ATTN-01.md)
+  sats_received: number; // Amount actually received (required)
+  payment_proof?: string; // Optional proof of payment (Lightning invoice, tx ID, etc.)
+  marketplace_confirmation_event_id: string; // Marketplace confirmation event ID (required, for e tag with "marketplace_confirmation" marker)
+  match_event_id: string; // Match event ID (required, for e tag)
+  marketplace_event_id?: string; // Marketplace event ID (optional, for e tag)
+  billboard_event_id?: string; // Billboard event ID (optional, for e tag)
+  promotion_event_id?: string; // Promotion event ID (optional, for e tag)
+  attention_event_id?: string; // Attention event ID (optional, for e tag)
+  marketplace_coordinate: string; // a tag: 38188:<marketplace_pubkey>:org.attnprotocol:marketplace:<marketplace_id>
+  billboard_coordinate: string; // a tag: 38288:<billboard_pubkey>:org.attnprotocol:billboard:<billboard_id>
+  promotion_coordinate: string; // a tag: 38388:<promotion_pubkey>:org.attnprotocol:promotion:<promotion_id>
+  attention_coordinate: string; // a tag: 38488:<attention_pubkey>:org.attnprotocol:attention:<attention_id>
+  match_coordinate: string; // a tag: 38888:<marketplace_pubkey>:org.attnprotocol:match:<match_id>
+  marketplace_pubkey: string;
+  billboard_pubkey: string;
+  promotion_pubkey: string;
+  attention_pubkey: string;
+  marketplace_id: string;
+  billboard_id: string;
+  promotion_id: string;
+  attention_id: string;
+  match_id: string;
+  relays?: string[]; // Relay URLs (optional)
+}
+
+/**
  * Published event result
  */
 export interface PublishResult {

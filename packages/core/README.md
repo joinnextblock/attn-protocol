@@ -8,7 +8,7 @@ This package provides shared constants and type definitions used across all ATTN
 
 ### Constants
 
-- `ATTN_EVENT_KINDS` - Event kind numbers (38088-38888)
+- `ATTN_EVENT_KINDS` - Event kind numbers (38088-38988)
 - `NIP51_LIST_TYPES` - NIP-51 list type identifiers
 
 ### Types

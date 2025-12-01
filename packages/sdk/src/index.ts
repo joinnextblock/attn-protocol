@@ -19,6 +19,7 @@ export {
   create_billboard_confirmation_event,
   create_attention_confirmation_event,
   create_marketplace_confirmation_event,
+  create_attention_payment_confirmation_event,
 } from "./events/index.js";
 
 // Types
@@ -33,6 +34,7 @@ export type {
   BillboardConfirmationEventParams,
   AttentionConfirmationEventParams,
   MarketplaceConfirmationEventParams,
+  AttentionPaymentConfirmationEventParams,
   PublishResult,
   PublishResults,
 } from "./types/index.js";

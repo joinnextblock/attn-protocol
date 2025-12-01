@@ -11,4 +11,5 @@ export { create_match_event } from "./match.js";
 export { create_billboard_confirmation_event } from "./billboard-confirmation.js";
 export { create_attention_confirmation_event } from "./attention-confirmation.js";
 export { create_marketplace_confirmation_event } from "./marketplace-confirmation.js";
+export { create_attention_payment_confirmation_event } from "./attention-payment-confirmation.js";
 

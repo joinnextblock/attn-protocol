@@ -25,6 +25,7 @@ export type {
   BillboardConfirmContext,
   AttentionConfirmContext,
   MarketplaceConfirmedContext,
+  AttentionPaymentConfirmContext,
   NewBlockContext,
   BlockGapDetectedContext,
   RateLimitContext,
@@ -54,6 +55,7 @@ export const HOOK_NAMES = {
   BILLBOARD_CONFIRM: 'on_billboard_confirm',
   ATTENTION_CONFIRM: 'on_attention_confirm',
   MARKETPLACE_CONFIRMED: 'on_marketplace_confirmed',
+  ATTENTION_PAYMENT_CONFIRM: 'on_attention_payment_confirm',
 
   // Block synchronization hooks
   BEFORE_NEW_BLOCK: 'before_new_block',

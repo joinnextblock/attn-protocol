@@ -72,7 +72,13 @@ sequenceDiagram
     Relay->>Viewer: Forwards MARKETPLACE_CONFIRMATION
     Relay->>Promoter: Forwards MARKETPLACE_CONFIRMATION
 
-    Note over Marketplace,Viewer: Settlement complete.<br/>Payment flows defined in future NIP.
+    Viewer->>Relay: ATTENTION_PAYMENT_CONFIRMATION (38988)<br/>["a", "<all_coordinates>"]<br/>["e", "<marketplace_confirmation_event_id>", "", "marketplace_confirmation"]<br/>["e", "<match_event_id>"]<br/>["t", "<block_height>"]<br/>sats_received, payment_proof?
+
+    Relay->>Marketplace: Forwards ATTENTION_PAYMENT_CONFIRMATION
+    Relay->>Billboard: Forwards ATTENTION_PAYMENT_CONFIRMATION
+    Relay->>Promoter: Forwards ATTENTION_PAYMENT_CONFIRMATION
+
+    Note over Marketplace,Viewer: Payment confirmation complete.<br/>Settlement verified by attention owner.
 ```
 
 ## Flow Explanation
@@ -125,7 +131,14 @@ The confirmation chain creates an auditable settlement trail:
 3. **MARKETPLACE_CONFIRMATION (38788)**: Final settlement event published after both confirmations are received
    - References all previous events including both confirmations via `["e", "..."]` tags
    - Includes `sats_settled` and `payout_breakdown` for transparency
-   - Completes the event chain
+   - Marketplace claims payment has been sent
+
+4. **ATTENTION_PAYMENT_CONFIRMATION (38988)**: Attention owner attestation of payment receipt
+   - References MARKETPLACE_CONFIRMATION event via `["e", "..."]` tag with `marketplace_confirmation` marker
+   - Includes `sats_received` (required) and optional `payment_proof` (Lightning invoice, tx ID, etc.)
+   - References all previous events via `["e", "..."]` tags
+   - Includes all coordinates via `["a", "..."]` tags
+   - Completes the payment confirmation chain
 
 ## Key Event Kinds Reference
 
@@ -138,8 +151,9 @@ The confirmation chain creates an auditable settlement trail:
 | 38488 | ATTENTION | Attention owners | Viewer availability with ask and duration range |
 | 38888 | MATCH | Marketplace services | Match between promotion and attention |
 | 38588 | BILLBOARD_CONFIRMATION | Billboard operators | Billboard attestation of successful view |
-| 38688 | ATTENTION_CONFIRMATION | Attention owners | Attention owner attestation of receipt and payment |
+| 38688 | ATTENTION_CONFIRMATION | Attention owners | Attention owner attestation of viewing |
 | 38788 | MARKETPLACE_CONFIRMATION | Marketplace operators | Final settlement after both confirmations |
+| 38988 | ATTENTION_PAYMENT_CONFIRMATION | Attention owners | Attention owner attestation of payment receipt |
 
 ## Tag Structure
 
@@ -160,6 +174,7 @@ Confirmation events reference all previous events:
 - BILLBOARD_CONFIRMATION references: marketplace, promotion, attention, match
 - ATTENTION_CONFIRMATION references: marketplace, promotion, attention, match
 - MARKETPLACE_CONFIRMATION references: all previous events including both confirmations
+- ATTENTION_PAYMENT_CONFIRMATION references: MARKETPLACE_CONFIRMATION (with `marketplace_confirmation` marker), marketplace, promotion, attention, match
 
 ## Block-by-Block Snapshot Architecture
 

@@ -32,6 +32,7 @@ export type {
   BillboardConfirmContext,
   AttentionConfirmContext,
   MarketplaceConfirmedContext,
+  AttentionPaymentConfirmContext,
   NewBlockContext,
   BlockData,
   BlockGapDetectedContext,

@@ -125,6 +125,15 @@ export interface MarketplaceConfirmedContext extends HookContext {
   event: Event;
 }
 
+export interface AttentionPaymentConfirmContext extends HookContext {
+  confirmation_event_id: EventId;
+  marketplace_confirmation_event_id: EventId;
+  match_event_id: EventId;
+  attention_pubkey: Pubkey;
+  payment_data: unknown;
+  event: Event;
+}
+
 /**
  * Block synchronization hook contexts
  */

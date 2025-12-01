@@ -10,11 +10,11 @@ It also functions as the Bitcoin-native attention interchange for block-synced m
 
 - **Block-synchronized marketplaces**: Replace timestamp-based ad tech with deterministic block heights so block services, billboards, and marketplaces never drift.
 - **Sovereign payments**: All value settles over Bitcoin/Lightning—no subscriptions, no rent extraction, instant exit between blocks.
-- **Composable services**: Because events are just Nostr kinds (38088–38888), anyone can build clients, billboards, or analytics without permission while still mapping to marketplace inventory, user earnings, transfers, and settlement flows.
+- **Composable services**: Because events are just Nostr kinds (38088–38988), anyone can build clients, billboards, or analytics without permission while still mapping to marketplace inventory, user earnings, transfers, and settlement flows.
 
 ## Key capabilities
 
-- **ATTN-01 spec**: [`docs/ATTN-01.md`](./docs/ATTN-01.md) is the canonical definition of kinds 38088–38888, the event mapping, and all required tags.
+- **ATTN-01 spec**: [`docs/ATTN-01.md`](./docs/ATTN-01.md) is the canonical definition of kinds 38088–38988, the event mapping, and all required tags.
 - **Runtime framework**: `@attn-protocol/framework` exposes the `Attn` hook system that wires relays, handles NIP-42 auth, deduplicates events, and sequences `before_new_block → on_new_block → after_new_block`.
 - **Typed SDK**: `@attn-protocol/sdk` ships builders plus validators such as `create_block_event`, `create_promotion_event`, and relay publishers so services can emit fully-signed events with the correct `["t","<block_height>"]` tags.
 - **Snapshot discipline**: Every helper enforces block height tagging and deterministic IDs so downstream marketplace inventory, user earnings, transfers, and settlement calculations never accumulate across blocks.
@@ -29,9 +29,10 @@ It also functions as the Bitcoin-native attention interchange for block-synced m
 | 38388 | PROMOTION | Promotion request with bid (total satoshis for duration), duration (milliseconds), and content reference. | Promotion creators |
 | 38488 | ATTENTION | Viewer availability signal with ask (total satoshis for duration), duration range (min/max milliseconds), and content preferences. | Attention owners |
 | 38588 | BILLBOARD_CONFIRMATION | Billboard attestation of successful view. | Billboard operators |
-| 38688 | ATTENTION_CONFIRMATION | Attention owner attestation of receipt and payment. | Attention owners |
+| 38688 | ATTENTION_CONFIRMATION | Attention owner attestation of viewing. | Attention owners |
 | 38788 | MARKETPLACE_CONFIRMATION | Final settlement event published after both BILLBOARD_CONFIRMATION and ATTENTION_CONFIRMATION are received. | Marketplace operators |
 | 38888 | MATCH | Match between promotion and attention. Created when bid ≥ ask and duration is compatible. | Marketplace operators |
+| 38988 | ATTENTION_PAYMENT_CONFIRMATION | Attention owner attestation of payment receipt. Published after receiving payment following MARKETPLACE_CONFIRMATION. | Attention owners |
 
 All builders stamp the canonical coordinate/tag layout (`["d", "<identifier>"]`, `["t", "<block_height>"]`) so relays and analytics can filter by block height only.
 

@@ -47,7 +47,7 @@ It also functions as the Bitcoin-native attention interchange for block-synced m
 
 - **Block-synchronized marketplaces**: Replace timestamp-based ad tech with deterministic block heights so block services, billboards, and marketplaces never drift.
 - **Sovereign payments**: All value settles over Bitcoin/Lightning—no subscriptions, no rent extraction, instant exit between blocks.
-- **Composable services**: Because events are just Nostr kinds (38088–38888), anyone can build clients, billboards, or analytics without permission while still mapping to marketplace inventory, user earnings, transfers, and settlement flows.
+- **Composable services**: Because events are just Nostr kinds (38088–38988), anyone can build clients, billboards, or analytics without permission while still mapping to marketplace inventory, user earnings, transfers, and settlement flows.
 
 > For detailed technical specifications, see [ATTN-01](./nips/ATTN-01.md).
 
@@ -114,7 +114,7 @@ sequenceDiagram
     participant PROMOTION Creator
     participant Attention Owner
 
-    Note over MARKETPLACE Service: Subscribes to BLOCK (38088), MARKETPLACE (38188), BILLBOARD (38288),<br/>PROMOTION (38388), ATTENTION (38488), MATCH (38888), and confirmation events (38588, 38688, 38788)
+    Note over MARKETPLACE Service: Subscribes to BLOCK (38088), MARKETPLACE (38188), BILLBOARD (38288),<br/>PROMOTION (38388), ATTENTION (38488), MATCH (38888), and confirmation events (38588, 38688, 38788, 38988)
     MARKETPLACE Service->>RELAY: Publishes MARKETPLACE event (38188)
     BILLBOARD->>RELAY: Publishes BILLBOARD event (38288)
     PROMOTION Creator->>RELAY: Publishes PROMOTION event (38388)
@@ -335,7 +335,7 @@ Running a BILLBOARD is a technical undertaking that enables you to facilitate th
 ### Implementation Steps
 
 1. **Set Up Infrastructure**:
-   - Deploy Nostr relay listeners for BLOCK (38088), MARKETPLACE (38188), BILLBOARD (38288), PROMOTION (38388), ATTENTION (38488), MATCH (38888), and confirmation events (38588, 38688, 38788)
+   - Deploy Nostr relay listeners for BLOCK (38088), MARKETPLACE (38188), BILLBOARD (38288), PROMOTION (38388), ATTENTION (38488), MATCH (38888), and confirmation events (38588, 38688, 38788, 38988)
    - Implement a matching engine based on protocol specifications (bid ≥ ask, duration within range)
    - Configure payment channels for satoshi transfers
    - Create verification mechanisms for viewing confirmation
@@ -798,7 +798,7 @@ This comprehensive analytics ecosystem enables PROMOTION Creators to continuousl
 
 - **Coordinate (`a` tag)**: Format `<kind>:<pubkey>:<identifier>` that uniquely identifies protocol entities (marketplaces, billboards, promotions, attention). For example: `38188:marketplace_pubkey:marketplace_001` identifies a specific marketplace instance.
 
-- **Event Kind**: Numeric identifier for Nostr event types. ATTN Protocol uses kinds 38088-38888 for protocol events, plus kind 30000 for NIP-51 lists.
+- **Event Kind**: Numeric identifier for Nostr event types. ATTN Protocol uses kinds 38088-38988 for protocol events, plus kind 30000 for NIP-51 lists.
 
 - **Content Field**: JSON payload in event `content` field. All custom data (sats, durations, descriptions, etc.) lives here, NOT in tags. Tags are used only for indexing and filtering.
 
@@ -851,6 +851,7 @@ This comprehensive analytics ecosystem enables PROMOTION Creators to continuousl
 | 38588 | BILLBOARD_CONFIRMATION | Billboard operators | After verified view | `block`, `price` |
 | 38688 | ATTENTION_CONFIRMATION | Attention owners | After viewing | `block`, `price`, `sats_delivered` |
 | 38788 | MARKETPLACE_CONFIRMATION | Marketplace operators | After both confirmations | `block`, `sats_settled`, `payout_breakdown` |
+| 38988 | ATTENTION_PAYMENT_CONFIRMATION | Attention owners | After receiving payment | `sats_received`, `payment_proof?` |
 
 ### Required Tags Per Event Type
 
@@ -931,7 +932,7 @@ When selecting relays for ATTN Protocol participation, consider:
    - Prioritize relays with consistent uptime and performance
 
 2. **Protocol Compatibility**:
-   - Ensure relays support all required event kinds: 38088 (BLOCK), 38188 (MARKETPLACE), 38288 (BILLBOARD), 38388 (PROMOTION), 38488 (ATTENTION), 38588 (BILLBOARD_CONFIRMATION), 38688 (ATTENTION_CONFIRMATION), 38788 (MARKETPLACE_CONFIRMATION), 38888 (MATCH)
+   - Ensure relays support all required event kinds: 38088 (BLOCK), 38188 (MARKETPLACE), 38288 (BILLBOARD), 38388 (PROMOTION), 38488 (ATTENTION), 38588 (BILLBOARD_CONFIRMATION), 38688 (ATTENTION_CONFIRMATION), 38788 (MARKETPLACE_CONFIRMATION), 38888 (MATCH), 38988 (ATTENTION_PAYMENT_CONFIRMATION)
    - Check for any relay-specific event or content restrictions
    - Verify support for required NIP implementations (NIP-51 for block lists)
 

@@ -34,6 +34,7 @@ ATTN-01 defines the event kinds, schemas, and tag specifications for the ATTN Pr
 - **38688**: ATTENTION_CONFIRMATION
 - **38788**: MARKETPLACE_CONFIRMATION
 - **38888**: MATCH (promotion-attention match)
+- **38988**: ATTENTION_PAYMENT_CONFIRMATION
 
 ### Standard Event Kinds
 - **30000**: NIP-51 Lists (blocked promotions, blocked promoters, trusted billboards, trusted marketplaces)
@@ -59,6 +60,7 @@ The ATTN Protocol uses only official Nostr tags. All custom data is stored in th
 | 38588 | BILLBOARD_CONFIRMATION | Billboard operators | `ref_match_event_id`, `ref_match_id`, `ref_*_pubkey`, `ref_*_id` | `["d", "org.attnprotocol:billboard-confirmation:<confirmation_id>"]`, `["t", "<block_height>"]`, `["e", "<match_event_id>"]`, `["e", "<marketplace_event_id>"]`, `["e", "<billboard_event_id>"]`, `["e", "<promotion_event_id>"]`, `["e", "<attention_event_id>"]`, `["a", "<marketplace_coordinate>"]`, `["a", "<billboard_coordinate>"]`, `["a", "<promotion_coordinate>"]`, `["a", "<attention_coordinate>"]`, `["a", "<match_coordinate>"]`, `["p", "<pubkey>"]`, `["r", "<relay_url>"]` |
 | 38688 | ATTENTION_CONFIRMATION | Attention owners | `ref_match_event_id`, `ref_match_id`, `ref_*_pubkey`, `ref_*_id` | `["d", "org.attnprotocol:attention-confirmation:<confirmation_id>"]`, `["t", "<block_height>"]`, `["e", "<match_event_id>"]`, `["e", "<marketplace_event_id>"]`, `["e", "<billboard_event_id>"]`, `["e", "<promotion_event_id>"]`, `["e", "<attention_event_id>"]`, `["a", "<marketplace_coordinate>"]`, `["a", "<billboard_coordinate>"]`, `["a", "<promotion_coordinate>"]`, `["a", "<attention_coordinate>"]`, `["a", "<match_coordinate>"]`, `["p", "<pubkey>"]`, `["r", "<relay_url>"]` |
 | 38788 | MARKETPLACE_CONFIRMATION | Marketplace operators | `ref_match_event_id`, `ref_*_confirmation_event_id`, `ref_*_pubkey`, `ref_*_id` | `["d", "org.attnprotocol:marketplace-confirmation:<confirmation_id>"]`, `["t", "<block_height>"]`, `["e", "<match_event_id>"]`, `["e", "<billboard_confirmation_event_id>"]`, `["e", "<attention_confirmation_event_id>"]`, `["e", "<marketplace_event_id>"]`, `["e", "<billboard_event_id>"]`, `["e", "<promotion_event_id>"]`, `["e", "<attention_event_id>"]`, `["a", "<marketplace_coordinate>"]`, `["a", "<billboard_coordinate>"]`, `["a", "<promotion_coordinate>"]`, `["a", "<attention_coordinate>"]`, `["a", "<match_coordinate>"]`, `["p", "<pubkey>"]`, `["r", "<relay_url>"]` |
+| 38988 | ATTENTION_PAYMENT_CONFIRMATION | Attention owners | `sats_received`, `payment_proof?`, `ref_match_event_id`, `ref_marketplace_confirmation_event_id`, `ref_*_pubkey`, `ref_*_id` | `["d", "org.attnprotocol:attention-payment-confirmation:<confirmation_id>"]`, `["t", "<block_height>"]`, `["e", "<marketplace_confirmation_event_id>", "", "marketplace_confirmation"]`, `["e", "<match_event_id>"]`, `["e", "<marketplace_event_id>"]`, `["e", "<billboard_event_id>"]`, `["e", "<promotion_event_id>"]`, `["e", "<attention_event_id>"]`, `["a", "<marketplace_coordinate>"]`, `["a", "<billboard_coordinate>"]`, `["a", "<promotion_coordinate>"]`, `["a", "<attention_coordinate>"]`, `["a", "<match_coordinate>"]`, `["p", "<pubkey>"]`, `["r", "<relay_url>"]` |
 
 ---
 
@@ -903,8 +905,115 @@ interface MarketplaceConfirmationContent {
 ```
 
 **Relationships:**
-- **Referenced by:** None (this is the final event in the confirmation chain)
+- **Referenced by:** ATTENTION_PAYMENT_CONFIRMATION event (via `e` tag)
 - **References:** MARKETPLACE event (via `e` tag and coordinate), PROMOTION event (via `e` tag and coordinate), ATTENTION event (via `e` tag and coordinate), MATCH event (via `e` tag and coordinate), BILLBOARD_CONFIRMATION event (via `e` tag), ATTENTION_CONFIRMATION event (via `e` tag)
+
+---
+
+## ATTENTION_PAYMENT_CONFIRMATION Event (kind 38988)
+
+**Purpose**: Attention owner attestation of payment receipt
+
+**Published By**: Attention owners
+
+**When**: After receiving payment, following MARKETPLACE_CONFIRMATION (38788)
+
+**Schema**:
+
+```typescript
+interface AttentionPaymentConfirmationContent {
+  // Payment fields (no prefix - this is the source data)
+  sats_received: number;  // Amount actually received
+  payment_proof?: string;  // Optional proof of payment (Lightning invoice, tx ID, etc.)
+
+  // Reference fields (ref_ prefix)
+  ref_match_event_id: string;
+  ref_match_id: string;
+  ref_marketplace_confirmation_event_id: string;
+  ref_marketplace_pubkey: string;
+  ref_billboard_pubkey: string;
+  ref_promotion_pubkey: string;
+  ref_attention_pubkey: string;
+  ref_marketplace_id: string;
+  ref_billboard_id: string;
+  ref_promotion_id: string;
+  ref_attention_id: string;
+}
+```
+
+**Tags**:
+
+```typescript
+[
+  ["d", "org.attnprotocol:attention-payment-confirmation:<confirmation_id>"],
+  ["t", "<block_height>"],
+  ["e", "<marketplace_confirmation_event_id>", "", "marketplace_confirmation"],
+  ["e", "<match_event_id>"],
+  ["e", "<marketplace_event_id>"],
+  ["e", "<billboard_event_id>"],
+  ["e", "<promotion_event_id>"],
+  ["e", "<attention_event_id>"],
+  ["a", "38188:<marketplace_pubkey>:org.attnprotocol:marketplace:<marketplace_id>"],
+  ["a", "38288:<billboard_pubkey>:org.attnprotocol:billboard:<billboard_id>"],
+  ["a", "38388:<promotion_pubkey>:org.attnprotocol:promotion:<promotion_id>"],
+  ["a", "38488:<attention_pubkey>:org.attnprotocol:attention:<attention_id>"],
+  ["a", "38888:<marketplace_pubkey>:org.attnprotocol:match:<match_id>"],
+  ["p", "<marketplace_pubkey>"],
+  ["p", "<billboard_pubkey>"],
+  ["p", "<promotion_pubkey>"],
+  ["p", "<attention_pubkey>"],
+  ["r", "<relay_url>"]  // Multiple
+]
+```
+
+**Example**:
+
+```json
+{
+  "kind": 38988,
+  "pubkey": "attention_pubkey_hex",
+  "created_at": 1234567890,
+  "tags": [
+    ["d", "org.attnprotocol:attention-payment-confirmation:payment-confirmation-001"],
+    ["t", "862626"],
+    ["e", "marketplace_confirmation_event_id_hex", "", "marketplace_confirmation"],
+    ["e", "match_event_id_hex"],
+    ["e", "marketplace_event_id_hex"],
+    ["e", "billboard_event_id_hex"],
+    ["e", "promotion_event_id_hex"],
+    ["e", "attention_event_id_hex"],
+    ["a", "38188:marketplace_pubkey_hex:org.attnprotocol:marketplace:nextblock.city"],
+    ["a", "38288:billboard_pubkey_hex:org.attnprotocol:billboard:nextblock-billboard-001"],
+    ["a", "38388:promotion_pubkey_hex:org.attnprotocol:promotion:promotion-001"],
+    ["a", "38488:attention_pubkey_hex:org.attnprotocol:attention:attention-001"],
+    ["a", "38888:marketplace_pubkey_hex:org.attnprotocol:match:match-001"],
+    ["p", "marketplace_pubkey_hex"],
+    ["p", "billboard_pubkey_hex"],
+    ["p", "promotion_pubkey_hex"],
+    ["p", "attention_pubkey_hex"],
+    ["r", "wss://relay.nextblock.city"]
+  ],
+  "content": {
+    "sats_received": 5000,
+    "payment_proof": "lnbc50u1p3example...",
+    "ref_match_event_id": "match_event_id_hex",
+    "ref_match_id": "match-001",
+    "ref_marketplace_confirmation_event_id": "marketplace_confirmation_event_id_hex",
+    "ref_marketplace_pubkey": "marketplace_pubkey_hex",
+    "ref_billboard_pubkey": "billboard_pubkey_hex",
+    "ref_promotion_pubkey": "promotion_pubkey_hex",
+    "ref_attention_pubkey": "attention_pubkey_hex",
+    "ref_marketplace_id": "nextblock.city",
+    "ref_billboard_id": "nextblock-billboard-001",
+    "ref_promotion_id": "promotion-001",
+    "ref_attention_id": "attention-001"
+  }
+}
+```
+
+**Relationships:**
+- **Referenced by:** None (this is the final event in the payment confirmation chain)
+- **References:** MARKETPLACE_CONFIRMATION event (via `e` tag with `marketplace_confirmation` marker), MARKETPLACE event (via `e` tag and coordinate), PROMOTION event (via `e` tag and coordinate), ATTENTION event (via `e` tag and coordinate), MATCH event (via `e` tag and coordinate)
 
 ---
 
@@ -1047,7 +1156,7 @@ All events use these reference fields consistently (ref_ prefix):
 
 All events include:
 - `["t", "<block_height>"]` - Block height for synchronization
-- `["d", "org.attnprotocol:<event_type>:<identifier>"]` - For all protocol events (38088, 38188, 38288, 38388, 38488, 38588, 38688, 38788, 38888). Format: `org.attnprotocol:` prefix, followed by event type (block, marketplace, billboard, promotion, attention, billboard-confirmation, attention-confirmation, marketplace-confirmation, match), followed by unique identifier.
+- `["d", "org.attnprotocol:<event_type>:<identifier>"]` - For all protocol events (38088, 38188, 38288, 38388, 38488, 38588, 38688, 38788, 38888, 38988). Format: `org.attnprotocol:` prefix, followed by event type (block, marketplace, billboard, promotion, attention, billboard-confirmation, attention-confirmation, marketplace-confirmation, match, attention-payment-confirmation), followed by unique identifier.
 - `["a", "kind:pubkey:org.attnprotocol:event_type:identifier"]` - For referencing ATTN Protocol events (format: `kind:pubkey:org.attnprotocol:event_type:identifier`). For non-protocol events (e.g., video content kind 34236), the format is `kind:pubkey:d_tag` without the `org.attnprotocol:` prefix.
 - `["p", "<pubkey>"]` - For all party pubkeys
 - `["r", "<relay_url>"]` - For relay hints (multiple allowed)

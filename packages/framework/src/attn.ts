@@ -26,6 +26,7 @@ import type {
   BillboardConfirmContext,
   AttentionConfirmContext,
   MarketplaceConfirmedContext,
+  AttentionPaymentConfirmContext,
   NewBlockContext,
   BlockGapDetectedContext,
   RateLimitContext,
@@ -201,6 +202,13 @@ export class Attn {
    */
   on_marketplace_confirmed(handler: HookHandler<MarketplaceConfirmedContext>): HookHandle {
     return this.emitter.register(HOOK_NAMES.MARKETPLACE_CONFIRMED, handler);
+  }
+
+  /**
+   * Register handler for attention payment confirmation events
+   */
+  on_attention_payment_confirm(handler: HookHandler<AttentionPaymentConfirmContext>): HookHandle {
+    return this.emitter.register(HOOK_NAMES.ATTENTION_PAYMENT_CONFIRM, handler);
   }
 
   // Block synchronization hooks

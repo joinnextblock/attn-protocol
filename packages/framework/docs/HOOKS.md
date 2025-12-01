@@ -12,6 +12,7 @@ graph TD
     receive_events --> match[4. on_match_published<br/>Publish MATCH event]
     match --> confirmations[5. Receive Confirmations<br/>on_billboard_confirm<br/>on_viewer_confirm]
     confirmations --> final[6. on_marketplace_confirmed<br/>Publish final MARKETPLACE_CONFIRMATION]
+    final --> payment[7. on_attention_payment_confirm<br/>Attention owner confirms payment receipt]
 
     subgraph Block Synchronization
         block_before[before_new_block]
@@ -60,6 +61,7 @@ Event reception and processing for the attention marketplace:
 - **on_billboard_confirm**: Billboard confirmation received (kind 38588)
 - **on_viewer_confirm**: Viewer confirmation received (kind 38688)
 - **on_marketplace_confirmed**: Final MARKETPLACE_CONFIRMATION published (kind 38788)
+- **on_attention_payment_confirm**: Attention payment confirmation received (kind 38988)
 
 ### 3. Block Synchronization Hooks
 
@@ -97,7 +99,7 @@ Hooks execute in registration order. Implementations register handlers that deci
 
 **Fully Implemented Hooks:**
 - Infrastructure: `on_relay_connect`, `on_relay_disconnect`, `on_subscription`
-- ATTN Protocol Events: `on_new_marketplace`, `on_new_billboard`, `on_new_promotion`, `on_new_attention`, `on_new_match`, `on_match_published`, `on_billboard_confirm`, `on_viewer_confirm`, `on_marketplace_confirmed`
+- ATTN Protocol Events: `on_new_marketplace`, `on_new_billboard`, `on_new_promotion`, `on_new_attention`, `on_new_match`, `on_match_published`, `on_billboard_confirm`, `on_viewer_confirm`, `on_marketplace_confirmed`, `on_attention_payment_confirm`
 - Block Synchronization: `before_new_block`, `on_new_block`, `after_new_block`
 - Standard Nostr Events: `on_new_profile`, `on_new_relay_list`, `on_new_nip51_list`
 
