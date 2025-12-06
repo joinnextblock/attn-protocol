@@ -1,5 +1,3 @@
-![The ATTN Protocol](../assets/banner.png)
-
 # ATTN Protocol
 
 A decentralized framework enabling paid content promotion within the Nostr ecosystem. By establishing standardized communication methods for promotional content, the protocol creates new economic opportunities while preserving Nostr's core principles of decentralization and privacy.

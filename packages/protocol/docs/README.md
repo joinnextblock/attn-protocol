@@ -49,7 +49,7 @@ It also functions as the Bitcoin-native attention interchange for block-synced m
 - **Sovereign payments**: All value settles over Bitcoin/Lightning—no subscriptions, no rent extraction, instant exit between blocks.
 - **Composable services**: Because events are just Nostr kinds (38088–38988), anyone can build clients, billboards, or analytics without permission while still mapping to marketplace inventory, user earnings, transfers, and settlement flows.
 
-> For detailed technical specifications, see [ATTN-01](./nips/ATTN-01.md).
+> For detailed technical specifications, see [ATTN-01](./ATTN-01.md).
 
 ### Key Features
 - Pay-per-view content promotion system
@@ -100,7 +100,7 @@ The ATTN Protocol ecosystem consists of four primary actors, each with distinct 
    - Publish kind:38188 MARKETPLACE events
    - May operate BILLBOARDs within their marketplace
 
-> For detailed event specifications and protocol requirements, see [ATTN-01](./nips/ATTN-01.md).
+> For detailed event specifications and protocol requirements, see [ATTN-01](./ATTN-01.md).
 
 These actors interact through standardized Nostr events to create a decentralized promotional content marketplace where attention is fairly valued and compensated.
 
@@ -160,7 +160,7 @@ The ATTN Protocol operates through standardized Nostr event kinds that enable co
    - Block list coordinate (NIP-51 list reference via `a` tag)
    - All custom data stored in JSON content field
 
-> For detailed event schemas and required tags, see [ATTN-01](./nips/ATTN-01.md).
+> For detailed event schemas and required tags, see [ATTN-01](./ATTN-01.md).
 
 5. **Matching Process**: MARKETPLACE services (or BILLBOARDs) monitor both event kinds and create matches when:
    - A PROMOTION CREATOR's bid meets or exceeds an Attention Owner's ask
@@ -330,7 +330,7 @@ Running a BILLBOARD is a technical undertaking that enables you to facilitate th
 4. **Verification System**: Mechanisms to verify promotion viewing time
 5. **Analytics Platform**: Tools to provide insights to PROMOTION Creators and Attention Owners
 
-> For detailed BILLBOARD requirements and protocol behavior, see [ATTN-01](./nips/ATTN-01.md).
+> For detailed BILLBOARD requirements and protocol behavior, see [ATTN-01](./ATTN-01.md).
 
 ### Implementation Steps
 

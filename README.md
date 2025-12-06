@@ -20,7 +20,7 @@ It also functions as the Bitcoin-native attention interchange for block-synced m
 | [`packages/core`](./packages/core/) | Core constants and type definitions |
 | [`packages/framework`](./packages/framework/) | Hook runtime and relay adapters |
 | [`packages/sdk`](./packages/sdk/) | Event builders and validators |
-| [`relay`](./relay/) | Open-source Nostr relay with plugin system |
+| [`packages/relay`](./packages/relay/) | Open-source Nostr relay with plugin system |
 
 ## License
 
