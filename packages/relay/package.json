@@ -1,0 +1,22 @@
+{
+  "name": "@attn-protocol/relay",
+  "version": "0.1.0",
+  "description": "Open-source Nostr relay implementation for the ATTN Protocol with plugin-based architecture",
+  "private": true,
+  "scripts": {
+    "test": "go test ./...",
+    "test:coverage": "go test -cover ./...",
+    "build": "go build -o relay ./cmd/relay"
+  },
+  "keywords": [
+    "attn-protocol",
+    "nostr",
+    "bitcoin",
+    "attention",
+    "relay",
+    "go"
+  ],
+  "author": "ATTN Protocol Contributors",
+  "license": "MIT"
+}
+
