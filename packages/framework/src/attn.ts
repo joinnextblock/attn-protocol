@@ -8,6 +8,7 @@ import { HookEmitter } from './hooks/emitter.js';
 import { HOOK_NAMES } from './hooks/index.js';
 import { RelayConnection } from './relay/connection.js';
 import type { RelayConnectionConfig } from './relay/connection.js';
+import type { Logger } from './logger.js';
 import type {
   HookHandler,
   BeforeHookHandler,
@@ -49,6 +50,7 @@ export interface AttnConfig {
   reconnect_delay_ms?: number; // Default: 5000
   max_reconnect_attempts?: number; // Default: 10
   auth_timeout_ms?: number; // Default: 10000
+  logger?: Logger; // Optional logger, defaults to Pino logger
 }
 
 /**
@@ -61,7 +63,7 @@ export class Attn {
   private relay_connections: Map<string, RelayConnection> = new Map();
 
   constructor(config: AttnConfig) {
-    this.emitter = new HookEmitter();
+    this.emitter = new HookEmitter(config.logger);
     this.config = config;
   }
 
@@ -307,6 +309,7 @@ export class Attn {
         auth_timeout_ms: this.config.auth_timeout_ms,
         auto_reconnect: this.config.auto_reconnect,
         deduplicate: this.config.deduplicate,
+        logger: this.config.logger,
       };
       connection = new RelayConnection(relay_config, this.emitter);
       this.relay_connections.set(relay_url, connection);

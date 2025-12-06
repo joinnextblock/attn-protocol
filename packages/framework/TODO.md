@@ -40,6 +40,12 @@ _No critical issues at this time. Add items as they are identified._
     - Update `last_block_height = block_height` after successful processing
     - Handle initial block (when `last_block_height === null`) by setting it without gap detection
 
+- [ ] [M4] Replace console logging with structured logging
+  - File: `src/relay/connection.ts` (76 instances of console.log/error/warn across monorepo)
+  - Issue: Uses `console.log`, `console.error`, `console.warn` instead of structured logging throughout the connection manager
+  - Impact: Difficult to monitor and debug in production, no log levels, no structured data, cannot filter or aggregate logs
+  - Recommendation: Add structured logging library (e.g., Pino) or accept logger as configuration option. Replace all console.* calls in connection.ts with structured logging that includes context (relay URL, connection state, event IDs, etc.)
+
 **Format:** `- [ ] [M#] Task description`
   - File: Path to file(s) affected
   - Issue: Description of the problem

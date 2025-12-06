@@ -10,7 +10,10 @@
   "scripts": {
     "lint": "eslint \"src/**/*.{ts,tsx}\"",
     "check": "tsc --noEmit",
-    "build": "tsc"
+    "build": "tsc",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
   },
   "keywords": [
     "attn-protocol",
@@ -23,7 +26,9 @@
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^22.7.5",
+    "@vitest/coverage-v8": "^2.1.8",
     "eslint": "^9.39.1",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vitest": "^2.1.8"
   }
 }

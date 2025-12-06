@@ -46,6 +46,10 @@ export type {
 // Relay connection (internal, used by Attn)
 export type { RelayConnectionConfig } from './relay/index.js';
 
+// Logger interface and utilities
+export type { Logger } from './logger.js';
+export { create_default_logger, create_noop_logger } from './logger.js';
+
 // Re-export core constants and types for backward compatibility
 export { ATTN_EVENT_KINDS, NIP51_LIST_TYPES } from '@attn-protocol/core';
 export type { RelayUrl } from '@attn-protocol/core';

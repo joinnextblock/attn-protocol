@@ -3,12 +3,100 @@
  * Handles connection lifecycle and emits hooks for block events
  */
 
-import WebSocket from 'ws';
+import WebSocketBase from 'isomorphic-ws';
 import type { Event } from 'nostr-tools';
+
+// Browser-compatible WebSocket wrapper
+// In browser, isomorphic-ws uses native WebSocket but doesn't expose .on() method
+// We create a compatibility wrapper that adds .on() support
+type WebSocketWithOn = WebSocketBase & {
+  on(event: string, handler: Function): void;
+  off?(event: string, handler?: Function): void;
+  removeAllListeners?(): void;
+};
+
+function get_websocket_impl(): typeof WebSocketBase {
+  // Check if we're in browser environment
+  if (typeof globalThis !== 'undefined' && 'window' in globalThis && (globalThis as any).window?.WebSocket) {
+    // Browser: Create wrapper that adds .on() method to native WebSocket
+    const NativeWS = (globalThis as any).window.WebSocket;
+    class BrowserWebSocketCompat extends NativeWS {
+      private _listeners: Map<string, Set<Function>> = new Map();
+
+      constructor(url: string | URL, protocols?: string | string[]) {
+        super(url, protocols);
+        this._setupEventListeners();
+      }
+
+      private _setupEventListeners() {
+        // Map native addEventListener to .on() style
+        super.addEventListener('open', (event: Event) => {
+          this._emit('open', event);
+        });
+
+        super.addEventListener('message', (event: MessageEvent) => {
+          this._emit('message', event.data);
+        });
+
+        super.addEventListener('error', (event: Event) => {
+          this._emit('error', event);
+        });
+
+        super.addEventListener('close', (event: Event) => {
+          const close_event = event as { code?: number; reason?: string };
+          this._emit('close', close_event.code, close_event.reason);
+        });
+      }
+
+      on(event: string, handler: Function) {
+        if (!this._listeners.has(event)) {
+          this._listeners.set(event, new Set());
+        }
+        this._listeners.get(event)!.add(handler);
+      }
+
+      off(event: string, handler?: Function) {
+        if (!this._listeners.has(event)) return;
+        if (handler) {
+          this._listeners.get(event)!.delete(handler);
+        } else {
+          this._listeners.get(event)!.clear();
+        }
+      }
+
+      private _emit(event: string, ...args: any[]) {
+        if (this._listeners.has(event)) {
+          this._listeners.get(event)!.forEach((handler) => {
+            try {
+              handler(...args);
+            } catch (error) {
+              // Note: This is in browser WebSocket wrapper, logger not available here
+              // Fallback to console for browser compatibility
+              if (typeof console !== 'undefined' && console.error) {
+                console.error('[attn] Error in WebSocket event handler:', error);
+              }
+            }
+          });
+        }
+      }
+
+      removeAllListeners() {
+        this._listeners.clear();
+      }
+    }
+    return BrowserWebSocketCompat as any;
+  }
+  // Node.js: use isomorphic-ws as-is
+  return WebSocketBase;
+}
+
+const WebSocket = get_websocket_impl();
 import { finalizeEvent, getPublicKey, utils } from 'nostr-tools';
 import { HookEmitter } from '../hooks/emitter.js';
 import { HOOK_NAMES } from '../hooks/index.js';
 import { ATTN_EVENT_KINDS, NIP51_LIST_TYPES } from '@attn-protocol/core';
+import type { Logger } from '../logger.js';
+import { create_default_logger } from '../logger.js';
 import type {
   RelayConnectContext,
   RelayDisconnectContext,
@@ -43,6 +131,7 @@ export interface RelayConnectionConfig {
   auth_timeout_ms?: number; // Timeout for NIP-42 authentication (default 10000ms)
   auto_reconnect?: boolean;
   deduplicate?: boolean;
+  logger?: Logger; // Optional logger, defaults to Pino logger
 }
 
 /**
@@ -50,9 +139,10 @@ export interface RelayConnectionConfig {
  * Manages connection to Nostr relay and listens for block events (kind 38088)
  */
 export class RelayConnection {
-  private ws: WebSocket | null = null;
+  private ws: WebSocketWithOn | null = null;
   private config: RelayConnectionConfig;
   private hooks: HookEmitter;
+  private logger: Logger;
   private is_connected: boolean = false;
   private is_authenticated: boolean = false;
   private connection_timeout_ms: number;
@@ -68,7 +158,7 @@ export class RelayConnection {
   private attn_filter_map: Map<string, { kinds: number[]; [key: string]: unknown }> = new Map();
   private standard_subscription_id: string; // For standard Nostr events (kind 0, 10002)
   private nip51_lists_subscription_id: string; // For NIP-51 lists (kind 30000)
-  private message_handler: ((data: WebSocket.Data) => void) | null = null;
+  private message_handler: ((data: string | Buffer | ArrayBuffer | Buffer[]) => void) | null = null;
   private auth_timeout: NodeJS.Timeout | null = null;
   private auth_challenge_received: boolean = false;
   private auth_event_id: string | null = null;
@@ -76,6 +166,7 @@ export class RelayConnection {
   constructor(config: RelayConnectionConfig, hooks: HookEmitter) {
     this.config = config;
     this.hooks = hooks;
+    this.logger = config.logger ?? create_default_logger();
     this.connection_timeout_ms = config.connection_timeout_ms ?? 30000;
     this.reconnect_delay_ms = config.reconnect_delay_ms ?? 5000;
     this.max_reconnect_attempts = config.max_reconnect_attempts ?? 10;
@@ -92,7 +183,8 @@ export class RelayConnection {
    * Emits on_relay_connect hook on success
    */
   async connect(): Promise<void> {
-    if (this.is_connected && this.ws && this.ws.readyState === WebSocket.OPEN) {
+    if (this.is_connected && this.ws && this.ws.readyState === 1) {
+      // readyState 1 = OPEN
       return;
     }
 
@@ -121,10 +213,10 @@ export class RelayConnection {
           this.auth_challenge_received = false;
           this.reconnect_attempts = 0;
 
-          console.log(`[attn] WebSocket opened to ${this.config.relay_url}, waiting for AUTH challenge...`);
+          this.logger.info({ relay_url: this.config.relay_url }, 'WebSocket opened, waiting for AUTH challenge');
 
           // Set up message handler first (before authentication)
-          this.message_handler = (data: WebSocket.Data) => {
+          this.message_handler = (data: string | Buffer | ArrayBuffer | Buffer[]) => {
             try {
               const message = JSON.parse(data.toString());
               const [type, ...rest] = message;
@@ -133,7 +225,7 @@ export class RelayConnection {
               if (type === 'AUTH') {
                 const challenge = rest[0];
                 if (challenge && typeof challenge === 'string') {
-                  console.log('[attn] Received AUTH challenge from relay');
+                  this.logger.debug({ relay_url: this.config.relay_url }, 'Received AUTH challenge from relay');
                   this.auth_challenge_received = true;
                   // Clear the timeout that waits for AUTH challenge
                   if (this.auth_timeout) {
@@ -151,9 +243,9 @@ export class RelayConnection {
                 const accepted = rest[1];
                 // Check if this is an auth response (match event ID)
                 if (event_id === this.auth_event_id) {
-                  console.log(`[attn] Received OK response for auth event ${event_id}, accepted: ${accepted}`);
+                  this.logger.debug({ relay_url: this.config.relay_url, event_id, accepted }, 'Received OK response for auth event');
                   if (accepted === true) {
-                    console.log('[attn] Authentication successful, subscribing to events');
+                    this.logger.info({ relay_url: this.config.relay_url }, 'Authentication successful, subscribing to events');
                     this.is_authenticated = true;
                     this.auth_event_id = null;
                     if (this.auth_timeout) {
@@ -171,7 +263,8 @@ export class RelayConnection {
                     });
                     return;
                   } else if (accepted === false) {
-                    console.log(`[attn] Authentication rejected: ${rest[2] || 'Unknown reason'}`);
+                    const reason = rest[2] || 'Unknown reason';
+                    this.logger.warn({ relay_url: this.config.relay_url, reason }, 'Authentication rejected');
                     this.auth_event_id = null;
                     if (this.auth_timeout) {
                       clearTimeout(this.auth_timeout);
@@ -267,9 +360,10 @@ export class RelayConnection {
                   }
                 } else if (type === 'NOTICE') {
                   const notice = rest[0] || '';
-                  console.log(`[attn] Relay NOTICE: ${notice}`);
                   if (typeof notice === 'string' && notice.toLowerCase().includes('error')) {
-                    console.error(`[attn] Relay error notice: ${notice}`);
+                    this.logger.error({ relay_url: this.config.relay_url, notice }, 'Relay error notice');
+                  } else {
+                    this.logger.info({ relay_url: this.config.relay_url, notice }, 'Relay NOTICE');
                   }
                 }
               }
@@ -281,12 +375,16 @@ export class RelayConnection {
           this.ws!.on('message', this.message_handler);
 
           // Wait for AUTH challenge - do NOT subscribe until authentication completes
-          console.log(`[attn] Private key provided, waiting for AUTH challenge from ${this.config.relay_url} (timeout: ${this.auth_timeout_ms}ms)...`);
+          this.logger.debug({ relay_url: this.config.relay_url, timeout_ms: this.auth_timeout_ms }, 'Private key provided, waiting for AUTH challenge');
           // Set timeout: if no AUTH challenge received within timeout, reject connection
           this.auth_timeout = setTimeout(() => {
             if (!this.auth_challenge_received) {
-              console.error(`[attn] No AUTH challenge received from ${this.config.relay_url} within ${this.auth_timeout_ms}ms timeout`);
-              console.error(`[attn] Connection state: connected=${this.is_connected}, readyState=${this.ws?.readyState}`);
+              this.logger.error({
+                relay_url: this.config.relay_url,
+                timeout_ms: this.auth_timeout_ms,
+                connected: this.is_connected,
+                ready_state: this.ws?.readyState,
+              }, 'No AUTH challenge received within timeout');
               reject(new Error(`No AUTH challenge received from relay ${this.config.relay_url} within ${this.auth_timeout_ms}ms - NIP-42 authentication required`));
             }
           }, this.auth_timeout_ms);
@@ -319,16 +417,16 @@ export class RelayConnection {
           } else {
             err = new Error(`WebSocket connection error: ${String(error)}`);
           }
-          console.error(`[attn] WebSocket error for ${this.config.relay_url}:`, err.message);
+          this.logger.error({ relay_url: this.config.relay_url, error: err.message }, 'WebSocket error');
           this.handle_disconnect('Connection error', err);
           reject(err);
         });
 
         this.ws.on('close', (code, reason) => {
           clearTimeout(timeout);
-          const reason_str = reason.toString();
+          const reason_str = reason ? reason.toString() : undefined;
           const close_message = `Connection closed: code=${code}, reason=${reason_str || 'none'}`;
-          console.log(`[attn] ${close_message} for ${this.config.relay_url}`);
+          this.logger.info({ relay_url: this.config.relay_url, code, reason: reason_str || 'none' }, 'Connection closed');
           if (this.is_connected) {
             this.handle_disconnect(close_message);
           }
@@ -349,7 +447,7 @@ export class RelayConnection {
         } else {
           err = new Error(`Failed to create WebSocket: ${String(error)}`);
         }
-        console.error(`[attn] Failed to create WebSocket for ${this.config.relay_url}:`, err.message);
+        this.logger.error({ relay_url: this.config.relay_url, error: err.message }, 'Failed to create WebSocket');
         reject(err);
       }
     });
@@ -422,8 +520,9 @@ export class RelayConnection {
 
       // Send AUTH response
       const auth_message = JSON.stringify(['AUTH', signed_event]);
-      console.log('[attn] Sending AUTH response with event ID:', signed_event.id);
-      if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+      this.logger.debug({ relay_url: this.config.relay_url, event_id: signed_event.id }, 'Sending AUTH response');
+      if (this.ws && this.ws.readyState === 1) {
+        // readyState 1 = OPEN
         this.ws.send(auth_message);
       }
 
@@ -448,8 +547,9 @@ export class RelayConnection {
    * Subscribe to block events (kind 38088) and ATTN Protocol events
    */
   private subscribe_to_events(): void {
-    if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
-      console.log('[attn] Cannot subscribe: WebSocket not open');
+    if (!this.ws || this.ws.readyState !== 1) {
+      // readyState 1 = OPEN
+      this.logger.warn({ relay_url: this.config.relay_url, ready_state: this.ws?.readyState }, 'Cannot subscribe: WebSocket not open');
       return;
     }
 
@@ -460,7 +560,7 @@ export class RelayConnection {
     };
 
     const block_req_message = JSON.stringify(['REQ', this.subscription_id, block_filter]);
-    console.log('[attn] Sending REQ subscription for block events:', JSON.stringify(block_filter));
+    this.logger.debug({ relay_url: this.config.relay_url, subscription_id: this.subscription_id, filter: block_filter }, 'Sending REQ subscription for block events');
     this.ws.send(block_req_message);
 
     const block_subscription_context: SubscriptionContext = {
@@ -508,7 +608,7 @@ export class RelayConnection {
     this.attn_filter_map.set(this.attn_subscription_id, attn_filter);
 
     const attn_req_message = JSON.stringify(['REQ', this.attn_subscription_id, attn_filter]);
-    console.log('[attn] Sending REQ subscription for ATTN Protocol events:', JSON.stringify(attn_filter));
+    this.logger.debug({ relay_url: this.config.relay_url, subscription_id: this.attn_subscription_id, filter: attn_filter }, 'Sending REQ subscription for ATTN Protocol events');
     this.ws.send(attn_req_message);
 
     const attn_subscription_context: SubscriptionContext = {
@@ -525,7 +625,7 @@ export class RelayConnection {
     };
 
     const profiles_relay_lists_req_message = JSON.stringify(['REQ', this.standard_subscription_id, profiles_relay_lists_filter]);
-    console.log('[attn] Sending REQ subscription for standard Nostr events:', JSON.stringify(profiles_relay_lists_filter));
+    this.logger.debug({ relay_url: this.config.relay_url, subscription_id: this.standard_subscription_id, filter: profiles_relay_lists_filter }, 'Sending REQ subscription for standard Nostr events');
     this.ws.send(profiles_relay_lists_req_message);
 
     const profiles_relay_lists_subscription_context: SubscriptionContext = {
@@ -548,7 +648,7 @@ export class RelayConnection {
     };
 
     const nip51_lists_req_message = JSON.stringify(['REQ', this.nip51_lists_subscription_id, nip51_lists_filter]);
-    console.log('[attn] Sending REQ subscription for NIP-51 lists:', JSON.stringify(nip51_lists_filter));
+    this.logger.debug({ relay_url: this.config.relay_url, subscription_id: this.nip51_lists_subscription_id, filter: nip51_lists_filter }, 'Sending REQ subscription for NIP-51 lists');
     this.ws.send(nip51_lists_req_message);
 
     const nip51_lists_subscription_context: SubscriptionContext = {
@@ -582,7 +682,7 @@ export class RelayConnection {
       const block_height = block_height_from_content ?? (block_height_tag ? parseInt(block_height_tag[1]!, 10) : undefined);
 
       if (!block_height || Number.isNaN(block_height)) {
-        console.warn(`[attn] Block event missing or invalid block_height: ${event.id}`);
+        this.logger.warn({ relay_url: this.config.relay_url, event_id: event.id }, 'Block event missing or invalid block_height');
         return;
       }
 
@@ -605,7 +705,7 @@ export class RelayConnection {
         await this.hooks.emit(HOOK_NAMES.AFTER_NEW_BLOCK, context);
       }
     } catch (error) {
-      console.error(`[attn] Error handling block event:`, error);
+      this.logger.error({ relay_url: this.config.relay_url, error: error instanceof Error ? error.message : String(error) }, 'Error handling block event');
     }
   }
 
@@ -643,10 +743,10 @@ export class RelayConnection {
           await this.handle_match_event(event);
           break;
         default:
-          console.warn(`[attn] Unknown ATTN Protocol event kind: ${event.kind}`);
+          this.logger.warn({ relay_url: this.config.relay_url, event_kind: event.kind, event_id: event.id }, 'Unknown ATTN Protocol event kind');
       }
     } catch (error) {
-      console.error(`[attn] Error handling ATTN Protocol event (kind ${event.kind}):`, error);
+      this.logger.error({ relay_url: this.config.relay_url, event_kind: event.kind, error: error instanceof Error ? error.message : String(error) }, 'Error handling ATTN Protocol event');
     }
   }
 
@@ -675,7 +775,7 @@ export class RelayConnection {
 
       await this.hooks.emit(HOOK_NAMES.NEW_MARKETPLACE, context);
     } catch (error) {
-      console.error(`[attn] Error handling marketplace event:`, error);
+      this.logger.error({ relay_url: this.config.relay_url, event_id: event.id, error: error instanceof Error ? error.message : String(error) }, 'Error handling marketplace event');
     }
   }
 
@@ -706,7 +806,7 @@ export class RelayConnection {
 
       await this.hooks.emit(HOOK_NAMES.NEW_BILLBOARD, context);
     } catch (error) {
-      console.error(`[attn] Error handling billboard event:`, error);
+      this.logger.error({ relay_url: this.config.relay_url, event_id: event.id, error: error instanceof Error ? error.message : String(error) }, 'Error handling billboard event');
     }
   }
 
@@ -737,7 +837,7 @@ export class RelayConnection {
 
       await this.hooks.emit(HOOK_NAMES.NEW_PROMOTION, context);
     } catch (error) {
-      console.error(`[attn] Error handling promotion event:`, error);
+      this.logger.error({ relay_url: this.config.relay_url, event_id: event.id, error: error instanceof Error ? error.message : String(error) }, 'Error handling promotion event');
     }
   }
 
@@ -768,7 +868,7 @@ export class RelayConnection {
 
       await this.hooks.emit(HOOK_NAMES.NEW_ATTENTION, context);
     } catch (error) {
-      console.error(`[attn] Error handling attention event:`, error);
+      this.logger.error({ relay_url: this.config.relay_url, event_id: event.id, error: error instanceof Error ? error.message : String(error) }, 'Error handling attention event');
     }
   }
 
@@ -808,7 +908,7 @@ export class RelayConnection {
 
       await this.hooks.emit(HOOK_NAMES.BILLBOARD_CONFIRM, context);
     } catch (error) {
-      console.error(`[attn] Error handling billboard confirmation event:`, error);
+      this.logger.error({ relay_url: this.config.relay_url, event_id: event.id, error: error instanceof Error ? error.message : String(error) }, 'Error handling billboard confirmation event');
     }
   }
 
@@ -847,7 +947,7 @@ export class RelayConnection {
 
       await this.hooks.emit(HOOK_NAMES.ATTENTION_CONFIRM, context);
     } catch (error) {
-      console.error(`[attn] Error handling attention confirmation event:`, error);
+      this.logger.error({ relay_url: this.config.relay_url, event_id: event.id, error: error instanceof Error ? error.message : String(error) }, 'Error handling attention confirmation event');
     }
   }
 
@@ -885,7 +985,7 @@ export class RelayConnection {
 
       await this.hooks.emit(HOOK_NAMES.MARKETPLACE_CONFIRMED, context);
     } catch (error) {
-      console.error(`[attn] Error handling marketplace confirmation event:`, error);
+      this.logger.error({ relay_url: this.config.relay_url, event_id: event.id, error: error instanceof Error ? error.message : String(error) }, 'Error handling marketplace confirmation event');
     }
   }
 
@@ -936,7 +1036,7 @@ export class RelayConnection {
 
       await this.hooks.emit(HOOK_NAMES.ATTENTION_PAYMENT_CONFIRM, context);
     } catch (error) {
-      console.error(`[attn] Error handling attention payment confirmation event:`, error);
+      this.logger.error({ relay_url: this.config.relay_url, event_id: event.id, error: error instanceof Error ? error.message : String(error) }, 'Error handling attention payment confirmation event');
     }
   }
 
@@ -994,7 +1094,7 @@ export class RelayConnection {
       };
       await this.hooks.emit(HOOK_NAMES.MATCH_PUBLISHED, match_published_context);
     } catch (error) {
-      console.error(`[attn] Error handling match event:`, error);
+      this.logger.error({ relay_url: this.config.relay_url, event_id: event.id, error: error instanceof Error ? error.message : String(error) }, 'Error handling match event');
     }
   }
 
@@ -1014,10 +1114,10 @@ export class RelayConnection {
           await this.handle_nip51_list_event(event);
           break;
         default:
-          console.warn(`[attn] Unknown standard Nostr event kind: ${event.kind}`);
+          this.logger.warn({ relay_url: this.config.relay_url, event_kind: event.kind, event_id: event.id }, 'Unknown standard Nostr event kind');
       }
     } catch (error) {
-      console.error(`[attn] Error handling standard Nostr event (kind ${event.kind}):`, error);
+      this.logger.error({ relay_url: this.config.relay_url, event_kind: event.kind, error: error instanceof Error ? error.message : String(error) }, 'Error handling standard Nostr event');
     }
   }
 
@@ -1043,7 +1143,7 @@ export class RelayConnection {
 
       await this.hooks.emit(HOOK_NAMES.NEW_PROFILE, context);
     } catch (error) {
-      console.error(`[attn] Error handling profile event:`, error);
+      this.logger.error({ relay_url: this.config.relay_url, event_id: event.id, error: error instanceof Error ? error.message : String(error) }, 'Error handling profile event');
     }
   }
 
@@ -1069,7 +1169,7 @@ export class RelayConnection {
 
       await this.hooks.emit(HOOK_NAMES.NEW_RELAY_LIST, context);
     } catch (error) {
-      console.error(`[attn] Error handling relay list event:`, error);
+      this.logger.error({ relay_url: this.config.relay_url, event_id: event.id, error: error instanceof Error ? error.message : String(error) }, 'Error handling relay list event');
     }
   }
 
@@ -1117,7 +1217,7 @@ export class RelayConnection {
 
       await this.hooks.emit(HOOK_NAMES.NEW_NIP51_LIST, context);
     } catch (error) {
-      console.error(`[attn] Error handling NIP-51 list event:`, error);
+      this.logger.error({ relay_url: this.config.relay_url, event_id: event.id, error: error instanceof Error ? error.message : String(error) }, 'Error handling NIP-51 list event');
     }
   }
 
@@ -1136,7 +1236,8 @@ export class RelayConnection {
       this.auth_timeout = null;
     }
 
-    if (!this.is_connected && (!this.ws || this.ws.readyState === WebSocket.CLOSED)) {
+    if (!this.is_connected && (!this.ws || this.ws.readyState === 3)) {
+      // readyState 3 = CLOSED
       return;
     }
 
@@ -1157,7 +1258,9 @@ export class RelayConnection {
           const close_nip51_message = JSON.stringify(['CLOSE', this.nip51_lists_subscription_id]);
           this.ws.send(close_nip51_message);
         }
-        this.ws.removeAllListeners();
+          if (this.ws.removeAllListeners) {
+            this.ws.removeAllListeners();
+          }
         this.ws.close();
       }
       this.ws = null;
@@ -1227,19 +1330,19 @@ export class RelayConnection {
     }
 
     if (this.reconnect_attempts >= this.max_reconnect_attempts) {
-      console.error(`[attn] Max reconnection attempts (${this.max_reconnect_attempts}) reached for ${this.config.relay_url}`);
+      this.logger.error({ relay_url: this.config.relay_url, max_attempts: this.max_reconnect_attempts }, 'Max reconnection attempts reached');
       return;
     }
 
     const delay = this.reconnect_delay_ms * Math.pow(2, this.reconnect_attempts);
     this.reconnect_attempts++;
 
-    console.log(`[attn] Will attempt to reconnect to ${this.config.relay_url} in ${delay}ms (attempt ${this.reconnect_attempts}/${this.max_reconnect_attempts})...`);
+    this.logger.info({ relay_url: this.config.relay_url, delay_ms: delay, attempt: this.reconnect_attempts, max_attempts: this.max_reconnect_attempts }, 'Will attempt to reconnect');
 
     this.reconnect_timeout = setTimeout(() => {
       this.reconnect_timeout = null;
       this.connect().catch((error) => {
-        console.error(`[attn] Reconnection failed:`, error);
+        this.logger.error({ relay_url: this.config.relay_url, error: error instanceof Error ? error.message : String(error) }, 'Reconnection failed');
       });
     }, delay);
   }
@@ -1248,7 +1351,7 @@ export class RelayConnection {
    * Check if currently connected
    */
   get connected(): boolean {
-    return this.is_connected && this.ws !== null && this.ws.readyState === WebSocket.OPEN;
+    return this.is_connected && this.ws !== null && this.ws.readyState === 1; // readyState 1 = OPEN
   }
 
   /**

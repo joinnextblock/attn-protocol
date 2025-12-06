@@ -14,6 +14,8 @@
     "build": "npm run build --workspaces",
     "lint": "npm run lint --workspaces",
     "check": "npm run check --workspaces",
+    "test": "npm run test --workspaces",
+    "test:coverage": "npm run test:coverage --workspaces",
     "format": "prettier --write \"packages/**/*.{ts,tsx,js,jsx,json,md}\"",
     "changeset": "changeset",
     "version-packages": "changeset version",

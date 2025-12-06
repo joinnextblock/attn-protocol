@@ -10,7 +10,10 @@
   "scripts": {
     "lint": "eslint \"src/**/*.{ts,tsx}\"",
     "check": "tsc --noEmit",
-    "build": "tsc --emitDeclarationOnly"
+    "build": "tsc --emitDeclarationOnly",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
   },
   "keywords": [
     "attn-protocol",
@@ -23,12 +26,23 @@
   "license": "MIT",
   "dependencies": {
     "@attn-protocol/core": "file:../core",
+    "isomorphic-ws": "^5.0.0",
     "nostr-tools": "^2.4.0",
+    "pino": "^10.1.0"
+  },
+  "peerDependencies": {
     "ws": "^8.18.0"
+  },
+  "peerDependenciesMeta": {
+    "ws": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@types/node": "^22.7.5",
+    "@vitest/coverage-v8": "^2.1.8",
     "eslint": "^9.39.1",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vitest": "^2.1.8"
   }
 }

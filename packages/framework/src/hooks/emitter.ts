@@ -8,12 +8,19 @@ import type {
   HookHandle,
   HookContext,
 } from './types.js';
+import type { Logger } from '../logger.js';
+import { create_default_logger } from '../logger.js';
 
 /**
  * Hook emitter that manages hook registration and execution
  */
 export class HookEmitter {
   private handlers: Map<string, Set<HookHandler>> = new Map();
+  private logger: Logger;
+
+  constructor(logger?: Logger) {
+    this.logger = logger ?? create_default_logger();
+  }
 
   /**
    * Register a handler for a specific hook
@@ -64,7 +71,10 @@ export class HookEmitter {
         await handler(context);
       } catch (error) {
         // Log error but don't stop other handlers
-        console.error(`Error in hook handler for ${hook_name}:`, error);
+        this.logger.error({
+          hook_name,
+          error: error instanceof Error ? error.message : String(error),
+        }, 'Error in hook handler');
       }
     }
   }
