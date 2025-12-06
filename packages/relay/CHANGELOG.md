@@ -1,5 +1,11 @@
 # @attn-protocol/relay
 
+## 0.4.0
+
+### Minor Changes
+
+- 7ec1f7c: Refactor relay package to export shared components (logger, ratelimit, validation) from pkg/ directory, enabling other projects to import and use these components as a library.
+
 ## 0.3.0
 
 ### Minor Changes
