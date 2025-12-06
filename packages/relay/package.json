@@ -1,6 +1,6 @@
 {
   "name": "@attn-protocol/relay",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Open-source Nostr relay implementation for the ATTN Protocol with plugin-based architecture",
   "private": true,
   "scripts": {

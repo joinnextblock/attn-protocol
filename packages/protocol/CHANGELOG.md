@@ -1,5 +1,11 @@
 # @attn-protocol/protocol
 
+## 0.5.1
+
+### Patch Changes
+
+- b93fec7: Fix broken links in README files: correct relay package path, remove broken banner image reference, and fix ATTN-01 documentation links.
+
 ## 0.5.0
 
 ### Minor Changes

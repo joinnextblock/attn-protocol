@@ -1,5 +1,13 @@
 # @attn-protocol/framework
 
+## 0.5.5
+
+### Patch Changes
+
+- b93fec7: Review and improve test quality: remove non-functional type tests, enhance SDK tests with actual behavior verification, and ensure all tests verify real functionality rather than shallow mock checks.
+
+  Add package.json to relay package to enable changeset versioning.
+
 ## 0.5.4
 
 ### Patch Changes
