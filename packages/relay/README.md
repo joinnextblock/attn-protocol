@@ -134,7 +134,7 @@ func (h *MyATTNHooks) AfterBlockEvent(ctx context.Context, event *nostr.Event) e
 
 ## Validation
 
-All ATTN events are validated using shared validation logic from `internal/validation/`. This ensures consistent validation across all relay instances.
+All ATTN events are validated using shared validation logic from `pkg/validation/`. This ensures consistent validation across all relay instances. The validation package is exported and can be imported by other projects using this relay library.
 
 ## License
 

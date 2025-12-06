@@ -1,17 +1,18 @@
-version: '3.8'
+name: attn-protocol
 
 services:
   relay-attnprotocol:
+    container_name: relay.attnprotocol.org
     build: .
     ports:
-      - "8010:8010"
+      - "8010:8008"
     env_file:
-      - .env.attnprotocol
+      - .env
     volumes:
       - relay-data:/data
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8010"]
+      test: ["CMD-SHELL", "wget --quiet --tries=1 --spider --server-response http://localhost:8008 2>&1 | grep -q '400\\|200' || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3

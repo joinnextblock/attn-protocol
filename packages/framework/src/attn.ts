@@ -38,7 +38,7 @@ import type {
 } from './hooks/types.js';
 
 export interface AttnConfig {
-  relays: string[];
+  relays?: string[]; // Default: ['wss://relay.attnprotocol.org']
   private_key: Uint8Array;
   node_pubkeys: string[];
   marketplace_pubkeys?: string[];
@@ -59,12 +59,16 @@ export interface AttnConfig {
  */
 export class Attn {
   private emitter: HookEmitter;
-  private config: AttnConfig;
+  private config: AttnConfig & { relays: string[] };
   private relay_connections: Map<string, RelayConnection> = new Map();
 
   constructor(config: AttnConfig) {
     this.emitter = new HookEmitter(config.logger);
-    this.config = config;
+    // Set default relay if not provided
+    this.config = {
+      ...config,
+      relays: config.relays ?? ['wss://relay.attnprotocol.org'],
+    };
   }
 
   /**
@@ -279,7 +283,8 @@ export class Attn {
    * Validate base configuration
    */
   private validate_config(): void {
-    if (!this.config?.relays?.length) {
+    // relays is now guaranteed to have a default value from constructor
+    if (!this.config.relays || this.config.relays.length === 0) {
       throw new Error('At least one relay URL is required');
     }
     if (!this.config.private_key || !(this.config.private_key instanceof Uint8Array)) {

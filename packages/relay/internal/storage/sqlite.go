@@ -7,7 +7,6 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
-	"time"
 
 	"github.com/nbd-wtf/go-nostr"
 	_ "modernc.org/sqlite"
@@ -86,7 +85,7 @@ func (s *SQLiteStorage) StoreEvent(ctx context.Context, event *nostr.Event) erro
 	_, err = s.db.ExecContext(ctx, query,
 		event.ID,
 		event.PubKey,
-		event.CreatedAt.Unix(),
+		int64(event.CreatedAt),
 		event.Kind,
 		event.Content,
 		string(tagsJSON),
@@ -145,12 +144,12 @@ func (s *SQLiteStorage) QueryEvents(ctx context.Context, filter *nostr.Filter) (
 
 	if filter.Since != nil {
 		query += " AND created_at >= ?"
-		args = append(args, filter.Since.Unix())
+		args = append(args, int64(*filter.Since))
 	}
 
 	if filter.Until != nil {
 		query += " AND created_at <= ?"
-		args = append(args, filter.Until.Unix())
+		args = append(args, int64(*filter.Until))
 	}
 
 	// Order by created_at descending
@@ -189,7 +188,7 @@ func (s *SQLiteStorage) QueryEvents(ctx context.Context, filter *nostr.Filter) (
 		event := &nostr.Event{
 			ID:        id,
 			PubKey:    pubkey,
-			CreatedAt: nostr.Timestamp(time.Unix(createdAt, 0)),
+			CreatedAt: nostr.Timestamp(createdAt),
 			Kind:      kind,
 			Content:   content,
 			Tags:      tags,

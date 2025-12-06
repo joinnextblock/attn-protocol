@@ -15,11 +15,11 @@ import (
 	"github.com/pippellia-btc/rely"
 
 	"github.com/joinnextblock/attn-protocol/relay/internal/config"
-	"github.com/joinnextblock/attn-protocol/relay/internal/logger"
-	"github.com/joinnextblock/attn-protocol/relay/internal/plugin"
-	"github.com/joinnextblock/attn-protocol/relay/internal/ratelimit"
+	"github.com/joinnextblock/attn-protocol/relay/pkg/logger"
+	"github.com/joinnextblock/attn-protocol/relay/plugin"
+	"github.com/joinnextblock/attn-protocol/relay/pkg/ratelimit"
 	"github.com/joinnextblock/attn-protocol/relay/internal/storage"
-	"github.com/joinnextblock/attn-protocol/relay/internal/validation"
+	"github.com/joinnextblock/attn-protocol/relay/pkg/validation"
 )
 
 func main() {
@@ -314,29 +314,30 @@ func setupHooks(
 			Msg("Event stored successfully")
 
 		return nil
-	})
+	}
 
 	// OnReq hook - handle queries
-	relay.Hooks.On.Req = func(client rely.Client, filters nostr.Filters) {
-		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-		defer cancel()
+	relay.Hooks.On.Req = func(ctx context.Context, client rely.Client, filters nostr.Filters) ([]nostr.Event, error) {
+		var allEvents []nostr.Event
 
-		// Query events from storage
-		events, err := eventStorage.QueryEvents(ctx, &filters[0])
-		if err != nil {
-			logger.Error().
-				Err(err).
-				Msg("Failed to query events")
-			client.SendNotice("Query failed")
-			return
+		// Process each filter
+		for _, filter := range filters {
+			// Query events from storage
+			events, err := eventStorage.QueryEvents(ctx, &filter)
+			if err != nil {
+				logger.Error().
+					Err(err).
+					Msg("Failed to query events")
+				continue // Continue with other filters
+			}
+
+			// Convert to slice of nostr.Event (not pointers)
+			for _, event := range events {
+				allEvents = append(allEvents, *event)
+			}
 		}
 
-		// Send events to client
-		for _, event := range events {
-			client.SendEvent(event)
-		}
-
-		client.SendEOSE()
+		return allEvents, nil
 	}
 }
 

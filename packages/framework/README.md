@@ -19,16 +19,21 @@ npm install @attn-protocol/framework
 ```typescript
 import { Attn } from "@attn-protocol/framework";
 
-// Basic usage
+// Basic usage (uses default relay: wss://relay.attnprotocol.org)
 const attn = new Attn({
-  relays: ["wss://relay.attnprotocol.org"],
   private_key: myPrivateKey, // Uint8Array for NIP-42
   node_pubkeys: [node_pubkey], // Trusted Bitcoin node services
 });
 
+// With explicit relay configuration
+const attnWithCustomRelay = new Attn({
+  relays: ["wss://custom-relay.example.com"],
+  private_key: myPrivateKey,
+  node_pubkeys: [node_pubkey],
+});
+
 // With marketplace filtering
 const filteredAttn = new Attn({
-  relays: ["wss://relay.attnprotocol.org"],
   private_key: myPrivateKey,
   node_pubkeys: [node_pubkey],
   marketplace_pubkeys: [example_marketplace_pubkey],
@@ -36,7 +41,6 @@ const filteredAttn = new Attn({
 
 // Multiple marketplaces
 const multiMarketplaceAttn = new Attn({
-  relays: ["wss://relay.attnprotocol.org"],
   private_key: myPrivateKey,
   node_pubkeys: [node_pubkey],
   marketplace_pubkeys: [example_marketplace_pubkey, other_marketplace_pubkey],
@@ -143,7 +147,7 @@ The framework also subscribes to standard Nostr events for enhanced functionalit
 
 ```typescript
 interface AttnConfig {
-  relays: string[];
+  relays?: string[]; // Default: ['wss://relay.attnprotocol.org']
   private_key: Uint8Array;
   node_pubkeys: string[];
   marketplace_pubkeys?: string[];
@@ -166,7 +170,8 @@ The framework validates configuration at runtime:
 
 - **Type Safety**: TypeScript interfaces ensure type correctness at compile time
 - **Runtime Validation**: The framework validates required fields when methods are called:
-  - `connect()` throws if no relays or no trusted `node_pubkeys` are supplied
+  - `connect()` throws if no trusted `node_pubkeys` are supplied
+  - If `relays` is not provided, defaults to `['wss://relay.attnprotocol.org']`
   - Each relay URL must be a valid WebSocket endpoint
   - `private_key` must be a `Uint8Array` (32 bytes) for NIP-42 authentication
   - `node_pubkeys` and optional pubkey filters must be hex strings
@@ -275,9 +280,9 @@ The framework provides hooks for block-synchronized processing, ensuring all ope
 import { Attn } from "@attn-protocol/framework";
 
 const attn = new Attn({
-  relays: ["wss://relay.attnprotocol.org"],
   private_key,
   node_pubkeys: [node_pubkey_hex],
+  // Uses default relay: wss://relay.attnprotocol.org
 });
 
 // Framework hook pattern for block-synchronized processing
