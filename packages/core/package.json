@@ -1,6 +1,6 @@
 {
   "name": "@attn-protocol/core",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "description": "Core constants and types for ATTN Protocol",
   "private": true,
   "type": "module",
