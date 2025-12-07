@@ -31,6 +31,11 @@ export function create_marketplace_event(
     ref_marketplace_id: params.marketplace_id,
     ref_node_pubkey: params.ref_node_pubkey, // Required per ATTN-01
     ref_block_id: params.ref_block_id, // Required per ATTN-01
+    // Metrics fields (required per ATTN-01, can be 0)
+    billboard_count: params.billboard_count ?? 0,
+    promotion_count: params.promotion_count ?? 0,
+    attention_count: params.attention_count ?? 0,
+    match_count: params.match_count ?? 0,
   };
 
   const tags: string[][] = [];

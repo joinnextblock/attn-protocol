@@ -52,6 +52,11 @@ export interface MarketplaceEventParams extends BaseEventParams {
   ref_node_pubkey: string; // Node pubkey that published the block event (required)
   ref_block_id: string; // Block event identifier (org.attnprotocol:block:<height>:<hash>) (required)
   block_coordinate: string; // Block coordinate: 38088:<node_pubkey>:org.attnprotocol:block:<height>:<hash> (required)
+  // Metrics fields (required per ATTN-01, can be 0)
+  billboard_count?: number; // Total billboards (default: 0)
+  promotion_count?: number; // Total promotions (default: 0)
+  attention_count?: number; // Total attention events (default: 0)
+  match_count?: number; // Total matches (default: 0)
 }
 
 /**
