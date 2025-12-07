@@ -132,6 +132,7 @@ export interface RelayConnectionConfig {
   auto_reconnect?: boolean;
   deduplicate?: boolean;
   logger?: Logger; // Optional logger, defaults to Pino logger
+  subscription_since?: number; // Unix timestamp to filter events (prevents infinite backlog on restart)
 }
 
 /**
@@ -563,11 +564,20 @@ export class RelayConnection {
       return;
     }
 
+    // Get subscription_since filter if configured (prevents infinite backlog on restart)
+    const since_filter = this.config.subscription_since;
+    if (since_filter) {
+      this.logger.info({ relay_url: this.config.relay_url, since: since_filter, since_date: new Date(since_filter * 1000).toISOString() }, 'Using since filter for subscriptions');
+    }
+
     // Subscribe to block events (kind 38088 from trusted node services)
-    const block_filter: { kinds: number[]; authors: string[] } = {
+    const block_filter: { kinds: number[]; authors: string[]; since?: number } = {
       kinds: [ATTN_EVENT_KINDS.BLOCK],
       authors: this.config.node_pubkeys,
     };
+    if (since_filter) {
+      block_filter.since = since_filter;
+    }
 
     const block_req_message = JSON.stringify(['REQ', this.subscription_id, block_filter]);
     this.logger.debug({ relay_url: this.config.relay_url, subscription_id: this.subscription_id, filter: block_filter }, 'Sending REQ subscription for block events');
@@ -582,7 +592,7 @@ export class RelayConnection {
     this.hooks.emit(HOOK_NAMES.SUBSCRIPTION, block_subscription_context).catch(() => {});
 
     // Subscribe to ATTN Protocol events (all kinds in a single subscription)
-    const attn_filter: { kinds: number[]; [key: string]: unknown } = {
+    const attn_filter: { kinds: number[]; since?: number; [key: string]: unknown } = {
       kinds: [
         ATTN_EVENT_KINDS.MARKETPLACE,
         ATTN_EVENT_KINDS.BILLBOARD,
@@ -595,6 +605,9 @@ export class RelayConnection {
         ATTN_EVENT_KINDS.MATCH,
       ],
     };
+    if (since_filter) {
+      attn_filter.since = since_filter;
+    }
 
     // Combine all pubkey filters if any are specified
     const all_pubkeys: string[] = [];
@@ -630,6 +643,7 @@ export class RelayConnection {
     this.hooks.emit(HOOK_NAMES.SUBSCRIPTION, attn_subscription_context).catch(() => {});
 
     // Subscribe to standard Nostr events (profiles, relay lists)
+    // Note: We don't apply since filter to profiles/relay lists as we always want the latest
     const profiles_relay_lists_filter: { kinds: number[] } = {
       kinds: [0, 10002],
     };
@@ -647,6 +661,7 @@ export class RelayConnection {
     this.hooks.emit(HOOK_NAMES.SUBSCRIPTION, profiles_relay_lists_subscription_context).catch(() => {});
 
     // Subscribe to NIP-51 lists (kind 30000 with d tag filter)
+    // Note: We don't apply since filter to NIP-51 lists as we always want the latest
     const nip51_lists_filter: { kinds: number[]; [key: string]: unknown } = {
       kinds: [30000],
       '#d': [

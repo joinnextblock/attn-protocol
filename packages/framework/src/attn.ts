@@ -51,6 +51,7 @@ export interface AttnConfig {
   max_reconnect_attempts?: number; // Default: 10
   auth_timeout_ms?: number; // Default: 10000
   logger?: Logger; // Optional logger, defaults to Pino logger
+  subscription_since?: number; // Unix timestamp to filter events (prevents infinite backlog on restart)
 }
 
 /**
@@ -315,6 +316,7 @@ export class Attn {
         auto_reconnect: this.config.auto_reconnect,
         deduplicate: this.config.deduplicate,
         logger: this.config.logger,
+        subscription_since: this.config.subscription_since,
       };
       connection = new RelayConnection(relay_config, this.emitter);
       this.relay_connections.set(relay_url, connection);
