@@ -167,6 +167,12 @@ interface MarketplaceContent {
   ref_marketplace_id: string;
   ref_node_pubkey: string;  // Block node this marketplace listens to
   ref_block_id: string;  // Current block event identifier (org.attnprotocol:block:<height>:<hash>)
+
+  // Metrics fields (required, can be 0)
+  billboard_count: number;  // Total billboards (can be 0)
+  promotion_count: number;  // Total promotions (can be 0)
+  attention_count: number;  // Total attention events (can be 0)
+  match_count: number;  // Total matches (can be 0)
 }
 ```
 
@@ -213,7 +219,11 @@ interface MarketplaceContent {
     "ref_marketplace_pubkey": "marketplace_pubkey_hex",
     "ref_marketplace_id": "nextblock.city",
     "ref_node_pubkey": "node_service_pubkey_hex",
-    "ref_block_id": "org.attnprotocol:block:862626:00000000000000000001a7c..."
+    "ref_block_id": "org.attnprotocol:block:862626:00000000000000000001a7c...",
+    "billboard_count": 5,
+    "promotion_count": 42,
+    "attention_count": 128,
+    "match_count": 18
   }
 }
 ```
@@ -228,6 +238,7 @@ interface MarketplaceContent {
 - Clients should query for the latest marketplace event at the current block height to get current parameters
 - The `ref_block_id` and `["a", "<block_coordinate>"]` tag always reference the current block event
 - **Republishing is optional but recommended**: Marketplaces that don't republish will be out of sync with other marketplaces using the same Bitcoin node events
+- **Count metrics are required fields**: The `billboard_count`, `promotion_count`, `attention_count`, and `match_count` fields are required and must be present in all marketplace event content. These metrics represent a snapshot of the marketplace state at the current block height. Count metrics can be 0 when there are no entities of that type at the specified block height. Marketplace operators include these metrics when publishing aggregated statistics to provide visibility into marketplace activity.
 
 ---
 

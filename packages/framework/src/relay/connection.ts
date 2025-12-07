@@ -374,22 +374,32 @@ export class RelayConnection {
 
           this.ws!.on('message', this.message_handler);
 
-          // Wait for AUTH challenge - do NOT subscribe until authentication completes
+          // Wait for AUTH challenge - some relays don't require authentication
+          // If no AUTH challenge is received within a short timeout, proceed without authentication
           this.logger.debug({ relay_url: this.config.relay_url, timeout_ms: this.auth_timeout_ms }, 'Private key provided, waiting for AUTH challenge');
-          // Set timeout: if no AUTH challenge received within timeout, reject connection
+          // Set timeout: if no AUTH challenge received, proceed without authentication
           this.auth_timeout = setTimeout(() => {
             if (!this.auth_challenge_received) {
-              this.logger.error({
+              // Relay doesn't require authentication - proceed without auth
+              this.logger.info({
                 relay_url: this.config.relay_url,
                 timeout_ms: this.auth_timeout_ms,
-                connected: this.is_connected,
-                ready_state: this.ws?.readyState,
-              }, 'No AUTH challenge received within timeout');
-              reject(new Error(`No AUTH challenge received from relay ${this.config.relay_url} within ${this.auth_timeout_ms}ms - NIP-42 authentication required`));
+              }, 'No AUTH challenge received - relay does not require authentication, proceeding without auth');
+              this.is_authenticated = true; // Mark as authenticated to allow subscriptions
+              // Subscribe to events without authentication
+              this.subscribe_to_events();
+              // Emit connection hook
+              const context: RelayConnectContext = {
+                relay_url: this.config.relay_url,
+              };
+              this.hooks.emit(HOOK_NAMES.RELAY_CONNECT, context).then(() => {
+                resolve();
+              });
             }
           }, this.auth_timeout_ms);
-          // Do NOT subscribe here - wait for authentication to complete
+          // Do NOT subscribe here - wait for authentication to complete OR timeout
           // Subscription will happen in the OK response handler after successful authentication
+          // OR in the timeout handler if no AUTH challenge is received
         });
 
         this.ws.on('error', (error) => {
