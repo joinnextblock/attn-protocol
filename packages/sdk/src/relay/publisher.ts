@@ -13,9 +13,9 @@ import type { PublishResult, PublishResults } from "../types/index.js";
  * @param relay_url - WebSocket URL of the relay
  * @param event - Nostr event to publish
  * @param private_key - Private key for signing (used for NIP-42 auth if required)
- * @param timeout_ms - Timeout for publish response (default 10000ms)
- * @param auth_timeout_ms - Timeout for authentication (default 10000ms)
- * @param requires_auth - Whether relay requires NIP-42 authentication (default true)
+ * @param timeout_ms - Timeout for publish response (default 3000ms)
+ * @param auth_timeout_ms - Timeout for authentication (default 3000ms)
+ * @param requires_auth - Whether relay requires NIP-42 authentication (default false)
  */
 export async function publish_to_relay(
   relay_url: string,
@@ -23,7 +23,7 @@ export async function publish_to_relay(
   private_key: Uint8Array,
   timeout_ms: number = 3000,
   auth_timeout_ms: number = 3000,
-  requires_auth: boolean = true
+  requires_auth: boolean = false
 ): Promise<PublishResult> {
   return new Promise((resolve) => {
     const ws = new WebSocket(relay_url);
@@ -81,7 +81,10 @@ export async function publish_to_relay(
         // Set timeout for AUTH challenge
         auth_timeout = setTimeout(() => {
           if (!is_authenticated && !resolved) {
-            fail("No AUTH challenge received from relay - NIP-42 authentication required");
+            // If no AUTH challenge received, relay doesn't require auth
+            // Proceed with publishing without authentication
+            is_authenticated = true; // Mark as "authenticated" to handle OK response correctly
+            send_event();
           }
         }, auth_timeout_ms);
       } else {
@@ -244,7 +247,7 @@ export async function publish_to_relay(
  * @param private_key - Private key for signing (used for NIP-42 auth if required)
  * @param timeout_ms - Timeout for publish response (default 10000ms)
  * @param auth_timeout_ms - Timeout for authentication (default 10000ms)
- * @param requires_auth - Whether relays require NIP-42 authentication (default true)
+ * @param requires_auth - Whether relays require NIP-42 authentication (default false)
  */
 export async function publish_to_multiple(
   relay_urls: string[],
@@ -252,7 +255,7 @@ export async function publish_to_multiple(
   private_key: Uint8Array,
   timeout_ms: number = 10000,
   auth_timeout_ms: number = 10000,
-  requires_auth: boolean = true
+  requires_auth: boolean = false
 ): Promise<PublishResults> {
   const publish_promises = relay_urls.map((url) =>
     publish_to_relay(url, event, private_key, timeout_ms, auth_timeout_ms, requires_auth)

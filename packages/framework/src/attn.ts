@@ -50,7 +50,7 @@ export interface AttnConfig {
   relays_auth?: string[]; // Relays requiring NIP-42 authentication
   relays_noauth?: string[]; // Relays not requiring authentication
   private_key: Uint8Array;
-  node_pubkeys: string[];
+  node_pubkeys?: string[]; // Optional - if not provided, block events won't be filtered by node
   marketplace_pubkeys?: string[];
   marketplace_d_tags?: string[]; // Filter marketplace events by d-tags (for subscribing to specific marketplaces)
   billboard_pubkeys?: string[];
@@ -319,9 +319,7 @@ export class Attn {
     if (!this.config.private_key || !(this.config.private_key instanceof Uint8Array)) {
       throw new Error('private_key (Uint8Array) is required');
     }
-    if (!this.config.node_pubkeys || this.config.node_pubkeys.length === 0) {
-      throw new Error('node_pubkeys configuration is required for block synchronization');
-    }
+    // node_pubkeys is optional - if not provided, block events won't be filtered by node
   }
 
   /**

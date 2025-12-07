@@ -120,9 +120,9 @@ import type {
 
 export interface RelayConnectionConfig {
   relay_url: string;
-  requires_auth?: boolean; // Whether relay requires NIP-42 authentication (default true)
+  requires_auth?: boolean; // Whether relay requires NIP-42 authentication (default false)
   private_key: Uint8Array;
-  node_pubkeys: string[];
+  node_pubkeys?: string[]; // Optional - if not provided, block events won't be filtered by node
   marketplace_pubkeys?: string[];
   marketplace_d_tags?: string[]; // Filter marketplace events by d-tags (for subscribing to specific marketplaces)
   billboard_pubkeys?: string[];
@@ -171,7 +171,7 @@ export class RelayConnection {
     this.config = config;
     this.hooks = hooks;
     this.logger = config.logger ?? create_default_logger();
-    this.requires_auth = config.requires_auth !== false; // Default true for backward compat
+    this.requires_auth = config.requires_auth === true; // Default false - most public relays don't require auth
     this.connection_timeout_ms = config.connection_timeout_ms ?? 30000;
     this.reconnect_delay_ms = config.reconnect_delay_ms ?? 5000;
     this.max_reconnect_attempts = config.max_reconnect_attempts ?? 10;
@@ -196,9 +196,7 @@ export class RelayConnection {
     if (!this.config.private_key) {
       throw new Error('private_key required for relay connection');
     }
-    if (!this.config.node_pubkeys || this.config.node_pubkeys.length === 0) {
-      throw new Error('node_pubkeys configuration is required');
-    }
+    // node_pubkeys is optional - if not provided, block events won't be filtered by node
 
     return new Promise((resolve, reject) => {
       const timeout = setTimeout(() => {
@@ -307,10 +305,12 @@ export class RelayConnection {
 
                   if (subscription_id === this.subscription_id) {
                     // End of stored events - block subscription confirmed
-                  const filter: { kinds: number[]; authors: string[] } = {
+                  const filter: { kinds: number[]; authors?: string[] } = {
                     kinds: [ATTN_EVENT_KINDS.BLOCK],
-                    authors: this.config.node_pubkeys,
                   };
+                  if (this.config.node_pubkeys && this.config.node_pubkeys.length > 0) {
+                    filter.authors = this.config.node_pubkeys;
+                  }
                     const confirmed_context: SubscriptionContext = {
                       relay_url: this.config.relay_url,
                       subscription_id: this.subscription_id,
@@ -592,10 +592,12 @@ export class RelayConnection {
     }
 
     // Subscribe to block events (kind 38088 from trusted node services)
-    const block_filter: { kinds: number[]; authors: string[]; since?: number } = {
+    const block_filter: { kinds: number[]; authors?: string[]; since?: number } = {
       kinds: [ATTN_EVENT_KINDS.BLOCK],
-      authors: this.config.node_pubkeys,
     };
+    if (this.config.node_pubkeys && this.config.node_pubkeys.length > 0) {
+      block_filter.authors = this.config.node_pubkeys;
+    }
     if (since_filter) {
       block_filter.since = since_filter;
     }

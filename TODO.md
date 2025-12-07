@@ -96,7 +96,7 @@ _No critical issues remaining._
 
 ---
 
-**Last Updated:** 2025-01-29
+**Last Updated:** 2025-12-07
 
 **Project Description:** ATTN Protocol monorepo - Protocol specification, framework, SDK, and relay for Bitcoin-native attention marketplace
 

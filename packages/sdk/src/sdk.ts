@@ -126,16 +126,16 @@ export class AttnSdk {
    * Publish event to a single relay with optional NIP-42 authentication
    * @param event - Nostr event to publish
    * @param relay_url - WebSocket URL of the relay
-   * @param timeout_ms - Timeout for publish response (default 10000ms)
-   * @param auth_timeout_ms - Timeout for authentication (default 10000ms)
-   * @param requires_auth - Whether relay requires NIP-42 authentication (default true)
+   * @param timeout_ms - Timeout for publish response (default 3000ms)
+   * @param auth_timeout_ms - Timeout for authentication (default 3000ms)
+   * @param requires_auth - Whether relay requires NIP-42 authentication (default false)
    */
   async publish(
     event: Event,
     relay_url: string,
     timeout_ms?: number,
     auth_timeout_ms?: number,
-    requires_auth: boolean = true
+    requires_auth: boolean = false
   ): Promise<PublishResult> {
     return publish_to_relay(relay_url, event, this.private_key, timeout_ms, auth_timeout_ms, requires_auth);
   }
@@ -146,14 +146,14 @@ export class AttnSdk {
    * @param relay_urls - WebSocket URLs of the relays
    * @param timeout_ms - Timeout for publish response (default 10000ms)
    * @param auth_timeout_ms - Timeout for authentication (default 10000ms)
-   * @param requires_auth - Whether relays require NIP-42 authentication (default true)
+   * @param requires_auth - Whether relays require NIP-42 authentication (default false)
    */
   async publish_to_multiple(
     event: Event,
     relay_urls: string[],
     timeout_ms?: number,
     auth_timeout_ms?: number,
-    requires_auth: boolean = true
+    requires_auth: boolean = false
   ): Promise<PublishResults> {
     return publish_to_multiple(relay_urls, event, this.private_key, timeout_ms, auth_timeout_ms, requires_auth);
   }
