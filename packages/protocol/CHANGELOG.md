@@ -1,5 +1,11 @@
 # @attn-protocol/protocol
 
+## 0.6.0
+
+### Minor Changes
+
+- 4aa8de7: Add required count metrics fields to MARKETPLACE event content schema (billboard_count, promotion_count, attention_count, match_count)
+
 ## 0.5.1
 
 ### Patch Changes

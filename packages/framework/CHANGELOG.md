@@ -1,5 +1,11 @@
 # @attn-protocol/framework
 
+## 0.5.6
+
+### Patch Changes
+
+- 4aa8de7: Fix relay connection to handle relays that don't require authentication gracefully
+
 ## 0.5.5
 
 ### Patch Changes
