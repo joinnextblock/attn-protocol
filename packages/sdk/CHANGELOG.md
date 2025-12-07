@@ -1,5 +1,11 @@
 # @attn-protocol/sdk
 
+## 0.7.4
+
+### Patch Changes
+
+- cdba28d: Add required metrics fields (billboard_count, promotion_count, attention_count, match_count) to MARKETPLACE events to conform with ATTN-01 specification. Fields default to 0 if not provided, maintaining backward compatibility.
+
 ## 0.7.3
 
 ### Patch Changes
