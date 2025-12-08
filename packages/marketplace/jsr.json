@@ -1,6 +1,6 @@
 {
   "name": "@attn/marketplace",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Marketplace lifecycle layer for ATTN Protocol - bring your own storage implementation for attention marketplaces",
   "license": "MIT",
   "exports": "./src/index.ts",

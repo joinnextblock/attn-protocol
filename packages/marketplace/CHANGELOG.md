@@ -1,5 +1,11 @@
 # @attn-protocol/marketplace
 
+## 0.2.3
+
+### Patch Changes
+
+- Enhance JSDoc documentation for improved JSR score and developer experience
+
 ## 0.2.2
 
 ### Patch Changes

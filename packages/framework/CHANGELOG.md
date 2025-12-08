@@ -1,5 +1,11 @@
 # @attn-protocol/framework
 
+## 0.9.2
+
+### Patch Changes
+
+- Enhance JSDoc documentation for improved JSR score and developer experience
+
 ## 0.9.1
 
 ### Patch Changes
