@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.7.0
+
+### Minor Changes
+
+- 62b90c7: Add marketplace package with storage abstraction, enhance core types, and improve testing infrastructure
+
 ## 0.6.0
 
 ### Minor Changes
