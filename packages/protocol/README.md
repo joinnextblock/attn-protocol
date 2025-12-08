@@ -13,7 +13,7 @@ It also functions as the Bitcoin-native attention interchange for block-synced m
 ## Key capabilities
 
 - **ATTN-01 spec**: [`docs/ATTN-01.md`](./docs/ATTN-01.md) is the canonical definition of kinds 38088–38988, the event mapping, and all required tags.
-- **Runtime framework**: `@attn-protocol/framework` exposes the `Attn` hook system that wires relays, handles NIP-42 auth, deduplicates events, and sequences `before_new_block → on_new_block → after_new_block`.
+- **Runtime framework**: `@attn-protocol/framework` exposes the `Attn` hook system that wires relays, handles NIP-42 auth, deduplicates events, and sequences `before_block_event → on_block_event → after_block_event`.
 - **Typed SDK**: `@attn-protocol/sdk` ships builders plus validators such as `create_block_event`, `create_promotion_event`, and relay publishers so services can emit fully-signed events with the correct `["t","<block_height>"]` tags.
 - **Snapshot discipline**: Every helper enforces block height tagging and deterministic IDs so downstream marketplace inventory, user earnings, transfers, and settlement calculations never accumulate across blocks.
 

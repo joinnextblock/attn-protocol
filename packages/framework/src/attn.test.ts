@@ -352,64 +352,64 @@ describe('Attn', () => {
       expect(handle.unregister).toBeDefined();
     });
 
-    it('should register on_new_block handler', () => {
+    it('should register on_block_event handler', () => {
       const attn = new Attn(config);
       const handler = vi.fn();
-      const handle = attn.on_new_block(handler);
+      const handle = attn.on_block_event(handler);
 
       expect(handle).toBeDefined();
       expect(handle.unregister).toBeDefined();
     });
 
-    it('should register on_new_marketplace handler', () => {
+    it('should register on_marketplace_event handler', () => {
       const attn = new Attn(config);
       const handler = vi.fn();
-      const handle = attn.on_new_marketplace(handler);
+      const handle = attn.on_marketplace_event(handler);
 
       expect(handle).toBeDefined();
       expect(handle.unregister).toBeDefined();
     });
 
-    it('should register on_new_billboard handler', () => {
+    it('should register on_billboard_event handler', () => {
       const attn = new Attn(config);
       const handler = vi.fn();
-      const handle = attn.on_new_billboard(handler);
+      const handle = attn.on_billboard_event(handler);
 
       expect(handle).toBeDefined();
       expect(handle.unregister).toBeDefined();
     });
 
-    it('should register on_new_promotion handler', () => {
+    it('should register on_promotion_event handler', () => {
       const attn = new Attn(config);
       const handler = vi.fn();
-      const handle = attn.on_new_promotion(handler);
+      const handle = attn.on_promotion_event(handler);
 
       expect(handle).toBeDefined();
       expect(handle.unregister).toBeDefined();
     });
 
-    it('should register on_new_attention handler', () => {
+    it('should register on_attention_event handler', () => {
       const attn = new Attn(config);
       const handler = vi.fn();
-      const handle = attn.on_new_attention(handler);
+      const handle = attn.on_attention_event(handler);
 
       expect(handle).toBeDefined();
       expect(handle.unregister).toBeDefined();
     });
 
-    it('should register before_new_block handler', () => {
+    it('should register before_block_event handler', () => {
       const attn = new Attn(config);
       const handler = vi.fn();
-      const handle = attn.before_new_block(handler);
+      const handle = attn.before_block_event(handler);
 
       expect(handle).toBeDefined();
       expect(handle.unregister).toBeDefined();
     });
 
-    it('should register after_new_block handler', () => {
+    it('should register after_block_event handler', () => {
       const attn = new Attn(config);
       const handler = vi.fn();
-      const handle = attn.after_new_block(handler);
+      const handle = attn.after_block_event(handler);
 
       expect(handle).toBeDefined();
       expect(handle.unregister).toBeDefined();
@@ -419,6 +419,78 @@ describe('Attn', () => {
       const attn = new Attn(config);
       const handler = vi.fn();
       const handle = attn.on_block_gap_detected(handler);
+
+      expect(handle).toBeDefined();
+      expect(handle.unregister).toBeDefined();
+    });
+
+    it('should register before_marketplace_event handler', () => {
+      const attn = new Attn(config);
+      const handler = vi.fn();
+      const handle = attn.before_marketplace_event(handler);
+
+      expect(handle).toBeDefined();
+      expect(handle.unregister).toBeDefined();
+    });
+
+    it('should register after_marketplace_event handler', () => {
+      const attn = new Attn(config);
+      const handler = vi.fn();
+      const handle = attn.after_marketplace_event(handler);
+
+      expect(handle).toBeDefined();
+      expect(handle.unregister).toBeDefined();
+    });
+
+    it('should register before_billboard_event handler', () => {
+      const attn = new Attn(config);
+      const handler = vi.fn();
+      const handle = attn.before_billboard_event(handler);
+
+      expect(handle).toBeDefined();
+      expect(handle.unregister).toBeDefined();
+    });
+
+    it('should register after_billboard_event handler', () => {
+      const attn = new Attn(config);
+      const handler = vi.fn();
+      const handle = attn.after_billboard_event(handler);
+
+      expect(handle).toBeDefined();
+      expect(handle.unregister).toBeDefined();
+    });
+
+    it('should register on_billboard_confirmation_event handler', () => {
+      const attn = new Attn(config);
+      const handler = vi.fn();
+      const handle = attn.on_billboard_confirmation_event(handler);
+
+      expect(handle).toBeDefined();
+      expect(handle.unregister).toBeDefined();
+    });
+
+    it('should register on_attention_confirmation_event handler', () => {
+      const attn = new Attn(config);
+      const handler = vi.fn();
+      const handle = attn.on_attention_confirmation_event(handler);
+
+      expect(handle).toBeDefined();
+      expect(handle.unregister).toBeDefined();
+    });
+
+    it('should register on_marketplace_confirmation_event handler', () => {
+      const attn = new Attn(config);
+      const handler = vi.fn();
+      const handle = attn.on_marketplace_confirmation_event(handler);
+
+      expect(handle).toBeDefined();
+      expect(handle.unregister).toBeDefined();
+    });
+
+    it('should register on_attention_payment_confirmation_event handler', () => {
+      const attn = new Attn(config);
+      const handler = vi.fn();
+      const handle = attn.on_attention_payment_confirmation_event(handler);
 
       expect(handle).toBeDefined();
       expect(handle.unregister).toBeDefined();

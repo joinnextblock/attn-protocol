@@ -185,6 +185,7 @@ describe('RelayConnection', () => {
       relay_url: 'ws://localhost:8080',
       private_key: mock_private_key,
       node_pubkeys: [mock_node_pubkey],
+      requires_auth: true, // Enable auth for tests
       connection_timeout_ms: 5000,
       auth_timeout_ms: 5000,
     };
@@ -387,7 +388,7 @@ describe('RelayConnection', () => {
   });
 
   describe('handle_block_event', () => {
-    it('should emit on_new_block hook when block event is received', async () => {
+    it('should emit on_block_event hook when block event is received', async () => {
       last_auth_event_id = null;
       // Connect first
       const connect_promise = connection.connect();
@@ -407,7 +408,7 @@ describe('RelayConnection', () => {
 
       // Register block handler
       const block_handler = vi.fn();
-      hooks.register(HOOK_NAMES.NEW_BLOCK, block_handler);
+      hooks.register(HOOK_NAMES.BLOCK_EVENT, block_handler);
 
       // Send block event
       const block_event = create_mock_block_event(850000, mock_node_pubkey);
@@ -429,7 +430,7 @@ describe('RelayConnection', () => {
       );
     });
 
-    it('should emit before_new_block and after_new_block hooks', async () => {
+    it('should emit before_block_event and after_block_event hooks', async () => {
       last_auth_event_id = null;
       // Connect first
       const connect_promise = connection.connect();
@@ -450,8 +451,8 @@ describe('RelayConnection', () => {
       // Register handlers
       const before_handler = vi.fn();
       const after_handler = vi.fn();
-      hooks.register(HOOK_NAMES.BEFORE_NEW_BLOCK, before_handler);
-      hooks.register(HOOK_NAMES.AFTER_NEW_BLOCK, after_handler);
+      hooks.register(HOOK_NAMES.BEFORE_BLOCK_EVENT, before_handler);
+      hooks.register(HOOK_NAMES.AFTER_BLOCK_EVENT, after_handler);
 
       // Send block event
       const block_event = create_mock_block_event(850000, mock_node_pubkey);

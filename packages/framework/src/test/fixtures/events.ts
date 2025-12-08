@@ -21,7 +21,7 @@ export function create_mock_block_event(
     content: JSON.stringify({
       height: block_height,
       hash: 'block_hash_' + block_height,
-      timestamp: Math.floor(Date.now() / 1000),
+      time: Math.floor(Date.now() / 1000),
     }),
     sig: 'sig'.repeat(64),
   };

@@ -18,23 +18,23 @@ import type {
   RelayConnectContext,
   RelayDisconnectContext,
   SubscriptionContext,
-  NewMarketplaceContext,
-  NewBillboardContext,
-  NewPromotionContext,
-  NewAttentionContext,
-  NewMatchContext,
+  MarketplaceEventContext,
+  BillboardEventContext,
+  PromotionEventContext,
+  AttentionEventContext,
+  MatchEventContext,
   MatchPublishedContext,
-  BillboardConfirmContext,
-  AttentionConfirmContext,
-  MarketplaceConfirmedContext,
-  AttentionPaymentConfirmContext,
-  NewBlockContext,
+  BillboardConfirmationEventContext,
+  AttentionConfirmationEventContext,
+  MarketplaceConfirmationEventContext,
+  AttentionPaymentConfirmationEventContext,
+  BlockEventContext,
   BlockGapDetectedContext,
   RateLimitContext,
   HealthChangeContext,
-  NewProfileContext,
-  NewRelayListContext,
-  NewNip51ListContext,
+  ProfileEventContext,
+  RelayListEventContext,
+  Nip51ListEventContext,
 } from './hooks/types.js';
 
 /**
@@ -174,41 +174,119 @@ export class Attn {
     return this.emitter.register(HOOK_NAMES.RATE_LIMIT, handler);
   }
 
-  // Event lifecycle hooks
+  // ATTN Protocol event hooks - Marketplace
 
   /**
-   * Register handler for new marketplace events
+   * Register handler before marketplace events
    */
-  on_new_marketplace(handler: HookHandler<NewMarketplaceContext>): HookHandle {
-    return this.emitter.register(HOOK_NAMES.NEW_MARKETPLACE, handler);
+  before_marketplace_event(handler: BeforeHookHandler<MarketplaceEventContext>): HookHandle {
+    return this.emitter.register(HOOK_NAMES.BEFORE_MARKETPLACE_EVENT, handler);
   }
 
   /**
-   * Register handler for new billboard events
+   * Register handler for marketplace events
    */
-  on_new_billboard(handler: HookHandler<NewBillboardContext>): HookHandle {
-    return this.emitter.register(HOOK_NAMES.NEW_BILLBOARD, handler);
+  on_marketplace_event(handler: HookHandler<MarketplaceEventContext>): HookHandle {
+    return this.emitter.register(HOOK_NAMES.MARKETPLACE_EVENT, handler);
   }
 
   /**
-   * Register handler for new promotion events
+   * Register handler after marketplace events
    */
-  on_new_promotion(handler: HookHandler<NewPromotionContext>): HookHandle {
-    return this.emitter.register(HOOK_NAMES.NEW_PROMOTION, handler);
+  after_marketplace_event(handler: AfterHookHandler<MarketplaceEventContext>): HookHandle {
+    return this.emitter.register(HOOK_NAMES.AFTER_MARKETPLACE_EVENT, handler);
+  }
+
+  // ATTN Protocol event hooks - Billboard
+
+  /**
+   * Register handler before billboard events
+   */
+  before_billboard_event(handler: BeforeHookHandler<BillboardEventContext>): HookHandle {
+    return this.emitter.register(HOOK_NAMES.BEFORE_BILLBOARD_EVENT, handler);
   }
 
   /**
-   * Register handler for new attention events
+   * Register handler for billboard events
    */
-  on_new_attention(handler: HookHandler<NewAttentionContext>): HookHandle {
-    return this.emitter.register(HOOK_NAMES.NEW_ATTENTION, handler);
+  on_billboard_event(handler: HookHandler<BillboardEventContext>): HookHandle {
+    return this.emitter.register(HOOK_NAMES.BILLBOARD_EVENT, handler);
   }
 
   /**
-   * Register handler for new match events
+   * Register handler after billboard events
    */
-  on_new_match(handler: HookHandler<NewMatchContext>): HookHandle {
-    return this.emitter.register(HOOK_NAMES.NEW_MATCH, handler);
+  after_billboard_event(handler: AfterHookHandler<BillboardEventContext>): HookHandle {
+    return this.emitter.register(HOOK_NAMES.AFTER_BILLBOARD_EVENT, handler);
+  }
+
+  // ATTN Protocol event hooks - Promotion
+
+  /**
+   * Register handler before promotion events
+   */
+  before_promotion_event(handler: BeforeHookHandler<PromotionEventContext>): HookHandle {
+    return this.emitter.register(HOOK_NAMES.BEFORE_PROMOTION_EVENT, handler);
+  }
+
+  /**
+   * Register handler for promotion events
+   */
+  on_promotion_event(handler: HookHandler<PromotionEventContext>): HookHandle {
+    return this.emitter.register(HOOK_NAMES.PROMOTION_EVENT, handler);
+  }
+
+  /**
+   * Register handler after promotion events
+   */
+  after_promotion_event(handler: AfterHookHandler<PromotionEventContext>): HookHandle {
+    return this.emitter.register(HOOK_NAMES.AFTER_PROMOTION_EVENT, handler);
+  }
+
+  // ATTN Protocol event hooks - Attention
+
+  /**
+   * Register handler before attention events
+   */
+  before_attention_event(handler: BeforeHookHandler<AttentionEventContext>): HookHandle {
+    return this.emitter.register(HOOK_NAMES.BEFORE_ATTENTION_EVENT, handler);
+  }
+
+  /**
+   * Register handler for attention events
+   */
+  on_attention_event(handler: HookHandler<AttentionEventContext>): HookHandle {
+    return this.emitter.register(HOOK_NAMES.ATTENTION_EVENT, handler);
+  }
+
+  /**
+   * Register handler after attention events
+   */
+  after_attention_event(handler: AfterHookHandler<AttentionEventContext>): HookHandle {
+    return this.emitter.register(HOOK_NAMES.AFTER_ATTENTION_EVENT, handler);
+  }
+
+  // ATTN Protocol event hooks - Match
+
+  /**
+   * Register handler before match events
+   */
+  before_match_event(handler: BeforeHookHandler<MatchEventContext>): HookHandle {
+    return this.emitter.register(HOOK_NAMES.BEFORE_MATCH_EVENT, handler);
+  }
+
+  /**
+   * Register handler for match events
+   */
+  on_match_event(handler: HookHandler<MatchEventContext>): HookHandle {
+    return this.emitter.register(HOOK_NAMES.MATCH_EVENT, handler);
+  }
+
+  /**
+   * Register handler after match events
+   */
+  after_match_event(handler: AfterHookHandler<MatchEventContext>): HookHandle {
+    return this.emitter.register(HOOK_NAMES.AFTER_MATCH_EVENT, handler);
   }
 
   /**
@@ -218,55 +296,119 @@ export class Attn {
     return this.emitter.register(HOOK_NAMES.MATCH_PUBLISHED, handler);
   }
 
+  // Confirmation event hooks - Billboard Confirmation
+
+  /**
+   * Register handler before billboard confirmation events
+   */
+  before_billboard_confirmation_event(handler: BeforeHookHandler<BillboardConfirmationEventContext>): HookHandle {
+    return this.emitter.register(HOOK_NAMES.BEFORE_BILLBOARD_CONFIRMATION_EVENT, handler);
+  }
+
   /**
    * Register handler for billboard confirmation events
    */
-  on_billboard_confirm(handler: HookHandler<BillboardConfirmContext>): HookHandle {
-    return this.emitter.register(HOOK_NAMES.BILLBOARD_CONFIRM, handler);
+  on_billboard_confirmation_event(handler: HookHandler<BillboardConfirmationEventContext>): HookHandle {
+    return this.emitter.register(HOOK_NAMES.BILLBOARD_CONFIRMATION_EVENT, handler);
+  }
+
+  /**
+   * Register handler after billboard confirmation events
+   */
+  after_billboard_confirmation_event(handler: AfterHookHandler<BillboardConfirmationEventContext>): HookHandle {
+    return this.emitter.register(HOOK_NAMES.AFTER_BILLBOARD_CONFIRMATION_EVENT, handler);
+  }
+
+  // Confirmation event hooks - Attention Confirmation
+
+  /**
+   * Register handler before attention confirmation events
+   */
+  before_attention_confirmation_event(handler: BeforeHookHandler<AttentionConfirmationEventContext>): HookHandle {
+    return this.emitter.register(HOOK_NAMES.BEFORE_ATTENTION_CONFIRMATION_EVENT, handler);
   }
 
   /**
    * Register handler for attention confirmation events
    */
-  on_attention_confirm(handler: HookHandler<AttentionConfirmContext>): HookHandle {
-    return this.emitter.register(HOOK_NAMES.ATTENTION_CONFIRM, handler);
+  on_attention_confirmation_event(handler: HookHandler<AttentionConfirmationEventContext>): HookHandle {
+    return this.emitter.register(HOOK_NAMES.ATTENTION_CONFIRMATION_EVENT, handler);
   }
 
   /**
-   * Register handler for marketplace confirmed events
+   * Register handler after attention confirmation events
    */
-  on_marketplace_confirmed(handler: HookHandler<MarketplaceConfirmedContext>): HookHandle {
-    return this.emitter.register(HOOK_NAMES.MARKETPLACE_CONFIRMED, handler);
+  after_attention_confirmation_event(handler: AfterHookHandler<AttentionConfirmationEventContext>): HookHandle {
+    return this.emitter.register(HOOK_NAMES.AFTER_ATTENTION_CONFIRMATION_EVENT, handler);
+  }
+
+  // Confirmation event hooks - Marketplace Confirmation
+
+  /**
+   * Register handler before marketplace confirmation events
+   */
+  before_marketplace_confirmation_event(handler: BeforeHookHandler<MarketplaceConfirmationEventContext>): HookHandle {
+    return this.emitter.register(HOOK_NAMES.BEFORE_MARKETPLACE_CONFIRMATION_EVENT, handler);
+  }
+
+  /**
+   * Register handler for marketplace confirmation events
+   */
+  on_marketplace_confirmation_event(handler: HookHandler<MarketplaceConfirmationEventContext>): HookHandle {
+    return this.emitter.register(HOOK_NAMES.MARKETPLACE_CONFIRMATION_EVENT, handler);
+  }
+
+  /**
+   * Register handler after marketplace confirmation events
+   */
+  after_marketplace_confirmation_event(handler: AfterHookHandler<MarketplaceConfirmationEventContext>): HookHandle {
+    return this.emitter.register(HOOK_NAMES.AFTER_MARKETPLACE_CONFIRMATION_EVENT, handler);
+  }
+
+  // Confirmation event hooks - Attention Payment Confirmation
+
+  /**
+   * Register handler before attention payment confirmation events
+   */
+  before_attention_payment_confirmation_event(handler: BeforeHookHandler<AttentionPaymentConfirmationEventContext>): HookHandle {
+    return this.emitter.register(HOOK_NAMES.BEFORE_ATTENTION_PAYMENT_CONFIRMATION_EVENT, handler);
   }
 
   /**
    * Register handler for attention payment confirmation events
    */
-  on_attention_payment_confirm(handler: HookHandler<AttentionPaymentConfirmContext>): HookHandle {
-    return this.emitter.register(HOOK_NAMES.ATTENTION_PAYMENT_CONFIRM, handler);
+  on_attention_payment_confirmation_event(handler: HookHandler<AttentionPaymentConfirmationEventContext>): HookHandle {
+    return this.emitter.register(HOOK_NAMES.ATTENTION_PAYMENT_CONFIRMATION_EVENT, handler);
+  }
+
+  /**
+   * Register handler after attention payment confirmation events
+   */
+  after_attention_payment_confirmation_event(handler: AfterHookHandler<AttentionPaymentConfirmationEventContext>): HookHandle {
+    return this.emitter.register(HOOK_NAMES.AFTER_ATTENTION_PAYMENT_CONFIRMATION_EVENT, handler);
   }
 
   // Block synchronization hooks
 
   /**
-   * Register handler for new block events
+   * Register handler before block events
    */
-  on_new_block(handler: HookHandler<NewBlockContext>): HookHandle {
-    return this.emitter.register(HOOK_NAMES.NEW_BLOCK, handler);
+  before_block_event(handler: BeforeHookHandler<BlockEventContext>): HookHandle {
+    return this.emitter.register(HOOK_NAMES.BEFORE_BLOCK_EVENT, handler);
   }
 
   /**
-   * Register handler before block events fire
+   * Register handler for block events
    */
-  before_new_block(handler: BeforeHookHandler<NewBlockContext>): HookHandle {
-    return this.emitter.register(HOOK_NAMES.BEFORE_NEW_BLOCK, handler);
+  on_block_event(handler: HookHandler<BlockEventContext>): HookHandle {
+    return this.emitter.register(HOOK_NAMES.BLOCK_EVENT, handler);
   }
 
   /**
-   * Register handler after block events fire
+   * Register handler after block events
    */
-  after_new_block(handler: AfterHookHandler<NewBlockContext>): HookHandle {
-    return this.emitter.register(HOOK_NAMES.AFTER_NEW_BLOCK, handler);
+  after_block_event(handler: AfterHookHandler<BlockEventContext>): HookHandle {
+    return this.emitter.register(HOOK_NAMES.AFTER_BLOCK_EVENT, handler);
   }
 
   /**
@@ -285,27 +427,73 @@ export class Attn {
     return this.emitter.register(HOOK_NAMES.HEALTH_CHANGE, handler);
   }
 
-  // Standard Nostr event hooks
+  // Standard Nostr event hooks - Profile
 
   /**
-   * Register handler for new profile events (kind 0)
+   * Register handler before profile events (kind 0)
    */
-  on_new_profile(handler: HookHandler<NewProfileContext>): HookHandle {
-    return this.emitter.register(HOOK_NAMES.NEW_PROFILE, handler);
+  before_profile_event(handler: BeforeHookHandler<ProfileEventContext>): HookHandle {
+    return this.emitter.register(HOOK_NAMES.BEFORE_PROFILE_EVENT, handler);
   }
 
   /**
-   * Register handler for new relay list events (kind 10002)
+   * Register handler for profile events (kind 0)
    */
-  on_new_relay_list(handler: HookHandler<NewRelayListContext>): HookHandle {
-    return this.emitter.register(HOOK_NAMES.NEW_RELAY_LIST, handler);
+  on_profile_event(handler: HookHandler<ProfileEventContext>): HookHandle {
+    return this.emitter.register(HOOK_NAMES.PROFILE_EVENT, handler);
   }
 
   /**
-   * Register handler for new NIP-51 list events (kind 30000)
+   * Register handler after profile events (kind 0)
    */
-  on_new_nip51_list(handler: HookHandler<NewNip51ListContext>): HookHandle {
-    return this.emitter.register(HOOK_NAMES.NEW_NIP51_LIST, handler);
+  after_profile_event(handler: AfterHookHandler<ProfileEventContext>): HookHandle {
+    return this.emitter.register(HOOK_NAMES.AFTER_PROFILE_EVENT, handler);
+  }
+
+  // Standard Nostr event hooks - Relay List
+
+  /**
+   * Register handler before relay list events (kind 10002)
+   */
+  before_relay_list_event(handler: BeforeHookHandler<RelayListEventContext>): HookHandle {
+    return this.emitter.register(HOOK_NAMES.BEFORE_RELAY_LIST_EVENT, handler);
+  }
+
+  /**
+   * Register handler for relay list events (kind 10002)
+   */
+  on_relay_list_event(handler: HookHandler<RelayListEventContext>): HookHandle {
+    return this.emitter.register(HOOK_NAMES.RELAY_LIST_EVENT, handler);
+  }
+
+  /**
+   * Register handler after relay list events (kind 10002)
+   */
+  after_relay_list_event(handler: AfterHookHandler<RelayListEventContext>): HookHandle {
+    return this.emitter.register(HOOK_NAMES.AFTER_RELAY_LIST_EVENT, handler);
+  }
+
+  // Standard Nostr event hooks - NIP-51 List
+
+  /**
+   * Register handler before NIP-51 list events (kind 30000)
+   */
+  before_nip51_list_event(handler: BeforeHookHandler<Nip51ListEventContext>): HookHandle {
+    return this.emitter.register(HOOK_NAMES.BEFORE_NIP51_LIST_EVENT, handler);
+  }
+
+  /**
+   * Register handler for NIP-51 list events (kind 30000)
+   */
+  on_nip51_list_event(handler: HookHandler<Nip51ListEventContext>): HookHandle {
+    return this.emitter.register(HOOK_NAMES.NIP51_LIST_EVENT, handler);
+  }
+
+  /**
+   * Register handler after NIP-51 list events (kind 30000)
+   */
+  after_nip51_list_event(handler: AfterHookHandler<Nip51ListEventContext>): HookHandle {
+    return this.emitter.register(HOOK_NAMES.AFTER_NIP51_LIST_EVENT, handler);
   }
 
   /**

@@ -1,0 +1,16 @@
+services:
+  attn-node:
+    build:
+      context: ../..
+      dockerfile: packages/node/Dockerfile
+    image: attn-protocol/node:latest
+    container_name: attn-protocol.node
+    restart: unless-stopped
+    env_file:
+      - .env
+    healthcheck:
+      test: ["CMD", "pgrep", "-f", "node.*src/index.js"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s

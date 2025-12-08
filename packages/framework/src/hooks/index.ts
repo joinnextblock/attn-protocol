@@ -16,23 +16,23 @@ export type {
   RelayConnectContext,
   RelayDisconnectContext,
   SubscriptionContext,
-  NewMarketplaceContext,
-  NewBillboardContext,
-  NewPromotionContext,
-  NewAttentionContext,
-  NewMatchContext,
+  MarketplaceEventContext,
+  BillboardEventContext,
+  PromotionEventContext,
+  AttentionEventContext,
+  MatchEventContext,
   MatchPublishedContext,
-  BillboardConfirmContext,
-  AttentionConfirmContext,
-  MarketplaceConfirmedContext,
-  AttentionPaymentConfirmContext,
-  NewBlockContext,
+  BillboardConfirmationEventContext,
+  AttentionConfirmationEventContext,
+  MarketplaceConfirmationEventContext,
+  AttentionPaymentConfirmationEventContext,
+  BlockEventContext,
   BlockGapDetectedContext,
   RateLimitContext,
   HealthChangeContext,
-  NewProfileContext,
-  NewRelayListContext,
-  NewNip51ListContext,
+  ProfileEventContext,
+  RelayListEventContext,
+  Nip51ListEventContext,
 } from './types.js';
 
 /**
@@ -45,30 +45,65 @@ export const HOOK_NAMES = {
   SUBSCRIPTION: 'on_subscription',
   RATE_LIMIT: 'on_rate_limit',
 
-  // Event lifecycle hooks
-  NEW_MARKETPLACE: 'on_new_marketplace',
-  NEW_BILLBOARD: 'on_new_billboard',
-  NEW_PROMOTION: 'on_new_promotion',
-  NEW_ATTENTION: 'on_new_attention',
-  NEW_MATCH: 'on_new_match',
-  MATCH_PUBLISHED: 'on_match_published',
-  BILLBOARD_CONFIRM: 'on_billboard_confirm',
-  ATTENTION_CONFIRM: 'on_attention_confirm',
-  MARKETPLACE_CONFIRMED: 'on_marketplace_confirmed',
-  ATTENTION_PAYMENT_CONFIRM: 'on_attention_payment_confirm',
+  // ATTN Protocol event hooks (with before/after lifecycle)
+  BEFORE_MARKETPLACE_EVENT: 'before_marketplace_event',
+  MARKETPLACE_EVENT: 'on_marketplace_event',
+  AFTER_MARKETPLACE_EVENT: 'after_marketplace_event',
 
-  // Block synchronization hooks
-  BEFORE_NEW_BLOCK: 'before_new_block',
-  NEW_BLOCK: 'on_new_block',
-  AFTER_NEW_BLOCK: 'after_new_block',
+  BEFORE_BILLBOARD_EVENT: 'before_billboard_event',
+  BILLBOARD_EVENT: 'on_billboard_event',
+  AFTER_BILLBOARD_EVENT: 'after_billboard_event',
+
+  BEFORE_PROMOTION_EVENT: 'before_promotion_event',
+  PROMOTION_EVENT: 'on_promotion_event',
+  AFTER_PROMOTION_EVENT: 'after_promotion_event',
+
+  BEFORE_ATTENTION_EVENT: 'before_attention_event',
+  ATTENTION_EVENT: 'on_attention_event',
+  AFTER_ATTENTION_EVENT: 'after_attention_event',
+
+  BEFORE_MATCH_EVENT: 'before_match_event',
+  MATCH_EVENT: 'on_match_event',
+  AFTER_MATCH_EVENT: 'after_match_event',
+  MATCH_PUBLISHED: 'on_match_published',
+
+  // Confirmation event hooks (with before/after lifecycle)
+  BEFORE_BILLBOARD_CONFIRMATION_EVENT: 'before_billboard_confirmation_event',
+  BILLBOARD_CONFIRMATION_EVENT: 'on_billboard_confirmation_event',
+  AFTER_BILLBOARD_CONFIRMATION_EVENT: 'after_billboard_confirmation_event',
+
+  BEFORE_ATTENTION_CONFIRMATION_EVENT: 'before_attention_confirmation_event',
+  ATTENTION_CONFIRMATION_EVENT: 'on_attention_confirmation_event',
+  AFTER_ATTENTION_CONFIRMATION_EVENT: 'after_attention_confirmation_event',
+
+  BEFORE_MARKETPLACE_CONFIRMATION_EVENT: 'before_marketplace_confirmation_event',
+  MARKETPLACE_CONFIRMATION_EVENT: 'on_marketplace_confirmation_event',
+  AFTER_MARKETPLACE_CONFIRMATION_EVENT: 'after_marketplace_confirmation_event',
+
+  BEFORE_ATTENTION_PAYMENT_CONFIRMATION_EVENT: 'before_attention_payment_confirmation_event',
+  ATTENTION_PAYMENT_CONFIRMATION_EVENT: 'on_attention_payment_confirmation_event',
+  AFTER_ATTENTION_PAYMENT_CONFIRMATION_EVENT: 'after_attention_payment_confirmation_event',
+
+  // Block synchronization hooks (with before/after lifecycle)
+  BEFORE_BLOCK_EVENT: 'before_block_event',
+  BLOCK_EVENT: 'on_block_event',
+  AFTER_BLOCK_EVENT: 'after_block_event',
   BLOCK_GAP_DETECTED: 'on_block_gap_detected',
 
   // Health hooks
   HEALTH_CHANGE: 'on_health_change',
 
-  // Standard Nostr event hooks
-  NEW_PROFILE: 'on_new_profile',
-  NEW_RELAY_LIST: 'on_new_relay_list',
-  NEW_NIP51_LIST: 'on_new_nip51_list',
+  // Standard Nostr event hooks (with before/after lifecycle)
+  BEFORE_PROFILE_EVENT: 'before_profile_event',
+  PROFILE_EVENT: 'on_profile_event',
+  AFTER_PROFILE_EVENT: 'after_profile_event',
+
+  BEFORE_RELAY_LIST_EVENT: 'before_relay_list_event',
+  RELAY_LIST_EVENT: 'on_relay_list_event',
+  AFTER_RELAY_LIST_EVENT: 'after_relay_list_event',
+
+  BEFORE_NIP51_LIST_EVENT: 'before_nip51_list_event',
+  NIP51_LIST_EVENT: 'on_nip51_list_event',
+  AFTER_NIP51_LIST_EVENT: 'after_nip51_list_event',
 } as const;
 

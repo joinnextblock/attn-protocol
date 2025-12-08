@@ -47,27 +47,27 @@ const multiMarketplaceAttn = new Attn({
 });
 
 // Register hooks for event processing
-attn.on_new_marketplace(async (context) => {
+attn.on_marketplace_event(async (context) => {
   console.log("Marketplace updated:", context.event);
 });
 
-attn.on_new_promotion(async (context) => {
+attn.on_promotion_event(async (context) => {
   console.log("New promotion received:", context.event);
 });
 
-attn.on_new_attention(async (context) => {
+attn.on_attention_event(async (context) => {
   console.log("New attention received:", context.event);
 });
 
-attn.on_new_block(async (context) => {
+attn.on_block_event(async (context) => {
   console.log(`Block ${context.block_height} hash ${context.block_hash}`);
 });
 
-attn.before_new_block(async (context) => {
+attn.before_block_event(async (context) => {
   console.log(`Preparing for block ${context.block_height}`);
 });
 
-attn.after_new_block(async (context) => {
+attn.after_block_event(async (context) => {
   console.log(`Finished processing block ${context.block_height}`);
 });
 
@@ -126,22 +126,31 @@ if (event.kind === ATTN_EVENT_KINDS.PROMOTION) {
 
 ### Event Lifecycle Hooks
 
-The framework provides hooks for all stages of the attention marketplace lifecycle:
+The framework provides hooks for all stages of the attention marketplace lifecycle. Each event type has `before_*_event`, `on_*_event`, and `after_*_event` hooks:
 
 - **Infrastructure**: `on_relay_connect`, `on_relay_disconnect`, `on_subscription`
-- **Event Reception**: `on_new_marketplace`, `on_new_billboard`, `on_new_promotion`, `on_new_attention`, `on_new_match`
+- **Event Reception** (with before/after lifecycle):
+  - `before_marketplace_event`, `on_marketplace_event`, `after_marketplace_event`
+  - `before_billboard_event`, `on_billboard_event`, `after_billboard_event`
+  - `before_promotion_event`, `on_promotion_event`, `after_promotion_event`
+  - `before_attention_event`, `on_attention_event`, `after_attention_event`
+  - `before_match_event`, `on_match_event`, `after_match_event`
 - **Matching**: `on_match_published` (backward compatibility, includes promotion/attention IDs)
-- **Confirmations**: `on_billboard_confirm`, `on_viewer_confirm`, `on_marketplace_confirmed`
-- **Block Processing**: `before_new_block`, `on_new_block`, `after_new_block`, `on_block_gap_detected`
+- **Confirmations** (with before/after lifecycle):
+  - `before_billboard_confirmation_event`, `on_billboard_confirmation_event`, `after_billboard_confirmation_event`
+  - `before_attention_confirmation_event`, `on_attention_confirmation_event`, `after_attention_confirmation_event`
+  - `before_marketplace_confirmation_event`, `on_marketplace_confirmation_event`, `after_marketplace_confirmation_event`
+  - `before_attention_payment_confirmation_event`, `on_attention_payment_confirmation_event`, `after_attention_payment_confirmation_event`
+- **Block Processing**: `before_block_event`, `on_block_event`, `after_block_event`, `on_block_gap_detected`
 - **Error Handling**: `on_rate_limit`, `on_health_change`
 
 ### Standard Nostr Event Hooks
 
-The framework also subscribes to standard Nostr events for enhanced functionality:
+The framework also subscribes to standard Nostr events for enhanced functionality (with before/after lifecycle):
 
-- **Profile Events**: `on_new_profile` (kind 0) - User profile metadata
-- **Relay Lists**: `on_new_relay_list` (kind 10002) - User relay preferences
-- **NIP-51 Lists**: `on_new_nip51_list` (kind 30000) - Trusted billboards, trusted marketplaces, blocked promotions
+- **Profile Events**: `before_profile_event`, `on_profile_event`, `after_profile_event` (kind 0) - User profile metadata
+- **Relay Lists**: `before_relay_list_event`, `on_relay_list_event`, `after_relay_list_event` (kind 10002) - User relay preferences
+- **NIP-51 Lists**: `before_nip51_list_event`, `on_nip51_list_event`, `after_nip51_list_event` (kind 30000) - Trusted billboards, trusted marketplaces, blocked promotions
 
 ## Configuration
 
@@ -181,12 +190,21 @@ Validation errors are thrown as exceptions with descriptive error messages.
 
 ## Hook System
 
-The framework uses a Rely-style hook system. Register handlers using `on_*` methods:
+The framework uses a Rely-style hook system. Register handlers using `on_*`, `before_*`, and `after_*` methods:
 
 ```typescript
 // Register a hook handler
-const handle = attn.on_new_promotion(async (context) => {
+const handle = attn.on_promotion_event(async (context) => {
   // Process promotion event
+});
+
+// Register before/after hooks for lifecycle management
+attn.before_promotion_event(async (context) => {
+  // Prepare state before processing
+});
+
+attn.after_promotion_event(async (context) => {
+  // Cleanup after processing
 });
 
 // Unregister the handler
@@ -202,23 +220,24 @@ import type {
   RelayConnectContext,
   RelayDisconnectContext,
   SubscriptionContext,
-  NewMarketplaceContext,
-  NewBillboardContext,
-  NewPromotionContext,
-  NewAttentionContext,
-  NewMatchContext,
+  MarketplaceEventContext,
+  BillboardEventContext,
+  PromotionEventContext,
+  AttentionEventContext,
+  MatchEventContext,
   MatchPublishedContext,
-  BillboardConfirmContext,
-  AttentionConfirmContext,
-  MarketplaceConfirmedContext,
-  NewBlockContext,
+  BillboardConfirmationEventContext,
+  AttentionConfirmationEventContext,
+  MarketplaceConfirmationEventContext,
+  AttentionPaymentConfirmationEventContext,
+  BlockEventContext,
   BlockData,
   BlockGapDetectedContext,
   RateLimitContext,
   HealthChangeContext,
-  NewProfileContext,
-  NewRelayListContext,
-  NewNip51ListContext,
+  ProfileEventContext,
+  RelayListEventContext,
+  Nip51ListEventContext,
 } from "@attn-protocol/framework";
 ```
 
@@ -232,7 +251,7 @@ The framework is designed for Bitcoin-native operations:
 
 - All events include `["t", "<block_height>"]` tags
 - Block heights are the primary time measurement
-- Block synchronization is built-in with `before_new_block` → `on_new_block` → `after_new_block` lifecycle hooks
+- Block synchronization is built-in with `before_block_event` → `on_block_event` → `after_block_event` lifecycle hooks
 - No wall-clock time dependencies
 
 ## Error Handling
@@ -261,9 +280,9 @@ attn.on_health_change(async (context) => {
 All hook handlers are fully typed with TypeScript:
 
 ```typescript
-import type { HookHandler, NewPromotionContext } from "@attn-protocol/framework";
+import type { HookHandler, PromotionEventContext } from "@attn-protocol/framework";
 
-const handler: HookHandler<NewPromotionContext> = async (context) => {
+const handler: HookHandler<PromotionEventContext> = async (context) => {
   // context is fully typed
   const event = context.event;
   const block_height = context.block_height;
@@ -286,14 +305,14 @@ const attn = new Attn({
 });
 
 // Framework hook pattern for block-synchronized processing
-attn.before_new_block(async (context) => {
+attn.before_block_event(async (context) => {
   // Prepare state for new block
   console.log(`Preparing for block ${context.block_height}`);
   await finalize_current_block_transactions();
   await prepare_state_for_new_block();
 });
 
-attn.on_new_block(async (context) => {
+attn.on_block_event(async (context) => {
   // Process new block
   const block_height = context.block_height;
   const block_hash = context.block_hash;
@@ -306,7 +325,7 @@ attn.on_new_block(async (context) => {
   await run_matching_engine(block_height);
 });
 
-attn.after_new_block(async (context) => {
+attn.after_block_event(async (context) => {
   // Cleanup after block processing
   console.log(`Finished processing block ${context.block_height}`);
   await reset_state_for_next_block();

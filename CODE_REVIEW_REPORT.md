@@ -1,6 +1,6 @@
 # ATTN Protocol Monorepo Code Review Report - NextBlock City Infrastructure
 
-**Date:** 2025-12-07
+**Date:** 2025-12-08
 **Reviewer:** Auto - AI Code Reviewer (NextBlock City Infrastructure Team)
 **Service:** ATTN Protocol Monorepo - Protocol specification, framework, SDK, and relay
 **Milestone:** M2-M4 (Protocol Foundation through Economy Infrastructure)
@@ -13,21 +13,21 @@ This comprehensive code review examined the entire ATTN Protocol monorepo, a **c
 
 **City Infrastructure Context:** The ATTN Protocol is the **constitutional foundation** for NextBlock City's attention marketplace (M2-M4 milestones). Without a reliable protocol implementation, services cannot create, validate, or process marketplace events. This review assesses the entire monorepo's readiness to serve as production infrastructure for the city.
 
-**Overall Assessment:** The monorepo demonstrates excellent architectural foundations with clear package separation, proper TypeScript typing, and good adherence to snake_case naming conventions. **All critical issues have been resolved**: structured logging is now fully implemented using Pino, and comprehensive test coverage exists across all TypeScript packages. The protocol specification is well-documented and consistent (per CONSISTENCY_FINDINGS.md). The implementation packages are now production-ready.
+**Overall Assessment:** The monorepo demonstrates excellent architectural foundations with clear package separation, proper TypeScript typing, and good adherence to snake_case naming conventions. Structured logging is fully implemented using Pino, and comprehensive test coverage exists across all TypeScript packages. The protocol specification is well-documented and consistent (per CONSISTENCY_FINDINGS.md). **However, a new critical issue has emerged**: the Vitest test runner crashes after test completion due to a tinypool/Node.js compatibility issue.
 
 **Key Findings:**
-- **Critical Issues:** 0 (all resolved)
-- **High Priority Issues:** 1 (any types in browser compatibility)
+- **Critical Issues:** 1 (test runner infrastructure broken - tinypool stack overflow)
+- **High Priority Issues:** 3 (block gap detection, 2 failing framework tests, outdated protocol README)
 - **Medium Priority Issues:** 4 (JSDoc coverage, error handling, examples, refactoring)
 - **Low Priority Issues:** 4 (benchmarks, integration tests, dependency audits, shared test utilities)
 
-**Production Readiness:** ✅ **READY** - No critical blockers remain
+**Production Readiness:** ⚠️ **MOSTLY READY** - Test infrastructure needs fixing for CI/CD
 
-**City Impact:** This monorepo is essential infrastructure for M2-M4 milestones (Protocol Foundation through Economy). The monorepo is now production-ready and can reliably support marketplace services for citizen participation in fair value exchange.
+**City Impact:** This monorepo is essential infrastructure for M2-M4 milestones (Protocol Foundation through Economy). The code itself is production-ready, but the test infrastructure issue blocks CI/CD pipelines and must be resolved for reliable automated testing.
 
 ## Progress Since Last Review
 
-**Status:** Codebase remains stable and production-ready. All previously identified critical issues remain resolved.
+**Status:** Codebase remains stable. New critical issue identified: test runner infrastructure broken.
 
 **Verified Improvements (from previous review):**
 1. ✅ **Structured Logging Complete** - Pino logger fully integrated:
@@ -42,11 +42,27 @@ This comprehensive code review examined the entire ATTN Protocol monorepo, a **c
    - Core Package: Test files exist (`constants.test.ts`, `types.test.ts`) with Vitest configured
    - Relay Package: Go tests exist and continue to pass
 
+**New Issues Identified (2025-12-08):**
+
+1. 🔴 **Test Runner Infrastructure Broken** (CRITICAL - NEW)
+   - **Location:** All TypeScript packages (core, framework, SDK)
+   - **Issue:** Vitest/tinypool crashes with `RangeError: Maximum call stack size exceeded` after tests complete
+   - **Evidence:** Tests pass individually (19/19 emitter tests, 5/5 formatting tests) but runner crashes during cleanup
+   - **Impact:** Blocks CI/CD pipelines, prevents automated test verification
+   - **Root Cause:** Likely Node.js v22.21.1 compatibility issue with tinypool worker termination
+   - **Recommendation:** Add `pool: 'forks'` to vitest.config.ts or pin tinypool to compatible version
+
+2. ⚠️ **Outdated Protocol README** (HIGH - NEW)
+   - **Location:** `packages/protocol/README.md:16`
+   - **Issue:** Still references old hook naming `before_new_block → on_new_block → after_new_block`
+   - **Reality:** Hooks were renamed to `before_block_event → on_block_event → after_block_event` on 2025-12-07
+   - **Recommendation:** Update to new hook naming convention
+
 **Current State:**
 - 107 TypeScript source files
 - 14 test files (13% by file count, actual coverage may vary)
-- All critical issues resolved
-- Production-ready for current phase
+- 1 critical issue (test infrastructure)
+- Code is production-ready, test infrastructure needs fixing
 
 ## Review Scope
 
@@ -209,19 +225,37 @@ This comprehensive code review examined the entire ATTN Protocol monorepo, a **c
    - **Status:** Go tests exist and passing
    - **Note:** Relay package has comprehensive validation tests
 
-### Areas for Improvement
+### Issues & Recommendations
+
+#### Critical Priority
+
+1. **Test Runner Infrastructure Broken** (NEW - 2025-12-08)
+   - **Location:** All TypeScript packages (`packages/core`, `packages/framework`, `packages/sdk`)
+   - **Issue:** Vitest test runner crashes with `RangeError: Maximum call stack size exceeded` after test completion
+   - **Evidence:**
+     - Core: 7 tests pass in `constants.test.ts`, then tinypool crashes
+     - Framework: 19 tests pass in `emitter.test.ts`, then tinypool crashes
+     - SDK: 5 tests pass in `formatting.test.ts`, then tinypool crashes
+   - **Error:** `RangeError: Maximum call stack size exceeded` at `WorkerInfo.freeWorkerId` in tinypool
+   - **Impact:** CI/CD pipelines fail, prevents automated test verification
+   - **Root Cause:** Node.js v22.21.1 compatibility issue with tinypool's worker termination
+   - **Recommendation:**
+     - Add `pool: 'forks'` to each package's `vitest.config.ts` to use forks instead of threads
+     - Or downgrade to Node.js v20 LTS
+     - Or pin Vitest/tinypool to a compatible version
+   - **Priority:** Critical - blocks all automated testing
+
+#### Medium Priority
 
 1. **Test Coverage Expansion**
    - **Location:** All TypeScript packages
    - **Issue:** Test coverage exists but may not cover all edge cases
    - **Recommendation:** Expand test coverage for edge cases, error handling, and integration scenarios
-   - **Priority:** Medium
 
 2. **Integration Tests Missing**
    - **Location:** No integration test directory
    - **Issue:** No integration tests for full framework lifecycle with mock relay
    - **Recommendation:** Add integration tests using mock Nostr relay
-   - **Priority:** Low
 
 ---
 
@@ -415,11 +449,14 @@ declare const globalThis: { window?: BrowserWindow };
 
 ### Immediate Actions (Critical)
 
-_No critical issues remaining._
+1. **Fix test runner infrastructure** - Add `pool: 'forks'` to vitest.config.ts in all TypeScript packages to resolve tinypool/Node.js v22 compatibility issue
 
 ### Short-term Actions (High Priority)
 
-1. Replace `any` types with proper type definitions for browser WebSocket compatibility
+1. Fix outdated hook naming in `packages/protocol/README.md`
+2. Implement block gap detection logic in framework
+3. Fix 2 failing framework tests (validation and timing issues)
+4. Replace `any` types with proper type definitions for browser WebSocket compatibility
 
 ### Medium-term Actions (Medium Priority)
 
@@ -440,35 +477,37 @@ _No critical issues remaining._
 
 ## Conclusion - City Infrastructure Readiness
 
-The ATTN Protocol monorepo demonstrates excellent architectural foundations with clear package separation, proper TypeScript typing, and good adherence to naming conventions. **All critical issues have been resolved**: structured logging is now fully implemented using Pino, and comprehensive test coverage exists across all TypeScript packages.
+The ATTN Protocol monorepo demonstrates excellent architectural foundations with clear package separation, proper TypeScript typing, and good adherence to naming conventions. Structured logging is fully implemented using Pino, and comprehensive test coverage exists across all TypeScript packages. **However, a new critical issue has emerged**: the Vitest test runner crashes after test completion due to a tinypool/Node.js v22 compatibility issue.
 
 **Current Status:**
 - ✅ Structured logging complete - Pino logger integrated, all console.* calls replaced
 - ✅ Test coverage exists - All TypeScript packages have Vitest test suites
-- ✅ Test infrastructure configured - Framework, SDK, and core packages have comprehensive test files
-- ✅ Production-ready - No critical blockers
+- ⚠️ Test infrastructure broken - Vitest/tinypool crashes on Node.js v22.21.1
+- ⚠️ 2 framework tests failing - Validation and timing issues
+- ⚠️ Block gap detection not implemented
 
 **Critical blockers:**
-_None remaining._
+1. 🔴 Test runner infrastructure broken (blocks CI/CD)
 
 **City Infrastructure Priority Actions:**
-1. Refactor event handlers to reduce code duplication
-2. Expand test coverage for edge cases and integration scenarios
-3. Complete JSDoc documentation
-4. Add examples directory
+1. **CRITICAL:** Fix test runner - add `pool: 'forks'` to vitest.config.ts
+2. Fix outdated protocol README hook naming
+3. Implement block gap detection logic
+4. Fix failing framework tests
+5. Refactor event handlers to reduce code duplication
 
-**Overall Grade: B+ (Production Ready)**
+**Overall Grade: B (Mostly Production Ready)**
 - Architecture: A (Excellent monorepo structure)
 - Code Quality: A- (Good practices, structured logging, test coverage)
-- Testing: B (Test coverage exists, needs expansion)
-- Documentation: B+ (Good but incomplete)
+- Testing: C+ (Tests exist but runner is broken)
+- Documentation: B (Good but some outdated sections)
 - Security: B (Good practices, needs audit)
 
-**City Infrastructure Assessment:** The monorepo is **production-ready** and can serve as the constitutional foundation for NextBlock City marketplace services. All critical issues (structured logging, test coverage) have been resolved. Remaining tasks are improvements and refactoring opportunities that do not block production use.
+**City Infrastructure Assessment:** The monorepo **code is production-ready** and can serve as the constitutional foundation for NextBlock City marketplace services. The test infrastructure issue must be resolved for CI/CD pipelines, but does not block runtime functionality. Remaining tasks are improvements and fixes that do not block production use of the libraries themselves.
 
 ---
 
-**Review Completed:** 2025-12-07
-**Next Review Recommended:** After refactoring opportunities are addressed or when significant changes are made
+**Review Completed:** 2025-12-08
+**Next Review Recommended:** After test infrastructure is fixed
 
-**City Infrastructure Status:** This monorepo is **production-ready** critical infrastructure for NextBlock City's attention marketplace (M2-M4 milestones). All critical blockers have been resolved. The monorepo is ready to support marketplace services for citizen participation in fair value exchange.
+**City Infrastructure Status:** This monorepo is **mostly ready** critical infrastructure for NextBlock City's attention marketplace (M2-M4 milestones). The code itself is production-ready, but the test runner infrastructure issue blocks automated testing and CI/CD pipelines.

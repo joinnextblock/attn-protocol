@@ -12,9 +12,21 @@ All tasks must include a milestone tag: `[M#]`
 
 ## 🔴 Critical (Address Immediately)
 
-_No critical issues remaining._
+- [ ] [M4] Fix test runner infrastructure - tinypool stack overflow on Node.js v22
+  - File: `packages/core/vitest.config.ts`, `packages/framework/vitest.config.ts`, `packages/sdk/vitest.config.ts`
+  - Issue: Vitest/tinypool crashes with `RangeError: Maximum call stack size exceeded` after tests complete. Tests pass individually but runner crashes during worker termination.
+  - Evidence: Framework 19 tests pass, SDK 5 tests pass, Core 7 tests pass, then tinypool crashes at `WorkerInfo.freeWorkerId`
+  - Impact: CI/CD pipelines fail, prevents automated test verification
+  - Root Cause: Node.js v22.21.1 compatibility issue with tinypool worker termination
+  - Recommendation: Add `pool: 'forks'` to each vitest.config.ts to use forks instead of threads, or downgrade to Node.js v20 LTS
 
 ## ⚠️ High Priority (Address Soon)
+
+- [ ] [M4] Fix outdated hook naming in protocol README
+  - File: `packages/protocol/README.md:16`
+  - Issue: Documentation still references old hook naming `before_new_block → on_new_block → after_new_block`
+  - Reality: Hooks were renamed to `before_block_event → on_block_event → after_block_event` on 2025-12-07
+  - Recommendation: Update to new hook naming convention
 
 - [ ] [M4] Replace `any` types with proper type definitions
   - File: `packages/framework/src/relay/connection.ts:20,22,67,87`
@@ -96,10 +108,10 @@ _No critical issues remaining._
 
 ---
 
-**Last Updated:** 2025-12-07
+**Last Updated:** 2025-12-08
 
 **Project Description:** ATTN Protocol monorepo - Protocol specification, framework, SDK, and relay for Bitcoin-native attention marketplace
 
 **Key Features:** Protocol specification (ATTN-01), hook-based framework, event builders, validation utilities, Go-based relay
 
-**Production Status:** Ready - All critical issues resolved, structured logging complete, test coverage exists
+**Production Status:** Mostly Ready - Code is production-ready, test infrastructure needs fixing (tinypool/Node.js v22 compatibility issue blocks CI/CD)

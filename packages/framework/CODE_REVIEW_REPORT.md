@@ -1,84 +1,83 @@
 # Framework Package Code Review Report - NextBlock City Infrastructure
 
-**Date:** 2025-01-28
+**Date:** 2025-12-07
 **Reviewer:** City Builder (NextBlock City Infrastructure Team)
 **Service:** ATTN Protocol Framework - Hook-based runtime for building Bitcoin-native attention marketplace implementations
 **Milestone:** M4 (Economy - Attention Marketplace Infrastructure)
-**Version:** Current (TypeScript/ESM)
-**Review Date:** 2025-01-28
+**Version:** 0.7.1
+**Review Type:** Full Review (Post Hook Refactoring)
 
 ## Executive Summary
 
-This comprehensive code review examined the ATTN Protocol Framework package, a **critical infrastructure component** for NextBlock City that provides the hook-based runtime system for building Bitcoin-native attention marketplace implementations. The framework enables services to connect to Nostr relays, subscribe to ATTN Protocol events, and synchronize to Bitcoin blocks through a clean hook-based API.
+This comprehensive code review examined the ATTN Protocol Framework package after the major hook naming refactoring. The framework provides the hook-based runtime system for building Bitcoin-native attention marketplace implementations.
 
-**City Infrastructure Context:** The framework is the **foundation layer** for all NextBlock City marketplace services. Without a reliable framework, services cannot connect to relays, process events, or maintain block synchronization. This review assesses the framework's readiness to serve as production infrastructure for the city.
+**City Infrastructure Context:** The framework is the **foundation layer** for all NextBlock City marketplace services. Without a reliable framework, services cannot connect to relays, process events, or maintain block synchronization.
 
-**Overall Assessment:** The codebase demonstrates solid architectural foundations with a clean hook-based API, proper TypeScript typing, and good separation of concerns. However, **critical gaps** exist: no test coverage, missing block gap detection logic, and some error handling improvements needed. The framework is **functional but not production-ready** without test coverage and block gap detection.
+**Overall Assessment:** The codebase demonstrates **excellent architectural foundations** with a clean hook-based API, proper TypeScript typing, structured logging via Pino, and comprehensive test coverage. The recent hook refactoring was successfully completed with consistent naming conventions. However, **critical gaps remain**: block gap detection logic is still not implemented, and 2 tests are failing due to validation and timing issues.
 
 **Key Findings:**
-- **Critical Issues:** 2 (no test coverage, missing block gap detection)
-- **High Priority Issues:** 0 (already documented in TODO)
-- **Medium Priority Issues:** 3 (JSDoc coverage, error handling edge cases, TypeScript strict mode)
-- **Low Priority Issues:** 3 (examples directory, performance benchmarks, integration tests)
+- **Critical Issues:** 0 (previous logging issue resolved)
+- **High Priority Issues:** 3 (failing tests, block gap detection, test assertion update)
+- **Medium Priority Issues:** 3 (JSDoc coverage, error handling edge cases, examples)
+- **Low Priority Issues:** 2 (performance benchmarks, integration tests)
 
-**Production Readiness:** ⚠️ **NOT READY** - Missing test coverage and block gap detection are critical blockers
+**Production Readiness:** ⚠️ **MOSTLY READY** - Block gap detection missing but not blocking for M4. Failing tests need fixing.
 
-**City Impact:** This framework is essential infrastructure for M4 milestone (Economy). Without production-ready framework infrastructure, marketplace services cannot operate reliably, blocking citizen participation in fair value exchange.
+**Recent Changes Reviewed:**
+- ✅ Hook naming refactoring completed (`on_new_*` → `on_*_event`, `before_new_*` → `before_*_event`)
+- ✅ Added 24 new before/after lifecycle hooks for all ATTN protocol events
+- ✅ Type interfaces renamed (`New*Context` → `*EventContext`)
+- ✅ Confirmation hooks renamed (`on_*_confirm` → `on_*_confirmation_event`)
+- ✅ Structured logging implemented via Pino
+- ✅ 58 tests passing (2 failing - pre-existing issues)
 
 ## Review Scope
 
 - **Service:** attn-protocol/packages/framework (City Infrastructure Foundation)
 - **Milestone:** M4 (Economy - Attention Marketplace)
-- **Technology Stack:** TypeScript, ESM, WebSocket (ws library), Nostr Protocol
-- **Review Date:** 2025-01-28
-- **Files Reviewed:** Core modules (src/attn.ts, src/hooks/emitter.ts, src/relay/connection.ts), configuration files, documentation
-- **City Infrastructure Role:** Foundation layer for NextBlock City marketplace services
+- **Technology Stack:** TypeScript, ESM, WebSocket (isomorphic-ws), Nostr Protocol, Pino logging
+- **Review Date:** 2025-12-07
+- **Files Reviewed:** All source files in src/, configuration files, documentation
 
 ---
 
-## 1. Architecture & Design - City Infrastructure Assessment
+## 1. Architecture & Design
 
 ### Strengths
 
-1. **Clean Hook-Based API**
-   - Rely-style API with `on_*` methods for hook registration
-   - Clear separation between infrastructure (framework) and business logic (services)
-   - Type-safe hook contexts with proper TypeScript interfaces
-   - **City Impact:** Modular design allows services to focus on business logic while framework handles infrastructure
+1. **Clean Hook-Based API** ✅
+   - Rely-style API with consistent `on_*_event`, `before_*_event`, `after_*_event` pattern
+   - All 9 ATTN protocol event types now have full lifecycle hooks (before/on/after)
+   - All 4 confirmation event types have full lifecycle hooks
+   - Standard Nostr events (profile, relay list, NIP-51) have full lifecycle hooks
+   - **City Impact:** Modular design allows services to hook into any stage of event processing
 
-2. **Relay Connection Management**
-   - Proper WebSocket lifecycle management
-   - NIP-42 authentication support
+2. **Relay Connection Management** ✅
+   - Proper WebSocket lifecycle management with browser compatibility
+   - NIP-42 authentication support with configurable auth requirements
    - Auto-reconnect with exponential backoff
-   - Multiple relay support
-   - **City Impact:** Reliable relay infrastructure ensures services can connect and participate in the marketplace without interruption
+   - Multiple relay support with separate auth/noauth relay lists
+   - **City Impact:** Reliable relay infrastructure ensures services can connect and participate
 
-3. **Event Routing**
+3. **Event Routing** ✅
    - Automatic routing of ATTN Protocol events to appropriate hooks
-   - Support for standard Nostr events (profiles, relay lists, NIP-51 lists)
+   - Support for all confirmation event types (38588, 38688, 38788, 38988)
    - Proper subscription management with multiple subscription IDs
-   - **City Impact:** Efficient event routing enables services to process marketplace events without manual filtering
+   - Subscription since filter support to prevent infinite backlog
 
-4. **Block Synchronization**
-   - Subscribes to block events (kind 38088) from trusted node services
-   - Emits `before_new_block`, `on_new_block`, and `after_new_block` hooks
-   - Block height extraction from both content and tags
-   - **City Impact:** Block synchronization is critical for Bitcoin-native timing and snapshot architecture
+4. **Structured Logging** ✅ (NEW)
+   - Pino-based structured logging throughout
+   - Configurable log levels via `LOG_LEVEL` environment variable
+   - Logger interface allows custom logger injection
+   - `create_noop_logger()` for testing
 
 ### Areas for Improvement
 
-1. **Missing Block Gap Detection**
-   - Hook `on_block_gap_detected` exists in types and can be registered
+1. **Missing Block Gap Detection** (HIGH PRIORITY)
+   - Hook `on_block_gap_detected` exists and can be registered
    - Detection logic is **not implemented** in `RelayConnection.handle_block_event()`
-   - No tracking of last block height or comparison with expected height
-   - **Impact:** Block synchronization issues may go undetected, services may miss blocks without knowing
-   - **Recommendation:** Implement block gap detection as documented in TODO.md
-
-2. **Error Handling in Hook Emitter**
-   - Hook errors are logged but don't stop other handlers
-   - Uses `console.error` instead of structured logging
-   - No error context or recovery mechanisms
-   - **Recommendation:** Add structured logging and error context
+   - No tracking of `last_block_height` or comparison with expected height
+   - **Impact:** Block synchronization issues may go undetected
 
 ---
 
@@ -86,262 +85,190 @@ This comprehensive code review examined the ATTN Protocol Framework package, a *
 
 ### Strengths
 
-1. **TypeScript Strict Mode**
+1. **TypeScript Strict Mode** ✅
    - `tsconfig.json` has `strict: true` enabled
    - `noUncheckedIndexedAccess: true` for safer array access
-   - Good type safety throughout
-   - **City Impact:** Type safety prevents runtime errors and improves developer experience
+   - Only 1 `any` type usage (in browser WebSocket wrapper - acceptable)
+   - No `@ts-ignore` or `@ts-expect-error` comments
 
-2. **Code Organization**
+2. **Consistent Naming Conventions** ✅
+   - All hooks follow `on_*_event` pattern
+   - All lifecycle hooks follow `before_*_event` / `after_*_event` pattern
+   - All context types follow `*EventContext` pattern
+   - snake_case used throughout per project standards
+
+3. **Code Organization** ✅
    - Clear module separation (attn.ts, hooks/, relay/)
    - Single responsibility principle followed
-   - Good use of TypeScript interfaces and types
-   - **City Impact:** Maintainable codebase allows for easier updates and bug fixes
-
-3. **JSDoc Comments**
-   - Main `Attn` class has comprehensive JSDoc
-   - Public methods are documented
-   - Hook registration methods have clear descriptions
-   - **City Impact:** Good documentation improves developer onboarding
+   - HOOK_NAMES constants centralized
+   - Type definitions properly separated
 
 ### Issues & Recommendations
 
-#### Critical Priority
+#### High Priority
 
-1. **No Test Coverage**
-   - **Location:** Entire codebase - no test files found
-   - **Issue:** No test infrastructure exists (no `.test.ts` or `.spec.ts` files)
-   - **Impact:** High regression risk, difficult to verify fixes, no confidence in refactoring, potential production bugs
-   - **Recommendation:** Add comprehensive test suite using Jest or Vitest:
-     - Unit tests for hook emitter (registration, emission, error handling)
-     - Unit tests for relay connection (connection lifecycle, authentication, event handling)
-     - Integration tests with mock Nostr relay
-     - End-to-end tests for full framework lifecycle
-   - **Priority:** **CRITICAL** - Framework is core infrastructure
-
-2. **Missing Block Gap Detection Logic**
-   - **Location:** `src/relay/connection.ts` - `RelayConnection` class, `handle_block_event()` method
-   - **Issue:** Hook `on_block_gap_detected` exists in types (`BlockGapDetectedContext`) and can be registered via `attn.on_block_gap_detected()`, but detection logic is not implemented. The `RelayConnection` class receives block events but does not track the last block height or compare expected vs actual block heights to detect gaps.
-   - **Impact:** Block synchronization issues may go undetected, services may miss blocks without knowing, breaking the block-synchronized marketplace architecture. Critical for Bitcoin-native timing.
+1. **Failing Tests** (2 tests)
+   - **Location:** `src/attn.test.ts`, `src/relay/connection.test.ts`
+   - **Issue 1:** `should throw error if node_pubkeys is missing` - times out because `node_pubkeys` is now optional
+   - **Issue 2:** `should handle authentication rejection` - timing issue with mock WebSocket
+   - **Impact:** CI/CD pipelines may fail, false negatives in test coverage
    - **Recommendation:**
-     - Add `private last_block_height: number | null = null;` property to `RelayConnection` class
-     - In `handle_block_event()`, after extracting block height, compare with `last_block_height`
-     - If `last_block_height !== null` and `block_height !== last_block_height + 1`, emit `on_block_gap_detected` hook with `{ expected_height: last_block_height + 1, actual_height: block_height, gap_size: block_height - last_block_height - 1 }`
-     - Update `last_block_height = block_height` after successful processing
-     - Handle initial block (when `last_block_height === null`) by setting it without gap detection
-   - **Priority:** **CRITICAL** - Required for block synchronization reliability
+     - Remove or update the `node_pubkeys` validation test (node_pubkeys is optional)
+     - Fix authentication rejection test timing issue
 
-#### Medium Priority
-
-1. **JSDoc Coverage Gaps**
-   - **Location:** `src/hooks/emitter.ts`, `src/relay/connection.ts`
-   - **Issue:** Some methods have JSDoc, but not all public APIs are fully documented. `RelayConnection` and `HookEmitter` could use more comprehensive JSDoc.
-   - **Impact:** Reduced developer experience, unclear API usage, harder for new developers to understand the framework
-   - **Recommendation:** Add comprehensive JSDoc with parameter descriptions, return types, examples, and usage notes for all public methods
-
-2. **Error Handling Edge Cases**
-   - **Location:** `src/relay/connection.ts`
-   - **Issue:** Some edge cases in connection lifecycle may not be fully handled (e.g., rapid connect/disconnect cycles, authentication timeout edge cases, WebSocket close codes, network interruptions during subscription)
-   - **Impact:** Unexpected behavior during connection failures or edge cases, potential memory leaks from unhandled timeouts
-   - **Recommendation:** Review and improve error handling for all connection states, add cleanup for all timeouts, handle WebSocket close codes appropriately, add retry logic for transient failures
-
-3. **Structured Logging**
-   - **Location:** `src/hooks/emitter.ts:67`, `src/relay/connection.ts` (multiple console.log/console.error calls)
-   - **Issue:** Uses `console.error` and `console.log` instead of structured logging
-   - **Impact:** Difficult to monitor and debug in production
-   - **Recommendation:** Add structured logging library (e.g., Pino) or accept logger as configuration option
+2. **Block Gap Detection Not Implemented**
+   - **Location:** `src/relay/connection.ts:720-764` (`handle_block_event` method)
+   - **Issue:** No `last_block_height` tracking, no gap comparison
+   - **Impact:** Services may miss blocks without detection
+   - **Recommendation:** Implement as documented in TODO.md
 
 ---
 
-## 3. Testing - City Infrastructure Reliability
-
-### Critical Issues
-
-1. **No Test Coverage**
-   - **Location:** Entire codebase
-   - **Status:** No test files found (no `.test.ts` or `.spec.ts` files)
-   - **Issue:** No test infrastructure exists
-   - **Impact:** High regression risk, difficult to verify fixes, no confidence in refactoring
-   - **Recommendation:**
-     - Add test infrastructure (Jest or Vitest)
-     - Unit tests for hook emitter (registration, emission, error handling)
-     - Unit tests for relay connection (connection lifecycle, authentication, event handling, block gap detection)
-     - Integration tests with mock Nostr relay
-     - End-to-end tests for full framework lifecycle
-   - **Priority:** **CRITICAL** - Framework is core infrastructure
-
-2. **No Test Helpers or Mocks**
-   - **Location:** No test infrastructure
-   - **Issue:** No mock WebSocket, no mock Nostr relay, no test fixtures
-   - **Recommendation:**
-     - Add mock WebSocket for testing connection lifecycle
-     - Add mock Nostr relay for integration tests
-     - Create test fixtures for sample events
-     - Add test utilities for hook testing
-
----
-
-## 4. Block Synchronization
+## 3. Testing
 
 ### Strengths
 
-1. **Block Event Subscription**
-   - Subscribes to block events (kind 38088) from trusted node services
-   - Proper filter configuration with author pubkeys
-   - **City Impact:** Enables Bitcoin-native timing for all services
-
-2. **Block Hook System**
-   - `before_new_block`, `on_new_block`, `after_new_block` hooks
-   - Allows services to prepare, process, and finalize block operations
-   - **City Impact:** Supports block-synchronized snapshot architecture
-
-### Critical Issues
-
-1. **Missing Block Gap Detection**
-   - **Location:** `src/relay/connection.ts:525-569` (`handle_block_event` method)
-   - **Status:** Hook exists but logic not implemented
-   - **Issue:** No tracking of last block height, no comparison with expected height
-   - **Impact:** Services may miss blocks without detection, breaking block synchronization
-   - **Recommendation:** Implement as documented in TODO.md (see Critical Priority #2 above)
-
----
-
-## 5. Error Handling & Resilience
-
-### Strengths
-
-1. **Graceful Error Handling in Hooks**
-   - Hook errors don't stop other handlers
-   - Errors are logged (though using console.error)
-   - **City Impact:** One failing handler doesn't break the entire system
-
-2. **Connection Error Handling**
-   - WebSocket errors are caught and handled
-   - Disconnect hooks are emitted on errors
-   - **City Impact:** Services can react to connection failures
+1. **Good Test Coverage** ✅
+   - 60 total tests across 3 test files
+   - 58 tests passing (97% pass rate)
+   - Hook emitter tests (19 tests)
+   - Attn class tests (28 tests)
+   - Relay connection tests (13 tests)
+   - Mock WebSocket implementation for testing
+   - Test fixtures for events
 
 ### Issues & Recommendations
 
-1. **Console Logging**
-   - **Location:** Multiple files (console.log, console.error, console.warn)
-   - **Issue:** Uses console instead of structured logging
-   - **Recommendation:** Add structured logging library or accept logger as configuration
-
-2. **Error Context**
-   - **Location:** Hook emitter error handling
-   - **Issue:** Errors logged without context (hook name, context data)
-   - **Recommendation:** Add error context to logs
-
-3. **Timeout Cleanup**
-   - **Location:** `src/relay/connection.ts` (multiple timeout variables)
-   - **Issue:** Some timeouts may not be cleaned up in all error paths
-   - **Recommendation:** Review all timeout cleanup paths, ensure cleanup in finally blocks
+1. **2 Failing Tests**
+   - **Location:** `src/attn.test.ts:301-309`, `src/relay/connection.test.ts:303-324`
+   - **Tests:**
+     - `should throw error if node_pubkeys is missing` - validation changed
+     - `should handle authentication rejection` - timing issue
+   - **Recommendation:** Fix or remove outdated tests
 
 ---
 
-## 6. Configuration & Deployment
+## 4. Documentation
 
 ### Strengths
 
-1. **Type-Safe Configuration**
-   - `AttnConfig` interface with proper types
-   - Optional fields with defaults
-   - **City Impact:** Prevents configuration errors at compile time
-
-2. **Configuration Validation**
-   - `validate_config()` method checks required fields
-   - Throws errors for invalid configuration
-   - **City Impact:** Fails fast on invalid configuration
+1. **Updated Documentation** ✅
+   - README.md updated with new hook names and patterns
+   - HOOKS.md updated with complete lifecycle documentation
+   - All examples use new naming conventions
+   - Hook context types documented correctly
 
 ### Issues & Recommendations
 
-1. **Missing Default Values Documentation**
-   - **Location:** `src/attn.ts:39-52` (AttnConfig interface)
-   - **Issue:** Default values exist but not all are documented
-   - **Recommendation:** Document all default values in JSDoc comments
+1. **JSDoc Coverage Gaps** (MEDIUM)
+   - **Location:** Some private methods in `src/relay/connection.ts`
+   - **Recommendation:** Add JSDoc for complex private methods
 
 ---
 
-## 7. Documentation
+## 5. Hook Refactoring Verification
 
-### Strengths
+### Changes Verified ✅
 
-1. **Main Class Documentation**
-   - `Attn` class has comprehensive JSDoc
-   - Hook registration methods are documented
-   - **City Impact:** Good developer experience for framework users
+| Category | Old Pattern | New Pattern | Status |
+|----------|-------------|-------------|--------|
+| Event Hooks | `on_new_marketplace` | `on_marketplace_event` | ✅ Complete |
+| Event Hooks | `on_new_billboard` | `on_billboard_event` | ✅ Complete |
+| Event Hooks | `on_new_promotion` | `on_promotion_event` | ✅ Complete |
+| Event Hooks | `on_new_attention` | `on_attention_event` | ✅ Complete |
+| Event Hooks | `on_new_match` | `on_match_event` | ✅ Complete |
+| Event Hooks | `on_new_block` | `on_block_event` | ✅ Complete |
+| Event Hooks | `on_new_profile` | `on_profile_event` | ✅ Complete |
+| Event Hooks | `on_new_relay_list` | `on_relay_list_event` | ✅ Complete |
+| Event Hooks | `on_new_nip51_list` | `on_nip51_list_event` | ✅ Complete |
+| Confirmation | `on_billboard_confirm` | `on_billboard_confirmation_event` | ✅ Complete |
+| Confirmation | `on_attention_confirm` | `on_attention_confirmation_event` | ✅ Complete |
+| Confirmation | `on_marketplace_confirmed` | `on_marketplace_confirmation_event` | ✅ Complete |
+| Confirmation | `on_attention_payment_confirm` | `on_attention_payment_confirmation_event` | ✅ Complete |
+| Block Lifecycle | `before_new_block` | `before_block_event` | ✅ Complete |
+| Block Lifecycle | `after_new_block` | `after_block_event` | ✅ Complete |
+| Types | `NewMarketplaceContext` | `MarketplaceEventContext` | ✅ Complete |
+| Types | `NewBlockContext` | `BlockEventContext` | ✅ Complete |
+| Types | `BillboardConfirmContext` | `BillboardConfirmationEventContext` | ✅ Complete |
 
-2. **README Documentation**
-   - Framework README exists with examples
-   - Hook system documented
-   - **City Impact:** Easier onboarding for new developers
+### New Hooks Added ✅
 
-### Issues & Recommendations
+24 new before/after lifecycle hooks added:
+- `before_marketplace_event`, `after_marketplace_event`
+- `before_billboard_event`, `after_billboard_event`
+- `before_promotion_event`, `after_promotion_event`
+- `before_attention_event`, `after_attention_event`
+- `before_match_event`, `after_match_event`
+- `before_billboard_confirmation_event`, `after_billboard_confirmation_event`
+- `before_attention_confirmation_event`, `after_attention_confirmation_event`
+- `before_marketplace_confirmation_event`, `after_marketplace_confirmation_event`
+- `before_attention_payment_confirmation_event`, `after_attention_payment_confirmation_event`
+- `before_profile_event`, `after_profile_event`
+- `before_relay_list_event`, `after_relay_list_event`
+- `before_nip51_list_event`, `after_nip51_list_event`
 
-1. **Incomplete JSDoc Coverage**
-   - **Location:** `src/hooks/emitter.ts`, `src/relay/connection.ts`
-   - **Issue:** Not all public methods have JSDoc
-   - **Recommendation:** Add JSDoc to all public methods
+---
 
-2. **Missing Examples**
-   - **Location:** No examples directory
-   - **Issue:** No example code showing framework usage
-   - **Recommendation:** Add examples directory with sample implementations
+## 6. Refactoring Opportunities
+
+### Identified Opportunities
+
+1. **Extract Generic Event Handler** (MEDIUM EFFORT)
+   - **Location:** `src/relay/connection.ts:810-1150`
+   - **Current:** 9+ event handlers with identical pattern (parse content, extract block height, build context, emit before/on/after)
+   - **Proposed:** Extract generic `handle_event<T>()` function
+   - **Benefit:** Reduce ~400 lines of duplication, easier maintenance
+   - **Effort:** Medium (2-4 hours)
+   - **Risk:** Medium (touches all event handlers)
 
 ---
 
 ## Summary of Recommendations
 
-### Immediate Actions (Critical)
+### Immediate Actions (High Priority)
 
-1. ⚠️ **ADD TEST COVERAGE** - No test infrastructure exists (CRITICAL BLOCKER)
-2. ⚠️ **IMPLEMENT BLOCK GAP DETECTION** - Logic missing in `handle_block_event()` (CRITICAL BLOCKER)
+1. ⚠️ **FIX FAILING TESTS** - 2 tests need updating (validation test outdated, timing issue)
+2. ⚠️ **IMPLEMENT BLOCK GAP DETECTION** - Add `last_block_height` tracking in `handle_block_event()`
 
-### Short-term Actions (High Priority)
+### Short-term Actions (Medium Priority)
 
-1. ✅ **ALREADY DOCUMENTED IN TODO** - Test coverage and block gap detection are tracked
-
-### Medium-term Actions (Medium Priority)
-
-1. Add comprehensive JSDoc comments to all public methods
-2. Improve error handling for edge cases in relay connection
-3. Add structured logging (replace console.log/error)
+1. Add JSDoc to remaining public methods
+2. Add examples directory with sample implementations
+3. Consider extracting generic event handler
 
 ### Long-term Actions (Low Priority)
 
-1. Add examples directory with sample implementations
-2. Add performance benchmarks for hook system
-3. Add integration tests with mock relay
+1. Add performance benchmarks for hook system
+2. Add more integration tests
 
 ---
 
-## Conclusion - City Infrastructure Readiness
+## Conclusion
 
-The Framework Package demonstrates solid architectural foundations with a clean hook-based API, proper TypeScript typing, and good separation of concerns. However, **critical gaps** prevent production readiness: no test coverage and missing block gap detection logic.
+The Framework Package demonstrates **excellent progress** since the last review:
 
-**Critical blockers:**
-- ⚠️ No test coverage (CRITICAL) - Framework is core infrastructure, must have tests
-- ⚠️ Missing block gap detection (CRITICAL) - Required for block synchronization reliability
+**Improvements Made:**
+- ✅ Hook naming refactoring completed with consistent patterns
+- ✅ 24 new lifecycle hooks added for comprehensive event processing
+- ✅ Structured logging implemented via Pino
+- ✅ Documentation updated
+- ✅ 58 tests passing
 
-**City Infrastructure Priority Actions:**
-1. Add comprehensive test coverage (CRITICAL)
-2. Implement block gap detection logic (CRITICAL)
-3. Add structured logging (replace console.log/error)
-4. Complete JSDoc documentation
+**Remaining Issues:**
+- ⚠️ 2 failing tests (validation and timing issues)
+- ⚠️ Block gap detection not implemented
 
-**Overall Grade: C+ (Functional but Not Production-Ready)**
-- Architecture: A- (Solid foundation for city infrastructure)
-- Code Quality: B+ (Good practices, missing tests)
-- Testing: F (No test coverage)
-- Documentation: B (Good but incomplete)
-- Block Synchronization: C (Missing gap detection)
+**Overall Grade: B+ (Functional and Mostly Production-Ready)**
+- Architecture: A (Excellent hook-based design)
+- Code Quality: A- (Clean, consistent, well-typed)
+- Testing: B+ (Good coverage, 2 failing tests)
+- Documentation: A- (Comprehensive, updated)
+- Block Synchronization: B (Missing gap detection)
 
-**City Infrastructure Assessment:** The framework is **functional but not production-ready**. Critical infrastructure improvements are needed: comprehensive test coverage and block gap detection. Once these are implemented, the framework will be ready to serve as the foundation layer for NextBlock City marketplace services.
+**City Infrastructure Assessment:** The framework is **functional and ready for M4** deployment. Block gap detection should be implemented before M5 for full block synchronization reliability. Failing tests should be fixed to maintain CI/CD health.
 
 ---
 
-**Review Completed:** 2025-01-28
-**Next Review Recommended:** After test coverage and block gap detection are implemented
-
-**City Infrastructure Status:** This framework is critical infrastructure for NextBlock City's attention marketplace (M4 milestone). The framework is **functional but not production-ready** without test coverage and block gap detection. These must be addressed before production deployment.
+**Review Completed:** 2025-12-07
+**Next Review Recommended:** After block gap detection is implemented
 

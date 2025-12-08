@@ -10,9 +10,9 @@ export type { BlockHeight, Pubkey, EventId };
 
 /**
  * Hook context passed to all hook handlers
+ * Contains only the raw event - implementations extract what they need
  */
 export interface HookContext {
-  block_height?: BlockHeight;
   timestamp?: number;
   [key: string]: unknown;
 }
@@ -58,78 +58,84 @@ export interface SubscriptionContext extends HookContext {
 
 /**
  * Event lifecycle hook contexts
+ * All contexts include event_id, pubkey (from event object), parsed content, and the raw event
+ * Implementations extract any additional data they need from the event or parsed content
  */
-export interface NewMarketplaceContext extends HookContext {
+export interface MarketplaceEventContext extends HookContext {
   event_id: EventId;
   pubkey: Pubkey;
   marketplace_data: unknown;
   event: Event;
 }
 
-export interface NewBillboardContext extends HookContext {
+export interface BillboardEventContext extends HookContext {
   event_id: EventId;
   pubkey: Pubkey;
   billboard_data: unknown;
   event: Event;
 }
 
-export interface NewPromotionContext extends HookContext {
+export interface PromotionEventContext extends HookContext {
   event_id: EventId;
   pubkey: Pubkey;
   promotion_data: unknown;
   event: Event;
 }
 
-export interface NewAttentionContext extends HookContext {
+export interface AttentionEventContext extends HookContext {
   event_id: EventId;
   pubkey: Pubkey;
   attention_data: unknown;
   event: Event;
 }
 
-export interface NewMatchContext extends HookContext {
+export interface MatchEventContext extends HookContext {
   event_id: EventId;
   pubkey: Pubkey;
   match_data: unknown;
   event: Event;
 }
 
+/**
+ * Match published context - backward compatibility hook
+ * Contains only event metadata and parsed content
+ * Implementations extract promotion/attention IDs from match_data or event.tags
+ */
 export interface MatchPublishedContext extends HookContext {
   match_event_id: EventId;
-  promotion_event_id: EventId;
-  attention_event_id: EventId;
   match_data: unknown;
   event: Event;
 }
 
-export interface BillboardConfirmContext extends HookContext {
-  confirmation_event_id: EventId;
-  match_event_id: EventId;
-  billboard_pubkey: Pubkey;
+/**
+ * Confirmation event contexts
+ * Contains event metadata and parsed content
+ * Implementations extract reference IDs from confirmation_data or event.tags
+ */
+export interface BillboardConfirmationEventContext extends HookContext {
+  event_id: EventId;
+  pubkey: Pubkey;
   confirmation_data: unknown;
   event: Event;
 }
 
-export interface AttentionConfirmContext extends HookContext {
-  confirmation_event_id: EventId;
-  match_event_id: EventId;
-  attention_pubkey: Pubkey;
+export interface AttentionConfirmationEventContext extends HookContext {
+  event_id: EventId;
+  pubkey: Pubkey;
   confirmation_data: unknown;
   event: Event;
 }
 
-export interface MarketplaceConfirmedContext extends HookContext {
-  marketplace_event_id: EventId;
-  match_event_id: EventId;
+export interface MarketplaceConfirmationEventContext extends HookContext {
+  event_id: EventId;
+  pubkey: Pubkey;
   settlement_data: unknown;
   event: Event;
 }
 
-export interface AttentionPaymentConfirmContext extends HookContext {
-  confirmation_event_id: EventId;
-  marketplace_confirmation_event_id: EventId;
-  match_event_id: EventId;
-  attention_pubkey: Pubkey;
+export interface AttentionPaymentConfirmationEventContext extends HookContext {
+  event_id: EventId;
+  pubkey: Pubkey;
   payment_data: unknown;
   event: Event;
 }
@@ -151,11 +157,11 @@ export interface BlockData {
   node_pubkey?: string;
 }
 
-export interface NewBlockContext extends HookContext {
+export interface BlockEventContext extends HookContext {
   block_height: BlockHeight;
   block_hash?: string;
   block_time?: number;
-  raw_block_data?: BlockData;
+  block_data?: BlockData;
   event?: Event;
   relay_url?: string;
 }
@@ -184,26 +190,28 @@ export interface HealthChangeContext extends HookContext {
 /**
  * Standard Nostr event hook contexts
  */
-export interface NewProfileContext extends HookContext {
+export interface ProfileEventContext extends HookContext {
   event_id: EventId;
   pubkey: Pubkey;
   profile_data: unknown;
   event: Event;
 }
 
-export interface NewRelayListContext extends HookContext {
+export interface RelayListEventContext extends HookContext {
   event_id: EventId;
   pubkey: Pubkey;
   relay_list_data: unknown;
   event: Event;
 }
 
-export interface NewNip51ListContext extends HookContext {
+/**
+ * NIP-51 list context
+ * Contains event metadata and parsed content
+ * Implementations extract list_type from event.tags d-tag or list_data
+ */
+export interface Nip51ListEventContext extends HookContext {
   event_id: EventId;
   pubkey: Pubkey;
   list_data: unknown;
-  list_type: 'trusted_billboard' | 'trusted_marketplace' | 'blocked_promotion' | 'blocked_promoter';
-  list_identifier?: string;
   event: Event;
 }
-
