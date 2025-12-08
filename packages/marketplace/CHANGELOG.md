@@ -1,5 +1,11 @@
 # @attn-protocol/marketplace
 
+## 0.1.0
+
+### Minor Changes
+
+- 3d31151: Add marketplace package with storage abstraction, enhance core types, and improve testing infrastructure
+
 ## 0.0.1
 
 ### Patch Changes

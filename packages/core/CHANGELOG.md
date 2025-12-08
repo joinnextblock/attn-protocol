@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.6.0
+
+### Minor Changes
+
+- 3d31151: Add marketplace package with storage abstraction, enhance core types, and improve testing infrastructure
+
 ## 0.5.4
 
 ### Patch Changes

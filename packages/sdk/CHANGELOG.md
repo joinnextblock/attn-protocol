@@ -1,5 +1,11 @@
 # @attn-protocol/sdk
 
+## 0.8.0
+
+### Minor Changes
+
+- 3d31151: Add marketplace package with storage abstraction, enhance core types, and improve testing infrastructure
+
 ## 0.7.6
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
   "name": "@attn-protocol/marketplace",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "ATTN Protocol marketplace - bring your own storage implementation",
   "private": true,
   "type": "module",
