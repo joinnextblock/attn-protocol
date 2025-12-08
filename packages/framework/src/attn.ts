@@ -69,55 +69,161 @@ import type {
 } from './hooks/types.ts';
 
 /**
- * Relay configuration with auth requirement
+ * Relay configuration with authentication requirement.
+ *
+ * Used internally to track which relays need NIP-42 authentication.
  */
 export interface RelayWithAuth {
+  /** WebSocket URL of the relay (e.g., 'wss://relay.example.com') */
   url: string;
+  /** Whether this relay requires NIP-42 authentication */
   requires_auth: boolean;
 }
 
 /**
- * Profile metadata for kind 0 events (NIP-01)
+ * Profile metadata for Nostr kind 0 events (NIP-01).
+ *
+ * Used to publish user profile information to relays.
+ *
+ * @example
+ * ```ts
+ * const profile: ProfileConfig = {
+ *   name: 'Alice',
+ *   about: 'Building the attention economy',
+ *   picture: 'https://example.com/avatar.png',
+ *   nip05: 'alice@example.com',
+ *   lud16: 'alice@getalby.com',
+ * };
+ * ```
  */
 export interface ProfileConfig {
+  /** Display name (required) */
   name: string;
+  /** Profile bio/description */
   about?: string;
+  /** Avatar image URL */
   picture?: string;
+  /** Banner image URL */
   banner?: string;
+  /** Website URL */
   website?: string;
+  /** NIP-05 identifier (e.g., 'user@domain.com') */
   nip05?: string;
+  /** Lightning address for payments (e.g., 'user@getalby.com') */
   lud16?: string;
+  /** Alternative display name */
   display_name?: string;
+  /** Whether this account is a bot */
   bot?: boolean;
 }
 
+/**
+ * Configuration options for the Attn framework.
+ *
+ * @example
+ * ```ts
+ * const config: AttnConfig = {
+ *   private_key: privateKeyBytes,
+ *   relays_noauth: ['wss://relay.example.com'],
+ *   marketplace_pubkeys: ['abc123...'],
+ *   auto_reconnect: true,
+ * };
+ * ```
+ */
 export interface AttnConfig {
-  relays?: string[]; // Default: ['wss://relay.attnprotocol.org'] - deprecated, use relays_auth/relays_noauth
-  relays_auth?: string[]; // Relays requiring NIP-42 authentication
-  relays_noauth?: string[]; // Relays not requiring authentication
+  /**
+   * Relay URLs (deprecated, use relays_auth/relays_noauth instead).
+   * @deprecated Use `relays_auth` and `relays_noauth` for explicit auth configuration.
+   * @default ['wss://relay.attnprotocol.org']
+   */
+  relays?: string[];
+
+  /** Relay URLs requiring NIP-42 authentication */
+  relays_auth?: string[];
+
+  /** Relay URLs not requiring authentication */
+  relays_noauth?: string[];
+
+  /** Private key for signing events (32-byte Uint8Array) */
   private_key: Uint8Array;
-  node_pubkeys?: string[]; // Optional - if not provided, block events won't be filtered by node
+
+  /**
+   * Trusted Bitcoin node service pubkeys for block events.
+   * If not provided, block events won't be filtered by node.
+   */
+  node_pubkeys?: string[];
+
+  /** Filter events by marketplace pubkeys */
   marketplace_pubkeys?: string[];
-  marketplace_d_tags?: string[]; // Filter marketplace events by d-tags (for subscribing to specific marketplaces)
+
+  /** Filter marketplace events by d-tags (for subscribing to specific marketplaces) */
+  marketplace_d_tags?: string[];
+
+  /** Filter events by billboard pubkeys */
   billboard_pubkeys?: string[];
+
+  /** Filter events by advertiser pubkeys */
   advertiser_pubkeys?: string[];
-  auto_reconnect?: boolean; // Default: true
-  deduplicate?: boolean; // Default: true
-  connection_timeout_ms?: number; // Default: 30000
-  reconnect_delay_ms?: number; // Default: 5000
-  max_reconnect_attempts?: number; // Default: 10
-  auth_timeout_ms?: number; // Default: 10000
-  logger?: Logger; // Optional logger, defaults to Pino logger
-  subscription_since?: number; // Unix timestamp to filter events (prevents infinite backlog on restart)
 
-  // Write relays (for publishing events, separate from subscription relays)
-  relays_write_auth?: string[]; // Write relays requiring NIP-42 authentication
-  relays_write_noauth?: string[]; // Write relays not requiring authentication
+  /**
+   * Whether to automatically reconnect on disconnect.
+   * @default true
+   */
+  auto_reconnect?: boolean;
 
-  // Identity publishing (optional)
-  profile?: ProfileConfig; // Profile metadata for kind 0 event
-  follows?: string[]; // Optional follow list pubkeys for kind 3 event (NIP-02)
-  publish_identity_on_connect?: boolean; // Auto-publish kind 0, 10002, and 3 on connect (default: true if profile is set)
+  /**
+   * Whether to deduplicate received events.
+   * @default true
+   */
+  deduplicate?: boolean;
+
+  /**
+   * Connection timeout in milliseconds.
+   * @default 30000
+   */
+  connection_timeout_ms?: number;
+
+  /**
+   * Delay between reconnection attempts in milliseconds.
+   * @default 5000
+   */
+  reconnect_delay_ms?: number;
+
+  /**
+   * Maximum number of reconnection attempts.
+   * @default 10
+   */
+  max_reconnect_attempts?: number;
+
+  /**
+   * NIP-42 authentication timeout in milliseconds.
+   * @default 10000
+   */
+  auth_timeout_ms?: number;
+
+  /** Custom logger instance (defaults to Pino) */
+  logger?: Logger;
+
+  /** Unix timestamp to filter events from (prevents infinite backlog on restart) */
+  subscription_since?: number;
+
+  /** Write relay URLs requiring NIP-42 authentication (for publishing) */
+  relays_write_auth?: string[];
+
+  /** Write relay URLs not requiring authentication (for publishing) */
+  relays_write_noauth?: string[];
+
+  /** Profile metadata for kind 0 event (enables identity publishing) */
+  profile?: ProfileConfig;
+
+  /** Pubkeys to follow for kind 3 event (NIP-02) */
+  follows?: string[];
+
+  /**
+   * Whether to auto-publish identity events (kind 0, 10002, 3) on connect.
+   * @default true (if profile is set)
+   */
+  publish_identity_on_connect?: boolean;
 }
 
 /**

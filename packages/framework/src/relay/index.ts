@@ -1,5 +1,13 @@
 /**
- * Relay module exports
+ * Relay connection and publishing module for the ATTN Framework.
+ *
+ * Provides WebSocket connection management, NIP-42 authentication,
+ * subscription handling, and event publishing to Nostr relays.
+ *
+ * Most users should use the `Attn` class which manages connections internally.
+ * These exports are provided for advanced use cases.
+ *
+ * @module
  */
 
 // Main connection manager

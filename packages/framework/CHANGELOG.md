@@ -1,5 +1,11 @@
 # @attn-protocol/framework
 
+## 0.9.1
+
+### Patch Changes
+
+- dba759b: Add descriptions to jsr.json files for improved JSR registry discoverability and score
+
 ## 0.9.0
 
 ### Minor Changes

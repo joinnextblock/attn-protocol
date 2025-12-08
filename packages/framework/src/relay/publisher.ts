@@ -1,6 +1,11 @@
 /**
- * Publisher module for publishing Nostr events
- * Handles kind 0 (profile) and kind 10002 (relay list) publishing
+ * Publisher module for publishing Nostr events.
+ *
+ * Handles publishing kind 0 (profile), kind 10002 (relay list),
+ * kind 3 (follow list), and arbitrary events to multiple relays
+ * with NIP-42 authentication support.
+ *
+ * @module
  */
 
 import WebSocket from 'isomorphic-ws';
@@ -11,37 +16,78 @@ import type { ProfileConfig } from '../attn.js';
 import type { PublishResult } from '../hooks/types.js';
 
 /**
- * Relay configuration for publishing
+ * Write relay configuration.
+ *
+ * Defines a relay URL and whether it requires authentication.
  */
 export interface WriteRelay {
+  /** WebSocket URL of the relay */
   url: string;
+  /** Whether this relay requires NIP-42 authentication */
   requires_auth: boolean;
 }
 
 /**
- * Publisher configuration
+ * Publisher configuration options.
  */
 export interface PublisherConfig {
+  /** Private key for signing events (32-byte Uint8Array) */
   private_key: Uint8Array;
+  /** Relays to publish events to */
   write_relays: WriteRelay[];
+  /** Read relays for relay list event (NIP-65) */
   read_relays: string[];
+  /** Logger instance */
   logger: Logger;
+  /**
+   * NIP-42 authentication timeout in milliseconds.
+   * @default 5000
+   */
   auth_timeout_ms?: number;
+  /**
+   * Publish operation timeout in milliseconds.
+   * @default 10000
+   */
   publish_timeout_ms?: number;
 }
 
 /**
- * Results from publishing to multiple relays
+ * Results from publishing an event to multiple relays.
  */
 export interface PublishResults {
+  /** ID of the published event */
   event_id: string;
+  /** Individual results from each relay */
   results: PublishResult[];
+  /** Number of successful publishes */
   success_count: number;
+  /** Number of failed publishes */
   failure_count: number;
 }
 
 /**
- * Publisher class for publishing events to Nostr relays
+ * Publisher for writing Nostr events to relays.
+ *
+ * Supports publishing profile (kind 0), relay list (kind 10002),
+ * follow list (kind 3), and arbitrary events with automatic
+ * NIP-42 authentication handling.
+ *
+ * @example
+ * ```ts
+ * const publisher = new Publisher({
+ *   private_key: privateKeyBytes,
+ *   write_relays: [{ url: 'wss://relay.example.com', requires_auth: true }],
+ *   read_relays: ['wss://relay.example.com'],
+ *   logger: myLogger,
+ * });
+ *
+ * const results = await publisher.publish_profile({
+ *   name: 'Alice',
+ *   about: 'Hello world',
+ * });
+ *
+ * console.log(`Published to ${results.success_count} relays`);
+ * ```
  */
 export class Publisher {
   private config: PublisherConfig;
@@ -49,6 +95,11 @@ export class Publisher {
   private auth_timeout_ms: number;
   private publish_timeout_ms: number;
 
+  /**
+   * Create a new Publisher instance.
+   *
+   * @param config - Publisher configuration
+   */
   constructor(config: PublisherConfig) {
     this.config = config;
     this.public_key_hex = get_public_key_hex(config.private_key);
@@ -57,7 +108,10 @@ export class Publisher {
   }
 
   /**
-   * Publish kind 0 profile event
+   * Publish a kind 0 profile event (NIP-01).
+   *
+   * @param profile - Profile metadata to publish
+   * @returns Results from publishing to all configured relays
    */
   async publish_profile(profile: ProfileConfig): Promise<PublishResults> {
     const profile_data: Record<string, unknown> = {
@@ -86,7 +140,11 @@ export class Publisher {
   }
 
   /**
-   * Publish kind 10002 relay list event (NIP-65)
+   * Publish a kind 10002 relay list event (NIP-65).
+   *
+   * Creates relay tags from configured read and write relays.
+   *
+   * @returns Results from publishing to all configured relays
    */
   async publish_relay_list(): Promise<PublishResults> {
     const tags: string[][] = [];

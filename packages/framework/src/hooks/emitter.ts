@@ -1,6 +1,10 @@
 /**
- * Hook event emitter for attn framework
- * Provides infrastructure for registering and emitting lifecycle hooks
+ * Hook event emitter for the ATTN Framework.
+ *
+ * Provides infrastructure for registering and emitting lifecycle hooks.
+ * Used internally by the `Attn` class to dispatch events to handlers.
+ *
+ * @module
  */
 
 import type {
@@ -12,7 +16,26 @@ import type { Logger } from '../logger.js';
 import { create_default_logger } from '../logger.js';
 
 /**
- * Hook emitter that manages hook registration and execution
+ * Hook emitter that manages hook registration and execution.
+ *
+ * Handlers are executed in registration order. Errors in one handler
+ * are caught and logged without stopping other handlers.
+ *
+ * @example
+ * ```ts
+ * const emitter = new HookEmitter(logger);
+ *
+ * // Register a handler
+ * const handle = emitter.register('on_event', async (ctx) => {
+ *   console.log('Event received:', ctx);
+ * });
+ *
+ * // Emit an event
+ * await emitter.emit('on_event', { data: 'test' });
+ *
+ * // Unregister when done
+ * handle.unregister();
+ * ```
  */
 export class HookEmitter {
   private handlers: Map<string, Set<HookHandler>> = new Map();

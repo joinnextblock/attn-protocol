@@ -1,6 +1,10 @@
 /**
- * Hook system core for attn framework
- * Provides hook emitter and hook name constants
+ * Hook system core for the ATTN Framework.
+ *
+ * Provides the hook emitter infrastructure and hook name constants
+ * for building event-driven ATTN Protocol applications.
+ *
+ * @module
  */
 
 export { HookEmitter } from './emitter.ts';
@@ -38,7 +42,20 @@ export type {
 } from './types.ts';
 
 /**
- * Hook name constants
+ * Hook name constants for internal use.
+ *
+ * These constants define the string identifiers for each hook type.
+ * Use the `on_*`, `before_*`, and `after_*` methods on the `Attn` class
+ * to register handlers instead of using these constants directly.
+ *
+ * @example
+ * ```ts
+ * // Preferred: Use Attn class methods
+ * attn.on_promotion_event(handler);
+ *
+ * // Internal: Hook names for advanced use cases
+ * console.log(HOOK_NAMES.PROMOTION_EVENT); // 'on_promotion_event'
+ * ```
  */
 export const HOOK_NAMES = {
   // Infrastructure hooks
