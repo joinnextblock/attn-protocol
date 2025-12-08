@@ -1,13 +1,13 @@
 {
   "name": "@attn/marketplace",
-  "version": "0.1.0",
+  "version": "0.2.1",
   "description": "Marketplace lifecycle layer for ATTN Protocol - bring your own storage implementation for attention marketplaces",
   "license": "MIT",
   "exports": "./src/index.ts",
   "imports": {
-    "@attn-protocol/core": "jsr:@attn/core@^0.6.0",
-    "@attn-protocol/framework": "jsr:@attn/framework@^0.8.0",
-    "@attn-protocol/sdk": "jsr:@attn/sdk@^0.8.0",
+    "@attn-protocol/core": "jsr:@attn/core@^0.7.1",
+    "@attn-protocol/framework": "jsr:@attn/framework@^0.9.1",
+    "@attn-protocol/sdk": "jsr:@attn/sdk@^0.9.1",
     "nostr-tools": "npm:nostr-tools@^2.4.0"
   },
   "publish": {

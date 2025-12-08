@@ -1,6 +1,6 @@
 {
   "name": "@attn/core",
-  "version": "0.6.0",
+  "version": "0.7.1",
   "description": "Core constants and types for ATTN Protocol - shared definitions for Bitcoin-native attention marketplace on Nostr",
   "license": "MIT",
   "exports": "./src/index.ts",
