@@ -30,6 +30,8 @@ export type {
   BlockGapDetectedContext,
   RateLimitContext,
   HealthChangeContext,
+  PublishResult,
+  ProfilePublishedContext,
   ProfileEventContext,
   RelayListEventContext,
   Nip51ListEventContext,
@@ -92,6 +94,9 @@ export const HOOK_NAMES = {
 
   // Health hooks
   HEALTH_CHANGE: 'on_health_change',
+
+  // Identity publishing hooks
+  PROFILE_PUBLISHED: 'on_profile_published',
 
   // Standard Nostr event hooks (with before/after lifecycle)
   BEFORE_PROFILE_EVENT: 'before_profile_event',

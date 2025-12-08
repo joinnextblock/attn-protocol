@@ -188,6 +188,25 @@ export interface HealthChangeContext extends HookContext {
 }
 
 /**
+ * Profile published context - emitted after kind 0, kind 10002, and optionally kind 3 are published on connect
+ */
+export interface PublishResult {
+  event_id: string;
+  relay_url: string;
+  success: boolean;
+  error?: string;
+}
+
+export interface ProfilePublishedContext extends HookContext {
+  profile_event_id?: string;
+  relay_list_event_id?: string;
+  follow_list_event_id?: string;
+  results: PublishResult[];
+  success_count: number;
+  failure_count: number;
+}
+
+/**
  * Standard Nostr event hook contexts
  */
 export interface ProfileEventContext extends HookContext {

@@ -108,7 +108,8 @@ describe('HookEmitter', () => {
 
     it('should include hook name in error message', async () => {
       await expect(
-        emitter.emit_required('store_promotion', {} as Parameters<typeof emitter.emit_required>[1])
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        emitter.emit_required('store_promotion', {} as any)
       ).rejects.toThrow("store_promotion");
     });
   });
@@ -135,7 +136,8 @@ describe('HookEmitter', () => {
       const handler = vi.fn().mockResolvedValue(undefined);
       emitter.register('store_promotion', handler);
 
-      const result = await emitter.emit('store_promotion', {} as Parameters<typeof emitter.emit>[1]);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const result = await emitter.emit('store_promotion', {} as any);
       expect(result).toBeUndefined();
       expect(handler).toHaveBeenCalled();
     });

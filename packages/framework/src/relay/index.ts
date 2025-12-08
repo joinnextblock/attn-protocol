@@ -20,3 +20,7 @@ export type { EventHandlerConfig } from './handlers.js';
 export { get_websocket_impl, WS_READY_STATE } from './websocket.js';
 export type { WebSocketWithOn } from './websocket.js';
 
+// Publisher for writing events
+export { Publisher } from './publisher.js';
+export type { PublisherConfig, WriteRelay, PublishResults } from './publisher.js';
+

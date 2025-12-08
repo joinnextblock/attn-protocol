@@ -7,8 +7,11 @@
 import { HookEmitter } from './hooks/emitter.js';
 import { HOOK_NAMES } from './hooks/index.js';
 import { RelayConnection } from './relay/connection.js';
+import { Publisher } from './relay/publisher.js';
 import type { RelayConnectionConfig } from './relay/connection.js';
+import type { WriteRelay } from './relay/publisher.js';
 import type { Logger } from './logger.js';
+import { create_default_logger } from './logger.js';
 import type {
   HookHandler,
   BeforeHookHandler,
@@ -32,6 +35,7 @@ import type {
   BlockGapDetectedContext,
   RateLimitContext,
   HealthChangeContext,
+  ProfilePublishedContext,
   ProfileEventContext,
   RelayListEventContext,
   Nip51ListEventContext,
@@ -43,6 +47,21 @@ import type {
 export interface RelayWithAuth {
   url: string;
   requires_auth: boolean;
+}
+
+/**
+ * Profile metadata for kind 0 events (NIP-01)
+ */
+export interface ProfileConfig {
+  name: string;
+  about?: string;
+  picture?: string;
+  banner?: string;
+  website?: string;
+  nip05?: string;
+  lud16?: string;
+  display_name?: string;
+  bot?: boolean;
 }
 
 export interface AttnConfig {
@@ -63,6 +82,15 @@ export interface AttnConfig {
   auth_timeout_ms?: number; // Default: 10000
   logger?: Logger; // Optional logger, defaults to Pino logger
   subscription_since?: number; // Unix timestamp to filter events (prevents infinite backlog on restart)
+
+  // Write relays (for publishing events, separate from subscription relays)
+  relays_write_auth?: string[]; // Write relays requiring NIP-42 authentication
+  relays_write_noauth?: string[]; // Write relays not requiring authentication
+
+  // Identity publishing (optional)
+  profile?: ProfileConfig; // Profile metadata for kind 0 event
+  follows?: string[]; // Optional follow list pubkeys for kind 3 event (NIP-02)
+  publish_identity_on_connect?: boolean; // Auto-publish kind 0, 10002, and 3 on connect (default: true if profile is set)
 }
 
 /**
@@ -72,12 +100,17 @@ export interface AttnConfig {
 export class Attn {
   private emitter: HookEmitter;
   private config: AttnConfig;
+  private logger: Logger;
   private relay_list: RelayWithAuth[] = [];
+  private write_relay_list: WriteRelay[] = [];
   private relay_connections: Map<string, RelayConnection> = new Map();
+  private publisher: Publisher | null = null;
+  private identity_published: boolean = false;
 
   constructor(config: AttnConfig) {
     this.emitter = new HookEmitter(config.logger);
     this.config = config;
+    this.logger = config.logger ?? create_default_logger();
 
     // Build relay list with auth requirements
     // Priority: relays_auth/relays_noauth > relays (deprecated)
@@ -98,6 +131,31 @@ export class Attn {
       // Default relay
       this.relay_list.push({ url: 'wss://relay.attnprotocol.org', requires_auth: false });
     }
+
+    // Build write relay list
+    // Priority: relays_write_auth/relays_write_noauth > subscription relays
+    if (config.relays_write_auth || config.relays_write_noauth) {
+      for (const url of config.relays_write_auth ?? []) {
+        this.write_relay_list.push({ url, requires_auth: true });
+      }
+      for (const url of config.relays_write_noauth ?? []) {
+        this.write_relay_list.push({ url, requires_auth: false });
+      }
+    } else {
+      // Default to subscription relays for writing
+      this.write_relay_list = this.relay_list.map((r) => ({ url: r.url, requires_auth: r.requires_auth }));
+    }
+
+    // Initialize publisher if we have write relays
+    if (this.write_relay_list.length > 0) {
+      this.publisher = new Publisher({
+        private_key: config.private_key,
+        write_relays: this.write_relay_list,
+        read_relays: this.relay_list.map((r) => r.url),
+        logger: this.logger,
+        auth_timeout_ms: config.auth_timeout_ms,
+      });
+    }
   }
 
   /**
@@ -115,11 +173,101 @@ export class Attn {
   /**
    * Connect to Nostr relay
    * Requires at least one relay URL and trusted node pubkeys
+   * If profile is configured, publishes kind 0 and kind 10002 after connecting
    */
   async connect(): Promise<void> {
     this.validate_config();
     const connect_promises = this.relay_list.map((relay) => this.connect_relay(relay.url, relay.requires_auth));
     await Promise.all(connect_promises);
+
+    // Publish profile if configured and not already published
+    const should_publish = this.config.publish_identity_on_connect ?? (this.config.profile !== undefined);
+    if (should_publish && this.config.profile && !this.identity_published) {
+      await this.publish_profile();
+    }
+  }
+
+  /**
+   * Publish profile (kind 0 profile, kind 10002 relay list, and optionally kind 3 follow list)
+   * Called automatically on connect if profile is configured
+   * @throws Error if profile is not configured
+   */
+  async publish_profile(): Promise<void> {
+    if (!this.config.profile) {
+      throw new Error('Cannot publish profile: profile is required but not configured');
+    }
+    if (!this.publisher) {
+      throw new Error('Cannot publish profile: publisher not initialized (no write relays configured)');
+    }
+
+    const has_follows = this.config.follows && this.config.follows.length > 0;
+    this.logger.info(
+      { has_follows },
+      `Publishing profile (kind 0, kind 10002${has_follows ? ', kind 3' : ''})`
+    );
+
+    try {
+      // Publish profile (kind 0)
+      const profile_results = await this.publisher.publish_profile(this.config.profile);
+      this.logger.info(
+        {
+          event_id: profile_results.event_id.substring(0, 16),
+          success_count: profile_results.success_count,
+          failure_count: profile_results.failure_count,
+        },
+        'Published kind 0 profile event'
+      );
+
+      // Publish relay list (kind 10002)
+      const relay_list_results = await this.publisher.publish_relay_list();
+      this.logger.info(
+        {
+          event_id: relay_list_results.event_id.substring(0, 16),
+          success_count: relay_list_results.success_count,
+          failure_count: relay_list_results.failure_count,
+        },
+        'Published kind 10002 relay list event'
+      );
+
+      // Publish follow list (kind 3) if configured
+      let follow_list_results: typeof profile_results | null = null;
+      if (has_follows) {
+        follow_list_results = await this.publisher.publish_follow_list(this.config.follows!);
+        this.logger.info(
+          {
+            event_id: follow_list_results.event_id.substring(0, 16),
+            follows_count: this.config.follows!.length,
+            success_count: follow_list_results.success_count,
+            failure_count: follow_list_results.failure_count,
+          },
+          'Published kind 3 follow list event'
+        );
+      }
+
+      this.identity_published = true;
+
+      // Emit hook
+      const all_results = [
+        ...profile_results.results,
+        ...relay_list_results.results,
+        ...(follow_list_results?.results ?? []),
+      ];
+      const context: ProfilePublishedContext = {
+        profile_event_id: profile_results.event_id,
+        relay_list_event_id: relay_list_results.event_id,
+        follow_list_event_id: follow_list_results?.event_id,
+        results: all_results,
+        success_count: profile_results.success_count + relay_list_results.success_count + (follow_list_results?.success_count ?? 0),
+        failure_count: profile_results.failure_count + relay_list_results.failure_count + (follow_list_results?.failure_count ?? 0),
+      };
+      await this.emitter.emit(HOOK_NAMES.PROFILE_PUBLISHED, context);
+    } catch (error) {
+      this.logger.error(
+        { err: error },
+        'Failed to publish profile'
+      );
+      throw error;
+    }
   }
 
   /**
@@ -425,6 +573,16 @@ export class Attn {
    */
   on_health_change(handler: HookHandler<HealthChangeContext>): HookHandle {
     return this.emitter.register(HOOK_NAMES.HEALTH_CHANGE, handler);
+  }
+
+  // Identity publishing hooks
+
+  /**
+   * Register handler for profile published events
+   * Emitted after kind 0 and kind 10002 are published on connect
+   */
+  on_profile_published(handler: HookHandler<ProfilePublishedContext>): HookHandle {
+    return this.emitter.register(HOOK_NAMES.PROFILE_PUBLISHED, handler);
   }
 
   // Standard Nostr event hooks - Profile

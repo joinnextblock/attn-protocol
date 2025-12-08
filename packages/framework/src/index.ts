@@ -7,7 +7,7 @@
 
 // Main Attn class (Rely-style API)
 export { Attn } from './attn.js';
-export type { AttnConfig } from './attn.js';
+export type { AttnConfig, ProfileConfig } from './attn.js';
 
 // Hook name constants (for internal use)
 export { HOOK_NAMES } from './hooks/index.js';
@@ -38,6 +38,8 @@ export type {
   BlockGapDetectedContext,
   RateLimitContext,
   HealthChangeContext,
+  PublishResult,
+  ProfilePublishedContext,
   ProfileEventContext,
   RelayListEventContext,
   Nip51ListEventContext,
@@ -45,6 +47,10 @@ export type {
 
 // Relay connection (internal, used by Attn)
 export type { RelayConnectionConfig } from './relay/index.js';
+
+// Publisher for writing events to relays
+export { Publisher } from './relay/index.js';
+export type { PublisherConfig, WriteRelay, PublishResults } from './relay/index.js';
 
 // Logger interface and utilities
 export type { Logger } from './logger.js';

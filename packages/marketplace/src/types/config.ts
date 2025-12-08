@@ -3,6 +3,7 @@
  */
 
 import type { Pubkey, RelayUrl } from '@attn-protocol/core';
+import type { ProfileConfig } from '@attn-protocol/framework';
 
 /**
  * Relay configuration
@@ -64,4 +65,13 @@ export interface MarketplaceConfig {
 
   /** Auto-run matching when attention/promotion received (default: true) */
   auto_match?: boolean;
+
+  /** Profile metadata for kind 0 event (optional) */
+  profile?: ProfileConfig;
+
+  /** Follow list pubkeys for kind 3 event (optional) */
+  follows?: string[];
+
+  /** Auto-publish profile on connect (default: true if profile is set) */
+  publish_profile_on_connect?: boolean;
 }

@@ -6,6 +6,7 @@
 import { Attn } from '@attn-protocol/framework';
 import { AttnSdk } from '@attn-protocol/sdk';
 import { ATTN_EVENT_KINDS } from '@attn-protocol/core';
+import { nip19 } from 'nostr-tools';
 import type { Event } from 'nostr-tools';
 import type {
   PromotionData,
@@ -31,6 +32,25 @@ import {
 } from './utils/extraction.js';
 
 /**
+ * Decode private key from hex or nsec format to Uint8Array
+ */
+function decode_private_key(key: string): Uint8Array {
+  if (key.startsWith('nsec')) {
+    const decoded = nip19.decode(key);
+    if (decoded.type !== 'nsec') {
+      throw new Error('Invalid nsec format');
+    }
+    return decoded.data as Uint8Array;
+  }
+  // Assume hex string - convert to Uint8Array
+  const bytes = new Uint8Array(key.length / 2);
+  for (let i = 0; i < key.length; i += 2) {
+    bytes[i / 2] = parseInt(key.substring(i, i + 2), 16);
+  }
+  return bytes;
+}
+
+/**
  * Marketplace class
  * Layers marketplace-specific lifecycle hooks on top of @attn-protocol/framework
  */
@@ -46,13 +66,20 @@ export class Marketplace {
     this.hooks = new HookEmitter();
     this.sdk = new AttnSdk({ private_key: config.private_key });
 
-    // Build relay URLs for framework
-    const relay_urls: string[] = [];
-    if (config.relay_config.read_auth) relay_urls.push(...config.relay_config.read_auth);
-    if (config.relay_config.read_noauth) relay_urls.push(...config.relay_config.read_noauth);
+    // Decode private key for framework
+    const private_key_bytes = decode_private_key(config.private_key);
 
+    // Initialize framework with proper relay config and profile publishing
     this.framework = new Attn({
-      relays: relay_urls,
+      relays_auth: config.relay_config.read_auth,
+      relays_noauth: config.relay_config.read_noauth,
+      relays_write_auth: config.relay_config.write_auth,
+      relays_write_noauth: config.relay_config.write_noauth,
+      private_key: private_key_bytes,
+      node_pubkeys: [config.node_pubkey],
+      profile: config.profile,
+      follows: config.follows,
+      publish_identity_on_connect: config.publish_profile_on_connect,
     });
 
     this.wire_framework_events();
@@ -70,18 +97,18 @@ export class Marketplace {
 
   /**
    * Start the marketplace
-   * Validates required hooks and starts framework
+   * Validates required hooks and connects to relays
    */
   async start(): Promise<void> {
     validate_required_hooks(this.hooks);
-    await this.framework.start();
+    await this.framework.connect();
   }
 
   /**
    * Stop the marketplace
    */
   async stop(): Promise<void> {
-    await this.framework.stop();
+    await this.framework.disconnect();
   }
 
   /**
@@ -110,49 +137,49 @@ export class Marketplace {
    */
   private wire_framework_events(): void {
     // Billboard events
-    this.framework.on('on_billboard_event', async (ctx) => {
+    this.framework.on_billboard_event(async (ctx) => {
       await this.handle_billboard(ctx.event, ctx.billboard_data as BillboardData);
     });
 
     // Promotion events
-    this.framework.on('on_promotion_event', async (ctx) => {
+    this.framework.on_promotion_event(async (ctx) => {
       await this.handle_promotion(ctx.event, ctx.promotion_data as PromotionData);
     });
 
     // Attention events
-    this.framework.on('on_attention_event', async (ctx) => {
+    this.framework.on_attention_event(async (ctx) => {
       await this.handle_attention(ctx.event, ctx.attention_data as AttentionData);
     });
 
     // Match events (external)
-    this.framework.on('on_match_event', async (ctx) => {
+    this.framework.on_match_event(async (ctx) => {
       await this.handle_match(ctx.event, ctx.match_data as MatchData);
     });
 
     // Marketplace events
-    this.framework.on('on_marketplace_event', async (ctx) => {
+    this.framework.on_marketplace_event(async (ctx) => {
       await this.handle_marketplace(ctx.event, ctx.marketplace_data as MarketplaceData);
     });
 
     // Block events
-    this.framework.on('on_block_event', async (ctx) => {
+    this.framework.on_block_event(async (ctx) => {
       await this.handle_block(ctx.block_height, ctx.block_hash);
     });
 
     // Confirmation events
-    this.framework.on('on_billboard_confirmation_event', async (ctx) => {
+    this.framework.on_billboard_confirmation_event(async (ctx) => {
       await this.handle_billboard_confirmation(ctx.event, ctx.confirmation_data as BillboardConfirmationData);
     });
 
-    this.framework.on('on_attention_confirmation_event', async (ctx) => {
+    this.framework.on_attention_confirmation_event(async (ctx) => {
       await this.handle_attention_confirmation(ctx.event, ctx.confirmation_data as AttentionConfirmationData);
     });
 
-    this.framework.on('on_marketplace_confirmation_event', async (ctx) => {
+    this.framework.on_marketplace_confirmation_event(async (ctx) => {
       await this.handle_marketplace_confirmation(ctx.event, ctx.settlement_data as MarketplaceConfirmationData);
     });
 
-    this.framework.on('on_attention_payment_confirmation_event', async (ctx) => {
+    this.framework.on_attention_payment_confirmation_event(async (ctx) => {
       await this.handle_attention_payment_confirmation(ctx.event, ctx.payment_data as AttentionPaymentConfirmationData);
     });
   }

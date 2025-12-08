@@ -130,7 +130,8 @@ All tasks must include a milestone tag: `[M#]`
 
 ---
 
-**Last Updated:** 2025-12-08
+**Last Updated:** 2025-12-08 (Verified)
+**Last Verified:** 2025-12-08 - All findings confirmed via test run on Node.js v22.21.1. Tests pass, tinypool cleanup crash persists.
 
 **Project Description:** ATTN Protocol monorepo - Protocol specification, framework, SDK, marketplace, node service, and relay for Bitcoin-native attention marketplace
 

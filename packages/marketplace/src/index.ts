@@ -29,6 +29,9 @@ export type {
   AttentionPaymentConfirmationData,
 } from '@attn-protocol/core';
 
+// Profile config (re-exported from framework)
+export type { ProfileConfig } from '@attn-protocol/framework';
+
 // Hook types
 export type {
   StoreEventContext,
