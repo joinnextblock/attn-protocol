@@ -1,5 +1,11 @@
 # @attn-protocol/framework
 
+## 0.9.3
+
+### Patch Changes
+
+- Fix README accuracy to match implementation: update package naming to @attn/*, document all AttnConfig options, add on_profile_published hook, add Publisher pattern documentation
+
 ## 0.9.2
 
 ### Patch Changes
