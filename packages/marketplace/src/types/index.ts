@@ -24,7 +24,6 @@ export type {
 // Config types
 export type {
   RelayConfig,
-  MarketplaceParams,
   MarketplaceConfig,
 } from './config.ts';
 

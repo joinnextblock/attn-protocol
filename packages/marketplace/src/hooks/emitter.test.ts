@@ -28,6 +28,35 @@ describe('HookEmitter', () => {
 
       expect(emitter.has('store_promotion')).toBe(true);
     });
+
+    it('should return a handle for unregistering', () => {
+      const handler = vi.fn();
+      const handle = emitter.register('store_promotion', handler);
+
+      expect(handle).toBeDefined();
+      expect(typeof handle.unregister).toBe('function');
+    });
+
+    it('should unregister handler when handle.unregister is called', () => {
+      const handler = vi.fn();
+      const handle = emitter.register('store_promotion', handler);
+
+      expect(emitter.has('store_promotion')).toBe(true);
+      handle.unregister();
+      expect(emitter.has('store_promotion')).toBe(false);
+    });
+
+    it('should not unregister if handler was replaced', () => {
+      const handler1 = vi.fn();
+      const handler2 = vi.fn();
+
+      const handle1 = emitter.register('store_promotion', handler1);
+      emitter.register('store_promotion', handler2);
+
+      // Unregistering the first handle should not affect the second handler
+      handle1.unregister();
+      expect(emitter.has('store_promotion')).toBe(true);
+    });
   });
 
   describe('has', () => {

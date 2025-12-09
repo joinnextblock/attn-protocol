@@ -32,22 +32,30 @@ const attn = new Attn({
 
 // With explicit relay configuration (recommended pattern)
 const attnWithRelays = new Attn({
+  relays_auth: ["wss://auth-relay.example.com"],
   relays_noauth: ["wss://public-relay.example.com"],
-  relays_auth: ["wss://authenticated-relay.example.com"],
+  relays_write_auth: ["wss://auth-relay.example.com"],
+  relays_write_noauth: ["wss://public-relay.example.com"],
   private_key: myPrivateKey,
   node_pubkeys: [node_pubkey], // Optional: filter block events by trusted nodes
 });
 
 // With marketplace filtering
 const filteredAttn = new Attn({
-  relays_noauth: ["wss://relay.example.com"],
+  relays_auth: ["wss://auth-relay.example.com"],
+  relays_noauth: ["wss://public-relay.example.com"],
+  relays_write_auth: ["wss://auth-relay.example.com"],
+  relays_write_noauth: ["wss://public-relay.example.com"],
   private_key: myPrivateKey,
   marketplace_pubkeys: [example_marketplace_pubkey],
 });
 
 // With identity publishing (kind 0 profile, kind 10002 relay list)
 const attnWithProfile = new Attn({
-  relays_noauth: ["wss://relay.example.com"],
+  relays_auth: ["wss://auth-relay.example.com"],
+  relays_noauth: ["wss://public-relay.example.com"],
+  relays_write_auth: ["wss://auth-relay.example.com"],
+  relays_write_noauth: ["wss://public-relay.example.com"],
   private_key: myPrivateKey,
   profile: {
     name: "My Marketplace",
@@ -363,7 +371,10 @@ The framework provides hooks for block-synchronized processing, ensuring all ope
 import { Attn } from "@attn/framework";
 
 const attn = new Attn({
-  relays_noauth: ["wss://relay.attnprotocol.org"],
+  relays_auth: ["wss://auth-relay.example.com"],
+  relays_noauth: ["wss://public-relay.example.com"],
+  relays_write_auth: ["wss://auth-relay.example.com"],
+  relays_write_noauth: ["wss://public-relay.example.com"],
   private_key,
   node_pubkeys: [node_pubkey_hex], // Optional: filter by trusted nodes
 });

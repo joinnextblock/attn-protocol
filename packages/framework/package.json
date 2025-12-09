@@ -1,7 +1,7 @@
 {
   "name": "@attn/framework",
   "version": "0.9.4",
-  "description": "Hook-based ATTN Protocol framework for Bitcoin-native attention marketplaces",
+  "description": "Hook-based framework for building attention marketplace implementations using ATTN Protocol on Nostr",
   "private": true,
   "type": "module",
   "main": "src/index.ts",

@@ -12,25 +12,30 @@
  * import { Marketplace } from '@attn/marketplace';
  *
  * const marketplace = new Marketplace({
+ *   // Identity
  *   private_key: process.env.MARKETPLACE_KEY!,
  *   marketplace_id: 'my-marketplace',
+ *   name: 'My Marketplace',
+ *
+ *   // Infrastructure
  *   node_pubkey: process.env.NODE_PUBKEY!,
  *   relay_config: {
- *     read_noauth: ['wss://relay.example.com'],
- *     write_noauth: ['wss://relay.example.com'],
+ *     read_auth: ['wss://auth-relay.example.com'],
+ *     read_noauth: ['wss://public-relay.example.com'],
+ *     write_auth: ['wss://auth-relay.example.com'],
+ *     write_noauth: ['wss://public-relay.example.com'],
  *   },
- *   marketplace_params: { name: 'My Marketplace' },
  * });
  *
  * // Register required hooks
- * marketplace.on('store_promotion', async (ctx) => { ... });
- * marketplace.on('store_attention', async (ctx) => { ... });
- * marketplace.on('store_billboard', async (ctx) => { ... });
- * marketplace.on('store_match', async (ctx) => { ... });
- * marketplace.on('query_promotions', async (ctx) => { ... });
- * marketplace.on('find_matches', async (ctx) => { ... });
- * marketplace.on('exists', async (ctx) => { ... });
- * marketplace.on('get_aggregates', async (ctx) => { ... });
+ * marketplace.on_store_promotion(async (ctx) => { ... });
+ * marketplace.on_store_attention(async (ctx) => { ... });
+ * marketplace.on_store_billboard(async (ctx) => { ... });
+ * marketplace.on_store_match(async (ctx) => { ... });
+ * marketplace.on_query_promotions(async (ctx) => { ... });
+ * marketplace.on_find_matches(async (ctx) => { ... });
+ * marketplace.on_exists(async (ctx) => { ... });
+ * marketplace.on_get_aggregates(async (ctx) => { ... });
  *
  * await marketplace.start();
  * ```
@@ -55,8 +60,48 @@ import type {
   AttentionPaymentConfirmationData,
 } from '@attn-protocol/core';
 import type { MarketplaceConfig } from './types/config.ts';
-import type { HookName, HookHandler } from './hooks/types.ts';
-import type { MatchCandidate, ExistsResult, QueryPromotionsResult, FindMatchesResult, AggregatesResult } from './types/hooks.ts';
+import type { HookName, HookHandler, HookHandle } from './hooks/types.ts';
+import type {
+  MatchCandidate,
+  ExistsResult,
+  QueryPromotionsResult,
+  FindMatchesResult,
+  AggregatesResult,
+  StoreBillboardContext,
+  StorePromotionContext,
+  StoreAttentionContext,
+  StoreMatchContext,
+  StoreMarketplaceContext,
+  StoreBillboardConfirmationContext,
+  StoreAttentionConfirmationContext,
+  StoreMarketplaceConfirmationContext,
+  StoreAttentionPaymentConfirmationContext,
+  QueryPromotionsContext,
+  QueryAttentionContext,
+  QueryAttentionResult,
+  ExistsContext,
+  FindMatchesContext,
+  BeforeCreateMatchContext,
+  BeforeCreateMatchResult,
+  AfterCreateMatchContext,
+  BeforePublishMatchContext,
+  BeforePublishMatchResult,
+  AfterPublishMatchContext,
+  BeforePublishMarketplaceContext,
+  BeforePublishMarketplaceResult,
+  AfterPublishMarketplaceContext,
+  OnBillboardConfirmationContext,
+  OnAttentionConfirmationContext,
+  BeforePublishMarketplaceConfirmationContext,
+  BeforePublishMarketplaceConfirmationResult,
+  AfterPublishMarketplaceConfirmationContext,
+  OnAttentionPaymentConfirmationContext,
+  AggregatesContext,
+  BlockBoundaryContext,
+  ValidatePromotionContext,
+  ValidateAttentionContext,
+  ValidationResult,
+} from './types/hooks.ts';
 import { HookEmitter, validate_required_hooks } from './hooks/index.ts';
 import {
   extract_block_height,
@@ -120,14 +165,236 @@ export class Marketplace {
     this.wire_framework_events();
   }
 
+  // ═══════════════════════════════════════════════════════════════
+  // REQUIRED HOOKS - Storage
+  // ═══════════════════════════════════════════════════════════════
+
   /**
-   * Register a hook handler
-   * @param name - Hook name
-   * @param handler - Handler function
+   * Register handler for storing billboard events (kind 38288)
    */
-  on<T extends HookName>(name: T, handler: HookHandler<T>): this {
-    this.hooks.register(name, handler);
-    return this;
+  on_store_billboard(handler: (ctx: StoreBillboardContext) => Promise<void>): HookHandle {
+    return this.hooks.register('store_billboard', handler);
+  }
+
+  /**
+   * Register handler for storing promotion events (kind 38388)
+   */
+  on_store_promotion(handler: (ctx: StorePromotionContext) => Promise<void>): HookHandle {
+    return this.hooks.register('store_promotion', handler);
+  }
+
+  /**
+   * Register handler for storing attention events (kind 38488)
+   */
+  on_store_attention(handler: (ctx: StoreAttentionContext) => Promise<void>): HookHandle {
+    return this.hooks.register('store_attention', handler);
+  }
+
+  /**
+   * Register handler for storing match events (kind 38888)
+   */
+  on_store_match(handler: (ctx: StoreMatchContext) => Promise<void>): HookHandle {
+    return this.hooks.register('store_match', handler);
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  // REQUIRED HOOKS - Query & Matching
+  // ═══════════════════════════════════════════════════════════════
+
+  /**
+   * Register handler for querying promotions
+   */
+  on_query_promotions(handler: (ctx: QueryPromotionsContext) => Promise<QueryPromotionsResult>): HookHandle {
+    return this.hooks.register('query_promotions', handler);
+  }
+
+  /**
+   * Register handler for finding matches
+   */
+  on_find_matches(handler: (ctx: FindMatchesContext) => Promise<FindMatchesResult>): HookHandle {
+    return this.hooks.register('find_matches', handler);
+  }
+
+  /**
+   * Register handler for checking if event exists (deduplication)
+   */
+  on_exists(handler: (ctx: ExistsContext) => Promise<ExistsResult>): HookHandle {
+    return this.hooks.register('exists', handler);
+  }
+
+  /**
+   * Register handler for getting aggregate counts
+   */
+  on_get_aggregates(handler: (ctx: AggregatesContext) => Promise<AggregatesResult>): HookHandle {
+    return this.hooks.register('get_aggregates', handler);
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  // OPTIONAL HOOKS - Storage
+  // ═══════════════════════════════════════════════════════════════
+
+  /**
+   * Register handler for storing marketplace events (kind 38188)
+   */
+  on_store_marketplace(handler: (ctx: StoreMarketplaceContext) => Promise<void>): HookHandle {
+    return this.hooks.register('store_marketplace', handler);
+  }
+
+  /**
+   * Register handler for storing billboard confirmation events (kind 38588)
+   */
+  on_store_billboard_confirmation(handler: (ctx: StoreBillboardConfirmationContext) => Promise<void>): HookHandle {
+    return this.hooks.register('store_billboard_confirmation', handler);
+  }
+
+  /**
+   * Register handler for storing attention confirmation events (kind 38688)
+   */
+  on_store_attention_confirmation(handler: (ctx: StoreAttentionConfirmationContext) => Promise<void>): HookHandle {
+    return this.hooks.register('store_attention_confirmation', handler);
+  }
+
+  /**
+   * Register handler for storing marketplace confirmation events (kind 38788)
+   */
+  on_store_marketplace_confirmation(handler: (ctx: StoreMarketplaceConfirmationContext) => Promise<void>): HookHandle {
+    return this.hooks.register('store_marketplace_confirmation', handler);
+  }
+
+  /**
+   * Register handler for storing attention payment confirmation events (kind 38988)
+   */
+  on_store_attention_payment_confirmation(handler: (ctx: StoreAttentionPaymentConfirmationContext) => Promise<void>): HookHandle {
+    return this.hooks.register('store_attention_payment_confirmation', handler);
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  // OPTIONAL HOOKS - Query
+  // ═══════════════════════════════════════════════════════════════
+
+  /**
+   * Register handler for querying attention offers
+   */
+  on_query_attention(handler: (ctx: QueryAttentionContext) => Promise<QueryAttentionResult>): HookHandle {
+    return this.hooks.register('query_attention', handler);
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  // OPTIONAL HOOKS - Matching Lifecycle
+  // ═══════════════════════════════════════════════════════════════
+
+  /**
+   * Register handler before creating a match (validation/filtering)
+   */
+  on_before_create_match(handler: (ctx: BeforeCreateMatchContext) => Promise<BeforeCreateMatchResult>): HookHandle {
+    return this.hooks.register('before_create_match', handler);
+  }
+
+  /**
+   * Register handler after creating a match
+   */
+  on_after_create_match(handler: (ctx: AfterCreateMatchContext) => Promise<void>): HookHandle {
+    return this.hooks.register('after_create_match', handler);
+  }
+
+  /**
+   * Register handler before publishing a match
+   */
+  on_before_publish_match(handler: (ctx: BeforePublishMatchContext) => Promise<BeforePublishMatchResult>): HookHandle {
+    return this.hooks.register('before_publish_match', handler);
+  }
+
+  /**
+   * Register handler after publishing a match
+   */
+  on_after_publish_match(handler: (ctx: AfterPublishMatchContext) => Promise<void>): HookHandle {
+    return this.hooks.register('after_publish_match', handler);
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  // OPTIONAL HOOKS - Marketplace Publishing Lifecycle
+  // ═══════════════════════════════════════════════════════════════
+
+  /**
+   * Register handler before publishing a marketplace event
+   */
+  on_before_publish_marketplace(handler: (ctx: BeforePublishMarketplaceContext) => Promise<BeforePublishMarketplaceResult>): HookHandle {
+    return this.hooks.register('before_publish_marketplace', handler);
+  }
+
+  /**
+   * Register handler after publishing a marketplace event
+   */
+  on_after_publish_marketplace(handler: (ctx: AfterPublishMarketplaceContext) => Promise<void>): HookHandle {
+    return this.hooks.register('after_publish_marketplace', handler);
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  // OPTIONAL HOOKS - Confirmation Lifecycle
+  // ═══════════════════════════════════════════════════════════════
+
+  /**
+   * Register handler when billboard confirmation is received
+   */
+  on_billboard_confirmation(handler: (ctx: OnBillboardConfirmationContext) => Promise<void>): HookHandle {
+    return this.hooks.register('on_billboard_confirmation', handler);
+  }
+
+  /**
+   * Register handler when attention confirmation is received
+   */
+  on_attention_confirmation(handler: (ctx: OnAttentionConfirmationContext) => Promise<void>): HookHandle {
+    return this.hooks.register('on_attention_confirmation', handler);
+  }
+
+  /**
+   * Register handler before publishing marketplace confirmation
+   */
+  on_before_publish_marketplace_confirmation(handler: (ctx: BeforePublishMarketplaceConfirmationContext) => Promise<BeforePublishMarketplaceConfirmationResult>): HookHandle {
+    return this.hooks.register('before_publish_marketplace_confirmation', handler);
+  }
+
+  /**
+   * Register handler after publishing marketplace confirmation
+   */
+  on_after_publish_marketplace_confirmation(handler: (ctx: AfterPublishMarketplaceConfirmationContext) => Promise<void>): HookHandle {
+    return this.hooks.register('after_publish_marketplace_confirmation', handler);
+  }
+
+  /**
+   * Register handler when attention payment confirmation is received
+   */
+  on_attention_payment_confirmation(handler: (ctx: OnAttentionPaymentConfirmationContext) => Promise<void>): HookHandle {
+    return this.hooks.register('on_attention_payment_confirmation', handler);
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  // OPTIONAL HOOKS - Block Boundary
+  // ═══════════════════════════════════════════════════════════════
+
+  /**
+   * Register handler for block boundary events
+   */
+  on_block_boundary(handler: (ctx: BlockBoundaryContext) => Promise<void>): HookHandle {
+    return this.hooks.register('block_boundary', handler);
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  // OPTIONAL HOOKS - Validation
+  // ═══════════════════════════════════════════════════════════════
+
+  /**
+   * Register handler for validating promotion events
+   */
+  on_validate_promotion(handler: (ctx: ValidatePromotionContext) => Promise<ValidationResult>): HookHandle {
+    return this.hooks.register('validate_promotion', handler);
+  }
+
+  /**
+   * Register handler for validating attention events
+   */
+  on_validate_attention(handler: (ctx: ValidateAttentionContext) => Promise<ValidationResult>): HookHandle {
+    return this.hooks.register('validate_attention', handler);
   }
 
   /**
@@ -778,9 +1045,9 @@ export class Marketplace {
 
     // Create marketplace event
     const marketplace_event = this.sdk.create_marketplace({
-      name: this.config.marketplace_params.name,
-      description: this.config.marketplace_params.description ?? '',
-      kind_list: this.config.marketplace_params.kind_list ?? [34236],
+      name: this.config.name,
+      description: this.config.description ?? '',
+      kind_list: this.config.kind_list ?? [34236],
       relay_list: [
         ...(this.config.relay_config.read_auth ?? []),
         ...(this.config.relay_config.read_noauth ?? []),
@@ -788,12 +1055,12 @@ export class Marketplace {
         ...(this.config.relay_config.write_noauth ?? []),
       ],
       admin_pubkey: this.pubkey,
-      min_duration: this.config.marketplace_params.min_duration ?? 15000,
-      max_duration: this.config.marketplace_params.max_duration ?? 60000,
-      match_fee_sats: this.config.marketplace_params.match_fee_sats ?? 0,
-      confirmation_fee_sats: this.config.marketplace_params.confirmation_fee_sats ?? 0,
+      min_duration: this.config.min_duration ?? 15000,
+      max_duration: this.config.max_duration ?? 60000,
+      match_fee_sats: this.config.match_fee_sats ?? 0,
+      confirmation_fee_sats: this.config.confirmation_fee_sats ?? 0,
       marketplace_id: this.config.marketplace_id,
-      website_url: this.config.marketplace_params.website_url,
+      website_url: this.config.website_url,
       marketplace_pubkey: this.pubkey,
       block_height,
       ref_node_pubkey: this.config.node_pubkey,

@@ -56,14 +56,14 @@ import type {
  * @example
  * ```ts
  * // All of these must be implemented:
- * marketplace.on('store_promotion', async (ctx) => { ... });
- * marketplace.on('store_attention', async (ctx) => { ... });
- * marketplace.on('store_billboard', async (ctx) => { ... });
- * marketplace.on('store_match', async (ctx) => { ... });
- * marketplace.on('query_promotions', async (ctx) => { ... });
- * marketplace.on('find_matches', async (ctx) => { ... });
- * marketplace.on('exists', async (ctx) => { ... });
- * marketplace.on('get_aggregates', async (ctx) => { ... });
+ * marketplace.on_store_promotion(async (ctx) => { ... });
+ * marketplace.on_store_attention(async (ctx) => { ... });
+ * marketplace.on_store_billboard(async (ctx) => { ... });
+ * marketplace.on_store_match(async (ctx) => { ... });
+ * marketplace.on_query_promotions(async (ctx) => { ... });
+ * marketplace.on_find_matches(async (ctx) => { ... });
+ * marketplace.on_exists(async (ctx) => { ... });
+ * marketplace.on_get_aggregates(async (ctx) => { ... });
  * ```
  */
 export const REQUIRED_HOOKS = [
@@ -185,3 +185,20 @@ export interface HookHandlers {
  * ```
  */
 export type HookHandler<T extends HookName> = HookHandlers[T];
+
+/**
+ * Handle returned when registering a hook handler.
+ *
+ * Use the `unregister` method to remove the handler.
+ *
+ * @example
+ * ```ts
+ * const handle = marketplace.on_store_promotion(handler);
+ * // Later, to remove the handler:
+ * handle.unregister();
+ * ```
+ */
+export interface HookHandle {
+  /** Remove this handler from the hook */
+  unregister: () => void;
+}

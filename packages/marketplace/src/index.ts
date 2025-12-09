@@ -20,48 +20,51 @@
  * import { Marketplace } from '@attn/marketplace';
  *
  * const marketplace = new Marketplace({
+ *   // Identity
  *   private_key: process.env.MARKETPLACE_KEY!,
  *   marketplace_id: 'my-marketplace',
+ *   name: 'My Marketplace',
+ *
+ *   // Infrastructure
  *   node_pubkey: process.env.NODE_PUBKEY!,
  *   relay_config: {
- *     read_noauth: ['wss://relay.example.com'],
- *     write_noauth: ['wss://relay.example.com'],
- *   },
- *   marketplace_params: {
- *     name: 'My Marketplace',
+ *     read_auth: ['wss://auth-relay.example.com'],
+ *     read_noauth: ['wss://public-relay.example.com'],
+ *     write_auth: ['wss://auth-relay.example.com'],
+ *     write_noauth: ['wss://public-relay.example.com'],
  *   },
  * });
  *
  * // Required hooks - implement your storage layer
- * marketplace.on('store_promotion', async (ctx) => {
+ * marketplace.on_store_promotion(async (ctx) => {
  *   await db.promotions.insert(ctx.event);
  * });
  *
- * marketplace.on('store_attention', async (ctx) => {
+ * marketplace.on_store_attention(async (ctx) => {
  *   await db.attention.insert(ctx.event);
  * });
  *
- * marketplace.on('store_billboard', async (ctx) => {
+ * marketplace.on_store_billboard(async (ctx) => {
  *   await db.billboards.insert(ctx.event);
  * });
  *
- * marketplace.on('store_match', async (ctx) => {
+ * marketplace.on_store_match(async (ctx) => {
  *   await db.matches.insert(ctx.event);
  * });
  *
- * marketplace.on('query_promotions', async (ctx) => {
+ * marketplace.on_query_promotions(async (ctx) => {
  *   return { promotions: await db.promotions.findActive() };
  * });
  *
- * marketplace.on('find_matches', async (ctx) => {
+ * marketplace.on_find_matches(async (ctx) => {
  *   return { matches: ctx.candidates };
  * });
  *
- * marketplace.on('exists', async (ctx) => {
+ * marketplace.on_exists(async (ctx) => {
  *   return { exists: await db.events.exists(ctx.event_id) };
  * });
  *
- * marketplace.on('get_aggregates', async () => ({
+ * marketplace.on_get_aggregates(async () => ({
  *   billboard_count: await db.count('billboards'),
  *   promotion_count: await db.count('promotions'),
  *   attention_count: await db.count('attention'),
@@ -74,14 +77,14 @@
  * ## Required Hooks
  *
  * You must implement these hooks (8 total):
- * - `store_promotion` - Persist promotion events
- * - `store_attention` - Persist attention events
- * - `store_billboard` - Persist billboard events
- * - `store_match` - Persist match events
- * - `query_promotions` - Query active promotions for matching
- * - `find_matches` - Find matching promotion/attention pairs
- * - `exists` - Check if an event has been processed
- * - `get_aggregates` - Return counts for marketplace event
+ * - `on_store_promotion` - Persist promotion events
+ * - `on_store_attention` - Persist attention events
+ * - `on_store_billboard` - Persist billboard events
+ * - `on_store_match` - Persist match events
+ * - `on_query_promotions` - Query active promotions for matching
+ * - `on_find_matches` - Find matching promotion/attention pairs
+ * - `on_exists` - Check if an event has been processed
+ * - `on_get_aggregates` - Return counts for marketplace event
  *
  * @module
  * @see https://github.com/joinnextblock/attn-protocol
@@ -93,7 +96,6 @@ export { Marketplace } from './marketplace.ts';
 // Config types
 export type {
   RelayConfig,
-  MarketplaceParams,
   MarketplaceConfig,
 } from './types/config.ts';
 
@@ -171,6 +173,7 @@ export type {
   HookName,
   HookHandler,
   HookHandlers,
+  HookHandle,
 } from './hooks/types.ts';
 
 export {

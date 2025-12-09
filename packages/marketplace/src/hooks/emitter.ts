@@ -3,7 +3,7 @@
  * Manages registration and emission of marketplace lifecycle hooks
  */
 
-import type { HookName, HookHandler, HookHandlers } from './types.ts';
+import type { HookName, HookHandler, HookHandlers, HookHandle } from './types.ts';
 
 /**
  * Hook emitter class
@@ -16,9 +16,18 @@ export class HookEmitter {
    * Register a hook handler
    * @param name - Hook name
    * @param handler - Handler function
+   * @returns Handle to unregister the handler
    */
-  register<T extends HookName>(name: T, handler: HookHandler<T>): void {
+  register<T extends HookName>(name: T, handler: HookHandler<T>): HookHandle {
     this.handlers.set(name, handler);
+    return {
+      unregister: () => {
+        // Only remove if it's still the same handler
+        if (this.handlers.get(name) === handler) {
+          this.handlers.delete(name);
+        }
+      },
+    };
   }
 
   /**

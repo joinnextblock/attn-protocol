@@ -18,8 +18,10 @@ import type { ProfileConfig } from '@attn-protocol/framework';
  * @example
  * ```ts
  * const relays: RelayConfig = {
- *   read_noauth: ['wss://relay.example.com'],
- *   write_noauth: ['wss://relay.example.com'],
+ *   read_auth: ['wss://auth-relay.example.com'],
+ *   read_noauth: ['wss://public-relay.example.com'],
+ *   write_auth: ['wss://auth-relay.example.com'],
+ *   write_noauth: ['wss://public-relay.example.com'],
  * };
  * ```
  */
@@ -35,55 +37,23 @@ export interface RelayConfig {
 }
 
 /**
- * Parameters for the marketplace event content.
- *
- * These values are included in the marketplace event (kind 38188)
- * published on each block boundary.
- *
- * @example
- * ```ts
- * const params: MarketplaceParams = {
- *   name: 'NextBlock Marketplace',
- *   description: 'Decentralized attention marketplace',
- *   min_duration: 15000,
- *   max_duration: 60000,
- * };
- * ```
- */
-export interface MarketplaceParams {
-  /** Marketplace display name */
-  name: string;
-  /** Marketplace description */
-  description?: string;
-  /** Minimum duration in milliseconds (default: 15000) */
-  min_duration?: number;
-  /** Maximum duration in milliseconds (default: 60000) */
-  max_duration?: number;
-  /** Fee charged per match in satoshis (default: 0) */
-  match_fee_sats?: number;
-  /** Fee charged per confirmation in satoshis (default: 0) */
-  confirmation_fee_sats?: number;
-  /** Supported content kinds (default: [34236]) */
-  kind_list?: number[];
-  /** Website URL for the marketplace */
-  website_url?: string;
-}
-
-/**
  * Main configuration for initializing a Marketplace.
  *
  * @example
  * ```ts
  * const config: MarketplaceConfig = {
+ *   // Identity
  *   private_key: process.env.MARKETPLACE_KEY!,
  *   marketplace_id: 'my-marketplace',
+ *   name: 'My Marketplace',
+ *
+ *   // Infrastructure
  *   node_pubkey: process.env.NODE_PUBKEY!,
  *   relay_config: {
- *     read_noauth: ['wss://relay.example.com'],
- *     write_noauth: ['wss://relay.example.com'],
- *   },
- *   marketplace_params: {
- *     name: 'My Marketplace',
+ *     read_auth: ['wss://auth-relay.example.com'],
+ *     read_noauth: ['wss://public-relay.example.com'],
+ *     write_auth: ['wss://auth-relay.example.com'],
+ *     write_noauth: ['wss://public-relay.example.com'],
  *   },
  * };
  * ```
@@ -101,8 +71,29 @@ export interface MarketplaceConfig {
   /** Relay configuration */
   relay_config: RelayConfig;
 
-  /** Marketplace parameters */
-  marketplace_params: MarketplaceParams;
+  /** Marketplace display name */
+  name: string;
+
+  /** Marketplace description */
+  description?: string;
+
+  /** Minimum duration in milliseconds (default: 15000) */
+  min_duration?: number;
+
+  /** Maximum duration in milliseconds (default: 60000) */
+  max_duration?: number;
+
+  /** Fee charged per match in satoshis (default: 0) */
+  match_fee_sats?: number;
+
+  /** Fee charged per confirmation in satoshis (default: 0) */
+  confirmation_fee_sats?: number;
+
+  /** Supported content kinds (default: [34236]) */
+  kind_list?: number[];
+
+  /** Website URL for the marketplace */
+  website_url?: string;
 
   /** Auto-publish marketplace event on block boundary (default: true) */
   auto_publish_marketplace?: boolean;

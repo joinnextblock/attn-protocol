@@ -18,4 +18,5 @@ export type {
   HookName,
   HookHandler,
   HookHandlers,
+  HookHandle,
 } from './types.ts';
