@@ -1,5 +1,13 @@
 # @attn-protocol/framework
 
+## 0.9.5
+
+### Patch Changes
+
+- a94fa53: docs(framework): Update README examples to show all 4 relay config arrays
+
+  Updated Quick Start and other examples to explicitly show `relays_auth`, `relays_noauth`, `relays_write_auth`, and `relays_write_noauth` configuration for better clarity and alignment with marketplace documentation.
+
 ## 0.9.4
 
 ### Patch Changes
@@ -13,7 +21,7 @@
 
 ### Patch Changes
 
-- Fix README accuracy to match implementation: update package naming to @attn/*, document all AttnConfig options, add on_profile_published hook, add Publisher pattern documentation
+- Fix README accuracy to match implementation: update package naming to @attn/\*, document all AttnConfig options, add on_profile_published hook, add Publisher pattern documentation
 
 ## 0.9.2
 
