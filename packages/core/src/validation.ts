@@ -12,12 +12,12 @@ import { z } from 'zod';
 /**
  * Block height: positive integer
  */
-const block_height_schema = z.number().int().positive();
+const block_height_schema: z.ZodNumber = z.number().int().positive();
 
 /**
  * Pubkey: 64-character hex string
  */
-const pubkey_schema = z
+const pubkey_schema: z.ZodString = z
   .string()
   .length(64, 'Pubkey must be exactly 64 characters')
   .regex(/^[0-9a-f]+$/i, 'Pubkey must be hexadecimal');
@@ -25,7 +25,7 @@ const pubkey_schema = z
 /**
  * Event ID: 64-character hex string (SHA-256 hash)
  */
-const event_id_schema = z
+const event_id_schema: z.ZodString = z
   .string()
   .length(64, 'Event ID must be exactly 64 characters')
   .regex(/^[0-9a-f]+$/i, 'Event ID must be hexadecimal');
@@ -33,42 +33,55 @@ const event_id_schema = z
 /**
  * Bitcoin block hash: hex string (typically 64 characters)
  */
-const block_hash_schema = z.string().regex(/^[0-9a-f]+$/i, 'Block hash must be hexadecimal');
+const block_hash_schema: z.ZodString = z.string().regex(/^[0-9a-f]+$/i, 'Block hash must be hexadecimal');
 
 /**
  * Merkle root: hex string (typically 64 characters)
  */
-const merkle_root_schema = z.string().regex(/^[0-9a-f]+$/i, 'Merkle root must be hexadecimal');
+const merkle_root_schema: z.ZodString = z.string().regex(/^[0-9a-f]+$/i, 'Merkle root must be hexadecimal');
 
 /**
  * Positive integer for satoshi amounts, durations, counts, etc.
  */
-const positive_integer_schema = z.number().int().nonnegative();
+const positive_integer_schema: z.ZodNumber = z.number().int().nonnegative();
 
 /**
  * Positive integer for fees, bids, asks, etc. (must be > 0)
  */
-const positive_sats_schema = z.number().int().positive();
+const positive_sats_schema: z.ZodNumber = z.number().int().positive();
 
 /**
  * Non-negative integer for fees (can be 0, meaning no fee)
  */
-const nonnegative_fee_sats_schema = z.number().int().nonnegative();
+const nonnegative_fee_sats_schema: z.ZodNumber = z.number().int().nonnegative();
 
 /**
  * Unix timestamp (optional, informational)
  */
-const unix_timestamp_schema = z.number().int().nonnegative().optional();
+const unix_timestamp_schema: z.ZodOptional<z.ZodNumber> = z.number().int().nonnegative().optional();
 
 /**
  * String array for lists (e.g., escrow_id_list)
  */
-const string_array_schema = z.array(z.string()).optional();
+const string_array_schema: z.ZodOptional<z.ZodArray<z.ZodString, "many">> = z.array(z.string()).optional();
 
 /**
  * BLOCK event content schema (kind 38088)
  */
-export const block_data_schema = z.object({
+export const block_data_schema: z.ZodObject<{
+  height: z.ZodNumber;
+  hash: z.ZodString;
+  time: z.ZodOptional<z.ZodNumber>;
+  difficulty: z.ZodOptional<z.ZodString>;
+  tx_count: z.ZodOptional<z.ZodNumber>;
+  size: z.ZodOptional<z.ZodNumber>;
+  weight: z.ZodOptional<z.ZodNumber>;
+  version: z.ZodOptional<z.ZodNumber>;
+  merkle_root: z.ZodOptional<z.ZodString>;
+  nonce: z.ZodOptional<z.ZodNumber>;
+  ref_node_pubkey: z.ZodOptional<z.ZodString>;
+  ref_block_id: z.ZodOptional<z.ZodString>;
+}> = z.object({
   height: block_height_schema,
   hash: block_hash_schema,
   time: unix_timestamp_schema,
