@@ -8,7 +8,7 @@
     "test:coverage": "go test -cover ./...",
     "build": "go build -o relay ./cmd/relay",
     "docker:build": "docker compose build",
-    "docker:rebuild": "docker compose build --no-cache",
+    "docker:rebuild": "docker compose down && docker compose build --no-cache && docker compose up -d",
     "docker:up": "docker compose up -d",
     "docker:down": "docker compose down",
     "docker:restart": "docker compose down && docker compose up -d",

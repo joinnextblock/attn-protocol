@@ -13,7 +13,7 @@ import { HOOK_NAMES } from '../hooks/index.js';
 import { getPublicKey } from 'nostr-tools';
 
 // Import shared MockWebSocket from core package
-import { create_mock_websocket } from '@attn/core/src/test/mocks/websocket.mock.ts';
+import { create_mock_websocket } from '@attn/core/src/test/mocks/websocket.mock.js';
 
 // Define MockWebSocket using vi.hoisted to ensure it's available for mocks
 const { MockWebSocket } = vi.hoisted(() => create_mock_websocket());

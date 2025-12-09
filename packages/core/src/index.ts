@@ -58,3 +58,17 @@ export type {
 // Utility functions
 export { decode_private_key } from './utils/index.js';
 
+// Validation schemas
+export {
+  block_data_schema,
+  marketplace_data_schema,
+  billboard_data_schema,
+  promotion_data_schema,
+  attention_data_schema,
+  match_data_schema,
+  billboard_confirmation_data_schema,
+  attention_confirmation_data_schema,
+  marketplace_confirmation_data_schema,
+  attention_payment_confirmation_data_schema,
+} from './validation.js';
+

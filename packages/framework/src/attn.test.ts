@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { Attn } from './attn.js';
 import { create_mock_auth_challenge, create_mock_auth_response } from './test/fixtures/events.js';
 // Import shared MockWebSocket from core package
-import { create_mock_websocket } from '@attn/core/src/test/mocks/websocket.mock.ts';
+import { create_mock_websocket } from '@attn/core/src/test/mocks/websocket.mock.js';
 
 // Define MockWebSocket using vi.hoisted to ensure it's available for mocks
 const { MockWebSocket } = vi.hoisted(() => create_mock_websocket());

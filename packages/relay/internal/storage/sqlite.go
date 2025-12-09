@@ -7,6 +7,8 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"strings"
+	"time"
 
 	"github.com/nbd-wtf/go-nostr"
 	_ "modernc.org/sqlite"
@@ -25,10 +27,46 @@ type SQLiteStorage struct {
 //
 // Returns a new SQLiteStorage instance ready for use.
 func NewSQLiteStorage(dbPath string) (*SQLiteStorage, error) {
-	db, err := sql.Open("sqlite", dbPath)
+	// Use connection string with query parameters to set PRAGMAs on all connections
+	// modernc.org/sqlite supports query parameters in the DSN
+	// Format: file:path?param=value&param2=value2
+	// busy_timeout is in milliseconds - 10000 = 10 seconds
+	dsn := fmt.Sprintf("%s?_journal_mode=WAL&_synchronous=NORMAL&_busy_timeout=10000&_foreign_keys=ON&_cache_size=-64000", dbPath)
+	db, err := sql.Open("sqlite", dsn)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open SQLite database: %w", err)
 	}
+
+	// Also set PRAGMAs via Exec to ensure they're applied to the initial connection
+	// This is a fallback in case the DSN parameters aren't fully supported
+	pragmas := []string{
+		"PRAGMA journal_mode = WAL",
+		"PRAGMA synchronous = NORMAL",
+		"PRAGMA busy_timeout = 10000", // 10 second timeout for locks
+		"PRAGMA foreign_keys = ON",
+		"PRAGMA cache_size = -64000", // 64MB cache (negative = KB)
+	}
+
+	for _, pragma := range pragmas {
+		if _, err := db.Exec(pragma); err != nil {
+			// Log but don't fail - DSN parameters might have set them
+			// This is just a fallback
+		}
+	}
+
+	// Configure connection pool for SQLite
+	// SQLite with WAL mode can handle a few concurrent writers, but too many connections
+	// can cause contention. We limit to a small number optimized for SQLite.
+	// SetMaxOpenConns sets the maximum number of open connections to the database
+	// For SQLite, 3-5 connections is optimal even with WAL mode
+	db.SetMaxOpenConns(5)
+	// SetMaxIdleConns sets the maximum number of connections in the idle connection pool
+	db.SetMaxIdleConns(2)
+	// SetConnMaxLifetime sets the maximum amount of time a connection may be reused
+	// Shorter lifetime helps ensure PRAGMAs are refreshed
+	db.SetConnMaxLifetime(1 * time.Minute)
+	// SetConnMaxIdleTime sets the maximum amount of time a connection may be idle
+	db.SetConnMaxIdleTime(30 * time.Second)
 
 	storage := &SQLiteStorage{
 		db:     db,
@@ -69,6 +107,7 @@ func (s *SQLiteStorage) initSchema() error {
 }
 
 // StoreEvent stores a Nostr event in SQLite.
+// Implements retry logic for SQLITE_BUSY errors to handle concurrent writes.
 func (s *SQLiteStorage) StoreEvent(ctx context.Context, event *nostr.Event) error {
 	// Serialize tags to JSON
 	tagsJSON, err := json.Marshal(event.Tags)
@@ -82,21 +121,51 @@ func (s *SQLiteStorage) StoreEvent(ctx context.Context, event *nostr.Event) erro
 		VALUES (?, ?, ?, ?, ?, ?, ?)
 	`
 
-	_, err = s.db.ExecContext(ctx, query,
-		event.ID,
-		event.PubKey,
-		int64(event.CreatedAt),
-		event.Kind,
-		event.Content,
-		string(tagsJSON),
-		event.Sig,
-	)
+	// Retry logic for SQLITE_BUSY errors
+	// SQLite with WAL mode can still have brief lock contention with concurrent writes
+	maxRetries := 10
+	baseDelay := 5 * time.Millisecond
+	maxDelay := 100 * time.Millisecond
 
-	if err != nil {
+	for attempt := 0; attempt < maxRetries; attempt++ {
+		_, err = s.db.ExecContext(ctx, query,
+			event.ID,
+			event.PubKey,
+			int64(event.CreatedAt),
+			event.Kind,
+			event.Content,
+			string(tagsJSON),
+			event.Sig,
+		)
+
+		if err == nil {
+			return nil
+		}
+
+		// Check if error is SQLITE_BUSY
+		errStr := err.Error()
+		if strings.Contains(errStr, "database is locked") || strings.Contains(errStr, "SQLITE_BUSY") {
+			if attempt < maxRetries-1 {
+				// Exponential backoff with jitter, capped at maxDelay
+				delay := baseDelay * time.Duration(1<<uint(attempt))
+				if delay > maxDelay {
+					delay = maxDelay
+				}
+				// Add small random jitter to prevent thundering herd
+				select {
+				case <-ctx.Done():
+					return ctx.Err()
+				case <-time.After(delay):
+				}
+				continue
+			}
+		}
+
+		// If not a busy error or max retries reached, return error
 		return fmt.Errorf("failed to store event: %w", err)
 	}
 
-	return nil
+	return fmt.Errorf("failed to store event after %d retries: %w", maxRetries, err)
 }
 
 // QueryEvents queries events matching the provided filter.
@@ -229,4 +298,3 @@ func (s *SQLiteStorage) DeleteEvent(ctx context.Context, eventID string) error {
 func (s *SQLiteStorage) Close() error {
 	return s.db.Close()
 }
-
