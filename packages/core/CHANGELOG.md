@@ -1,5 +1,19 @@
 # @attn/ts-core
 
+## 0.8.2
+
+### Patch Changes
+
+- 3260600: feat: add Go packages and refactor validation to go-core
+
+  - Added go-core package with constants, types, and validation
+  - Added go-sdk package with event builders
+  - Added go-framework package with hook-based runtime
+  - Added go-marketplace package with marketplace implementation
+  - Refactored validation logic from relay to go-core/validation for reuse
+  - Added marketplace server.ts for standalone marketplace deployment
+  - Updated CODE_REVIEW_REPORT.md and TODO.md with full code review findings
+
 ## 0.8.1
 
 ### Patch Changes
@@ -76,6 +90,7 @@
 - ebd67d2: Add ATTENTION_PAYMENT_CONFIRMATION event (kind 38988)
 
   Adds a new event that allows attention owners to independently attest they received payment after the marketplace publishes MARKETPLACE_CONFIRMATION. This completes the payment audit trail by providing cryptographic proof that payment was actually delivered.
+
   - Added event kind 38988 constant to core
   - Added ATTENTION_PAYMENT_CONFIRMATION event specification to ATTN-01
   - Added event builder and types to SDK
