@@ -1,6 +1,6 @@
 {
   "name": "@attn/ts-core",
-  "version": "0.8.1",
+  "version": "0.8.2",
   "description": "Core constants and types for ATTN Protocol",
   "private": true,
   "type": "module",
