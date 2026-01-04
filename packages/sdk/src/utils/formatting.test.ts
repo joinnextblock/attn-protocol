@@ -31,9 +31,11 @@ describe('format_coordinate', () => {
   });
 
   it('should handle different event kinds', () => {
-    expect(format_coordinate(38088, 'a'.repeat(64), 'org.attnprotocol:block:850000:hash')).toBe(
-      '38088:' + 'a'.repeat(64) + ':org.attnprotocol:block:850000:hash'
+    // City Protocol block events (kind 38808)
+    expect(format_coordinate(38808, 'a'.repeat(64), 'org.cityprotocol:block:850000:hash')).toBe(
+      '38808:' + 'a'.repeat(64) + ':org.cityprotocol:block:850000:hash'
     );
+    // ATTN Protocol billboard events
     expect(format_coordinate(38288, 'b'.repeat(64), 'org.attnprotocol:billboard:billboard_1')).toBe(
       '38288:' + 'b'.repeat(64) + ':org.attnprotocol:billboard:billboard_1'
     );

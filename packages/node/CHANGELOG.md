@@ -1,4 +1,4 @@
-# @attn-protocol/node
+# @attn/node
 
 ## 0.1.1
 

@@ -3,7 +3,7 @@
  * Handles creating, tracking, and closing subscriptions
  */
 
-import { ATTN_EVENT_KINDS, NIP51_LIST_TYPES } from '@attn/core';
+import { ATTN_EVENT_KINDS, NIP51_LIST_TYPES, CITY_PROTOCOL_KINDS } from '@attn/ts-core';
 import { HookEmitter } from '../hooks/emitter.js';
 import { HOOK_NAMES } from '../hooks/index.js';
 import type { Logger } from '../logger.js';
@@ -152,7 +152,7 @@ export class SubscriptionManager {
     let filter: SubscriptionFilter;
 
     if (subscription_id === this.block_subscription_id) {
-      filter = { kinds: [ATTN_EVENT_KINDS.BLOCK] };
+      filter = { kinds: [CITY_PROTOCOL_KINDS.BLOCK] };
       if (this.config.node_pubkeys?.length) {
         filter.authors = this.config.node_pubkeys;
       }
@@ -187,11 +187,11 @@ export class SubscriptionManager {
   }
 
   /**
-   * Subscribe to block events (kind 38088)
+   * Subscribe to block events (kind 38808 from City Protocol)
    */
   private subscribe_to_block_events(ws: WebSocketWithOn, since_filter?: number): void {
     const filter: SubscriptionFilter = {
-      kinds: [ATTN_EVENT_KINDS.BLOCK],
+      kinds: [CITY_PROTOCOL_KINDS.BLOCK],
     };
 
     if (this.config.node_pubkeys?.length) {

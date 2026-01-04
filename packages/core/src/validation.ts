@@ -63,10 +63,11 @@ const unix_timestamp_schema: z.ZodOptional<z.ZodNumber> = z.number().int().nonne
 /**
  * String array for lists (e.g., escrow_id_list)
  */
-const string_array_schema: z.ZodOptional<z.ZodArray<z.ZodString, "many">> = z.array(z.string()).optional();
+const string_array_schema: z.ZodOptional<z.ZodArray<z.ZodString>> = z.array(z.string()).optional();
 
 /**
- * BLOCK event content schema (kind 38088)
+ * BLOCK event content schema (kind 38808 - City Protocol)
+ * @deprecated Block events are now published by City Protocol. Use CityBlockData type from @attn/core.
  */
 export const block_data_schema: z.ZodObject<{
   height: z.ZodNumber;

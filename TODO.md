@@ -12,33 +12,54 @@ All tasks must include a milestone tag: `[M#]`
 
 ## 🔴 Critical (Address Immediately)
 
-- [ ] [M4] Use Node.js v20 LTS for CI/CD to avoid tinypool crash
-  - File: CI/CD configuration (GitHub Actions, etc.)
-  - Issue: Vitest/tinypool crashes with `RangeError: Maximum call stack size exceeded` after tests complete on Node.js v22.21.1. Tests pass (218 total: core 7, framework 60, SDK 84, marketplace 67) but runner crashes during worker termination.
-  - Root Cause: Node.js v22 compatibility issue with tinypool worker termination - this is a tinypool bug, not a vitest config issue
-  - Applied Fixes:
-    - ✅ Added `pool: 'forks'` to all vitest.config.ts files
-    - ✅ Added `poolOptions: { forks: { singleFork: true } }` to minimize worker pool issues
-  - Workaround: Use Node.js v20 LTS for CI/CD until tinypool fixes Node.js v22 compatibility
-  - Note: **All 218 tests pass** - this is a cleanup issue, not a test failure
+_No critical issues at this time._
 
 ## ⚠️ High Priority (Address Soon)
 
-*No high priority issues - previous issues have been resolved.*
+- [ ] [M4] Fix framework test import initialization issues
+  - File: `packages/framework/src/attn.test.ts`, `packages/framework/src/relay/connection.test.ts`
+  - Issue: `ReferenceError: Cannot access '__vi_import_2__' before initialization` - circular import or hoisting issue with vi.mock
+  - Impact: 2 of 3 framework test suites fail, ~60 tests not running
+  - Recommendation: Review mock setup order; ensure mocked modules are hoisted before imports that use them
+
+- [ ] [M4] Fix node package test mocking issues
+  - File: `packages/node/src/lib/services/nostr.service.test.js`, `packages/node/src/lib/bridge.test.js`
+  - Issue: 8 NostrService tests fail with "No relay URLs provided", 2 Bridge tests fail with "get_connected_count is not a function"
+  - Impact: 10 of 43 node tests failing
+  - Recommendation: Fix mock setup to properly inject relay URLs and mock all required methods
+
+- [ ] [M4] Run go mod tidy for go-sdk and go-marketplace
+  - File: `packages/go-sdk/go.mod`, `packages/go-marketplace/go.mod`
+  - Issue: Both packages require `go mod tidy` before tests can run
+  - Impact: Cannot verify test coverage for these packages
+  - Recommendation: Run `go mod tidy` in both directories and commit updated go.sum files
+
+- [ ] [M4] Replace console.log with structured logging in server.ts
+  - File: `packages/marketplace/src/server.ts`
+  - Issue: 35 console.log/error/warn statements in production server code
+  - Impact: Inconsistent with structured logging used elsewhere in the codebase
+  - Recommendation: Replace with Pino logger (already used in framework package)
 
 ## 📝 Medium Priority (Address When Possible)
 
-- [ ] [M4] Fix SDK README package name inconsistency
-  - File: `packages/sdk/README.md`
-  - Issue: README references `@attn-protocol/core` but actual package name is `@attn/core` (lines 9, 21, 77, 80, 805)
-  - Impact: Confusing for developers trying to install dependencies
-  - Recommendation: Update all references from `@attn-protocol/core` to `@attn/core` to match actual package.json and code usage
+- [ ] [M4] Fix go-sdk formatInt64 implementation bug
+  - File: `packages/go-sdk/sdk.go:110-112`
+  - Issue: `formatInt64` function uses timestamp formatting which doesn't produce correct block height strings
+  - Code: `return nostr.Timestamp(n).Time().Format("20060102150405")[:14]`
+  - Impact: Block height tags may be incorrectly formatted
+  - Recommendation: Use `strconv.FormatInt(n, 10)` instead
 
-- [ ] [M4] Improve error handling for edge cases in relay connection
-  - File: `packages/framework/src/relay/connection.ts`
-  - Issue: Some edge cases may not be fully handled (rapid connect/disconnect, timeout edge cases, concurrent connection attempts, race conditions)
-  - Impact: Unexpected behavior during connection failures or race conditions
-  - Recommendation: Review and improve error handling for all connection states, add guards for concurrent operations
+- [ ] [M4] Fix go-sdk README accuracy
+  - File: `packages/go-sdk/README.md:1`
+  - Issue: README says "TypeScript SDK" but this is the Go SDK
+  - Impact: Confusing for developers
+  - Recommendation: Update first line from "TypeScript SDK" to "Go SDK"
+
+- [ ] [M4] Implement or remove go-framework/relay empty directory
+  - File: `packages/go-framework/relay/`
+  - Issue: Empty directory - no relay connection implementation
+  - Impact: Go framework incomplete compared to TypeScript framework; README documents non-existent features
+  - Recommendation: Implement relay module or remove empty directory and update README
 
 - [ ] [M4] Create root-level examples directory
   - File: Create `examples/` directory at monorepo root
@@ -46,21 +67,25 @@ All tasks must include a milestone tag: `[M#]`
   - Impact: Slower onboarding for new developers
   - Recommendation: Add examples directory with sample marketplace implementations using framework + SDK + marketplace
 
-- [ ] [M4] Configure test framework for node package
-  - File: `packages/node/package.json`
-  - Issue: Jest is listed in devDependencies and test files use Jest, but Jest is not actually used. Test files exist but no test framework is configured.
-  - Impact: Node package tests cannot be executed - test files exist but are not runnable
-  - Recommendation: Either remove Jest dependencies and test files, or configure a test framework (Vitest recommended for consistency with other TypeScript packages, or Node.js built-in test runner for JavaScript)
+- [ ] [M4] Use Node.js v20 LTS for CI/CD to avoid tinypool crash
+  - File: CI/CD configuration (GitHub Actions, etc.)
+  - Issue: Vitest/tinypool crashes with `RangeError: Maximum call stack size exceeded` after tests complete on Node.js v22
+  - Workaround: Use Node.js v20 LTS for CI/CD until tinypool fixes Node.js v22 compatibility
+  - Note: **Tests pass successfully** - this is a cleanup issue, not a test failure
 
 ## 💡 Low Priority (Nice to Have)
 
-- ✅ [M4] Refactor: Extract shared WebSocket mock to test utilities (2025-01-28)
-  - File(s): `packages/framework/src/test/mocks/websocket.mock.ts`, `packages/sdk/src/test/mocks/websocket.mock.ts`
-  - Completion Note: Created shared `MockWebSocket` in `packages/core/src/test/mocks/websocket.mock.ts`. Updated framework and SDK test files to import from core package. Deleted duplicate mock files. All tests updated to use shared mock via `vi.hoisted()` pattern.
+- [ ] [M4] Add tests for go-sdk package
+  - File: `packages/go-sdk/`
+  - Issue: No test files exist in this package
+  - Impact: Event builders untested
+  - Recommendation: Add unit tests for event creation functions
 
-- ✅ [M4] Refactor: Extract private key decoding to shared utility (2025-01-28)
-  - File(s): `packages/marketplace/src/marketplace.ts:117-131`, `packages/sdk/src/sdk.ts:86-116`
-  - Completion Note: Created `decode_private_key` utility in `packages/core/src/utils/private-key.ts` with full validation (hex length, format, nsec decoding). Updated marketplace and SDK to import and use shared utility. Added `nostr-tools` dependency to core package. Exported from core package index.
+- [ ] [M4] Add tests for go-marketplace package
+  - File: `packages/go-marketplace/`
+  - Issue: No test files exist in this package
+  - Impact: Marketplace logic untested
+  - Recommendation: Add unit tests for marketplace operations
 
 - [ ] [M4] Refactor: Consider splitting Marketplace class
   - File: `packages/marketplace/src/marketplace.ts` (1118 lines)
@@ -83,12 +108,23 @@ All tasks must include a milestone tag: `[M#]`
   - Recommendation: Add integration tests using mock Nostr relay
 
 - [ ] [M4] Regular dependency audits for security vulnerabilities
-  - File: All package.json files
-  - Issue: No regular dependency audit process
+  - File: All package.json and go.mod files
+  - Issue: No regular dependency audit process documented
   - Impact: Potential security vulnerabilities in dependencies
-  - Recommendation: Set up automated dependency audits (npm audit, Dependabot, etc.)
+  - Recommendation: Set up automated dependency audits (npm audit, govulncheck, Dependabot)
 
 ## ✅ Recently Completed
+
+- ✅ [M4] Validation logic extraction to go-core (2026-01-04)
+  - File: `packages/go-core/validation/`
+  - Moved validation from relay/pkg/validation to go-core/validation
+  - Now shared across relay implementations
+  - All 33 validation tests passing
+
+- ✅ [M4] Fix SDK README package name inconsistency (2025-12-15)
+  - File: `packages/sdk/README.md`
+  - Updated all references from `@attn-protocol/core` to `@attn/ts-core` to match actual package.json
+  - Fixed lines 9, 21, 77, 80, 805 in SDK README
 
 - ✅ [M4] Extract shared WebSocket mock to core package (2025-01-28)
   - File: `packages/core/src/test/mocks/websocket.mock.ts`
@@ -104,87 +140,41 @@ All tasks must include a milestone tag: `[M#]`
   - Added `nostr-tools` dependency to core package
   - Exported from core package index
 
-## ✅ Recently Completed (Previous)
+## ✅ Previously Completed
 
 - ✅ [M4] JSR publishing configuration complete (2025-12-08)
-  - File: `packages/*/jsr.json`
-  - Added jsr.json to core, sdk, framework, marketplace packages
-  - Configured @attn namespace, MIT license, publish.exclude
-  - All 4 packages pass JSR dry-run validation
-
 - ✅ [M4] Import extensions updated for JSR (.js → .ts) (2025-12-08)
-  - File: All TypeScript source files (39 files, 115 imports)
-  - Changed import extensions from .js to .ts for JSR compatibility
-  - All tests pass after migration
-
 - ✅ [M4] SDK WebSocket cross-platform support (2025-12-08)
-  - File: `packages/sdk/src/relay/publisher.ts`
-  - Replaced `ws` (Node.js only) with `isomorphic-ws`
-  - SDK now works in Node.js, Deno, and browsers
-  - All 84 SDK tests pass
-
 - ✅ [M4] Comprehensive JSDoc documentation (2025-12-08)
-  - File: All package index.ts and main class files
-  - Added module-level docs with installation instructions
-  - Added usage examples to AttnSdk, Attn, Marketplace classes
-  - Added @example blocks and @module tags for JSR doc generation
-
-- ✅ [M4] All 218 tests passing (2025-12-08)
-  - Core: 7 tests, Framework: 60 tests, SDK: 84 tests, Marketplace: 67 tests
-  - All test suites pass before tinypool cleanup crash
-
+- ✅ [M4] All TypeScript tests passing (2025-12-08)
 - ✅ [M4] Added comprehensive test coverage for marketplace package (67 tests)
-  - File: `packages/marketplace/src/hooks/emitter.test.ts`, `packages/marketplace/src/hooks/validation.test.ts`, `packages/marketplace/src/utils/extraction.test.ts`
-  - Completion Note: Added comprehensive test coverage with 67 tests total:
-    - `emitter.test.ts` - 15 tests for HookEmitter class (register, has, get_registered, emit, emit_required, clear)
-    - `validation.test.ts` - 14 tests for hook validation (validate_required_hooks, get_missing_required_hooks, MissingHooksError)
-    - `extraction.test.ts` - 38 tests for extraction utilities (extract_block_height, extract_d_tag, build_coordinate, extract_coordinate, extract_*_coordinate, parse_coordinate, parse_content)
-
 - ✅ [M4] Updated vitest configs with pool: 'forks' and singleFork: true
-  - File: `packages/core/vitest.config.ts`, `packages/framework/vitest.config.ts`, `packages/sdk/vitest.config.ts`, `packages/marketplace/vitest.config.ts`
-  - Completion Note: Added `pool: 'forks'` and `poolOptions: { forks: { singleFork: true } }` to all vitest configs to mitigate Node.js v22 tinypool compatibility issues. Tinypool cleanup crash still occurs but tests pass successfully.
-
 - ✅ [M4] Added marketplace package to monorepo README documentation
-  - File: `README.md`
-  - Completion Note: Added marketplace package to Quick Links section and Packages table in monorepo README.
-
-- ✅ [M4] Replace console logging with structured logging
-  - File: `packages/framework/src/relay/connection.ts`, `packages/framework/src/hooks/emitter.ts`
-  - Completion Note: All console.* calls replaced with structured logging using Pino. Added Logger interface and default logger implementation. Logger can be provided via AttnConfig or RelayConnectionConfig. All console calls replaced with structured logging. Only 1 acceptable console.error remains in browser WebSocket compatibility wrapper.
-
+- ✅ [M4] Replace console logging with structured logging (framework package)
 - ✅ [M4] Add structured logging infrastructure
-  - File: `packages/framework/src/logger.ts`, `packages/framework/src/attn.ts`, `packages/framework/src/relay/connection.ts`, `packages/framework/src/hooks/emitter.ts`
-  - Completion Note: Added Pino dependency, created Logger interface, default logger implementation, and no-op logger for testing. Logger interface exported from framework package.
-
 - ✅ [M4] Add comprehensive test coverage for all TypeScript packages
-  - File: `packages/framework`, `packages/sdk`, `packages/core`, `packages/marketplace`
-  - Completion Note: Test infrastructure and coverage added across all TypeScript packages using Vitest. Framework has tests for hook emitter, relay connection, and event handling. SDK has tests for event builders, validation, and publishing. Core has tests for constants. Marketplace has tests for emitter, validation, and extraction.
-
 - ✅ [M4] Resolved `any` types in TypeScript codebase
-  - File: All TypeScript packages
-  - Completion Note: Search for `: any` in TypeScript files returns no matches. Type safety fully achieved.
-
 - ✅ [M4] Updated protocol README with correct hook naming
-  - File: `packages/protocol/README.md`
-  - Completion Note: Hook naming updated from `before_new_block → on_new_block → after_new_block` to `before_block_event → on_block_event → after_block_event`. All documentation aligned with current implementation.
-
 - ✅ [M4] Event handler factory pattern implemented
-  - File: `packages/framework/src/relay/handlers.ts`
-  - Completion Note: Implemented `emit_lifecycle_hooks()` utility and `create_simple_handler()` factory function. Reduces code duplication for before/on/after pattern across all event types.
-
 - ✅ [M4] Protocol consistency verified - 0 issues found
-  - File: `CONSISTENCY_FINDINGS.md`
-  - Completion Note: All packages (core, SDK, framework) verified against ATTN-01 specification. 0 inconsistencies found between specification and implementation.
 
 ---
 
-**Last Updated:** 2025-01-28 (Full Code Review Complete)
-**Last Verified:** 2025-01-28 - Comprehensive code review completed. All findings documented in CODE_REVIEW_REPORT.md.
+**Last Updated:** 2026-01-04 (Full Code Review Complete)
+**Last Verified:** 2026-01-04 - Full review completed. Test infrastructure issues identified and documented.
 
 **Project Description:** ATTN Protocol monorepo - Protocol specification, framework, SDK, marketplace, node service, and relay for Bitcoin-native attention marketplace
 
 **Key Features:** Protocol specification (ATTN-01), hook-based framework, event builders, validation utilities, marketplace lifecycle layer, Bitcoin ZMQ bridge, Go-based relay
 
-**JSR Publishing:** Ready to publish to JSR under @attn namespace. Run `bunx jsr publish` in each package directory in dependency order: core → sdk → framework → marketplace.
+**Test Status:**
+- go-core: ✅ 39 tests pass
+- go-core/validation: ✅ 33 tests pass
+- go-framework/hooks: ✅ 11 tests pass
+- relay/ratelimit: ✅ 8 tests pass
+- ts-core: ✅ 47 tests pass
+- ts-marketplace: ✅ 70 tests pass
+- ts-framework: ❌ 2 suites fail (import init issues)
+- node: ❌ 10 of 43 tests fail (mocking issues)
 
-**Production Status:** Production Ready - Code is production-ready with comprehensive test coverage (218 tests pass). JSR publishing configuration complete. CI/CD pipelines may report failure due to tinypool/Node.js v22 cleanup crash, but this is a false negative - tests pass successfully. Use Node.js v20 LTS for CI/CD until tinypool fixes Node.js v22 compatibility.
+**Production Status:** Production Ready with Caveats - Core packages are production-ready. Framework and node packages have test issues that need resolution before full production deployment.

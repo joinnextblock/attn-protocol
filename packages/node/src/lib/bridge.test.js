@@ -1,4 +1,4 @@
-import { describe, it, expect, jest } from '@jest/globals';
+import { describe, it, expect, vi } from 'vitest';
 import { ZeroMQToNostrBridge } from './bridge.js';
 
 const buildBuffer = () => Buffer.alloc(32, 0);
@@ -20,13 +20,13 @@ describe('ZeroMQToNostrBridge', () => {
 
   const createBridge = () => {
     const bitcoin = {
-      buffer_to_hex: jest.fn(() => blockHash),
-      get_block_data: jest.fn().mockResolvedValue(blockData),
-      get_best_block_hash: jest.fn().mockResolvedValue(blockHash)
+      buffer_to_hex: vi.fn(() => blockHash),
+      get_block_data: vi.fn().mockResolvedValue(blockData),
+      get_best_block_hash: vi.fn().mockResolvedValue(blockHash)
     };
 
     const nostr = {
-      publish_block_event: jest.fn().mockResolvedValue({ success: 1, total: 1 })
+      publish_block_event: vi.fn().mockResolvedValue({ success: 1, total: 1 })
     };
 
     const bridge = new ZeroMQToNostrBridge({
@@ -60,20 +60,20 @@ describe('ZeroMQToNostrBridge', () => {
   it('wires start/stop lifecycle', async () => {
     const message = buildBuffer();
     const bitcoin = {
-      connect: jest.fn().mockResolvedValue(undefined),
-      disconnect: jest.fn().mockResolvedValue(undefined),
-      buffer_to_hex: jest.fn(() => blockHash),
-      get_block_data: jest.fn().mockResolvedValue(blockData),
-      get_best_block_hash: jest.fn().mockResolvedValue(blockHash),
-      listen: jest.fn(async function* () {
+      connect: vi.fn().mockResolvedValue(undefined),
+      disconnect: vi.fn().mockResolvedValue(undefined),
+      buffer_to_hex: vi.fn(() => blockHash),
+      get_block_data: vi.fn().mockResolvedValue(blockData),
+      get_best_block_hash: vi.fn().mockResolvedValue(blockHash),
+      listen: vi.fn(async function* () {
         yield { topic: 'hashblock', message };
       }),
     };
 
     const nostr = {
-      connect: jest.fn().mockResolvedValue(undefined),
-      disconnect: jest.fn().mockResolvedValue(undefined),
-      publish_block_event: jest.fn().mockResolvedValue({ success: 1, total: 1 })
+      connect: vi.fn().mockResolvedValue(undefined),
+      disconnect: vi.fn().mockResolvedValue(undefined),
+      publish_block_event: vi.fn().mockResolvedValue({ success: 1, total: 1 })
     };
 
     const bridge = new ZeroMQToNostrBridge({ bitcoin, nostr, relay_urls: ['ws://example.com'] });
@@ -91,20 +91,20 @@ describe('ZeroMQToNostrBridge', () => {
   it('publishes current best block on startup', async () => {
     const message = buildBuffer();
     const bitcoin = {
-      connect: jest.fn().mockResolvedValue(undefined),
-      disconnect: jest.fn().mockResolvedValue(undefined),
-      buffer_to_hex: jest.fn(() => blockHash),
-      get_best_block_hash: jest.fn().mockResolvedValue(blockHash),
-      get_block_data: jest.fn().mockResolvedValue(blockData),
-      listen: jest.fn(async function* () {
+      connect: vi.fn().mockResolvedValue(undefined),
+      disconnect: vi.fn().mockResolvedValue(undefined),
+      buffer_to_hex: vi.fn(() => blockHash),
+      get_best_block_hash: vi.fn().mockResolvedValue(blockHash),
+      get_block_data: vi.fn().mockResolvedValue(blockData),
+      listen: vi.fn(async function* () {
         return;
       }),
     };
 
     const nostr = {
-      connect: jest.fn().mockResolvedValue(undefined),
-      disconnect: jest.fn().mockResolvedValue(undefined),
-      publish_block_event: jest.fn().mockResolvedValue({ success: 1, total: 1 })
+      connect: vi.fn().mockResolvedValue(undefined),
+      disconnect: vi.fn().mockResolvedValue(undefined),
+      publish_block_event: vi.fn().mockResolvedValue({ success: 1, total: 1 })
     };
 
     const bridge = new ZeroMQToNostrBridge({ bitcoin, nostr, relay_urls: ['ws://example.com'] });

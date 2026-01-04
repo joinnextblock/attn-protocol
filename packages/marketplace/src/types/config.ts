@@ -7,8 +7,8 @@
  * @module
  */
 
-import type { Pubkey, RelayUrl } from '@attn/core';
-import type { ProfileConfig } from '@attn/framework';
+import type { Pubkey, RelayUrl } from '@attn/ts-core';
+import type { ProfileConfig } from '@attn/ts-framework';
 
 /**
  * Relay configuration for reading and writing events.

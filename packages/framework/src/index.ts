@@ -17,7 +17,7 @@
  * ## Quick Start
  *
  * ```ts
- * import { Attn } from '@attn/framework';
+ * import { Attn } from '@attn/ts-framework';
  *
  * const attn = new Attn({
  *   private_key: privateKeyBytes,
@@ -107,6 +107,6 @@ export type { Logger } from './logger.js';
 export { create_default_logger, create_noop_logger } from './logger.js';
 
 // Re-export core constants and types for backward compatibility
-export { ATTN_EVENT_KINDS, NIP51_LIST_TYPES } from '@attn/core';
-export type { RelayUrl } from '@attn/core';
+export { ATTN_EVENT_KINDS, NIP51_LIST_TYPES } from '@attn/ts-core';
+export type { RelayUrl } from '@attn/ts-core';
 

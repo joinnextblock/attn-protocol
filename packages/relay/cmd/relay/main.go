@@ -344,7 +344,7 @@ func setupHooks(
 // callBeforeATTNHooks calls the appropriate Before hook based on event kind.
 func callBeforeATTNHooks(ctx context.Context, hooks plugin.ATTNHooks, event *nostr.Event) error {
 	switch event.Kind {
-	case 38088:
+	case 38808: // City Protocol block event
 		return hooks.BeforeBlockEvent(ctx, event)
 	case 38188:
 		return hooks.BeforeMarketplaceEvent(ctx, event)
@@ -372,7 +372,7 @@ func callBeforeATTNHooks(ctx context.Context, hooks plugin.ATTNHooks, event *nos
 // callAfterATTNHooks calls the appropriate After hook based on event kind.
 func callAfterATTNHooks(ctx context.Context, hooks plugin.ATTNHooks, event *nostr.Event) error {
 	switch event.Kind {
-	case 38088:
+	case 38808: // City Protocol block event
 		return hooks.AfterBlockEvent(ctx, event)
 	case 38188:
 		return hooks.AfterMarketplaceEvent(ctx, event)

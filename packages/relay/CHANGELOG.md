@@ -1,4 +1,4 @@
-# @attn-protocol/relay
+# @attn/relay
 
 ## 0.4.1
 

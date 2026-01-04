@@ -8,7 +8,7 @@
  */
 
 import type { Event } from 'nostr-tools';
-import { ATTN_EVENT_KINDS } from '@attn/core';
+import { ATTN_EVENT_KINDS } from '@attn/ts-core';
 import { HookEmitter } from '../hooks/emitter.js';
 import { HOOK_NAMES } from '../hooks/index.js';
 import type { Logger } from '../logger.js';
@@ -338,8 +338,8 @@ export class EventHandlers {
   // ==========================================================================
 
   /**
-   * Handle block event from relay (kind 38088)
-   * Block height comes from parsed content (block_data.height)
+   * Handle block event from relay (kind 38808 from City Protocol)
+   * Block height comes from parsed content (block_data.block_height or legacy block_data.height)
    */
   async handle_block_event(event: Event): Promise<void> {
     try {

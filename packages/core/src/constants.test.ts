@@ -1,9 +1,9 @@
 import { describe, it, expect } from 'vitest';
-import { ATTN_EVENT_KINDS, NIP51_LIST_TYPES } from './constants.js';
+import { ATTN_EVENT_KINDS, NIP51_LIST_TYPES, CITY_PROTOCOL_KINDS } from './constants.js';
 
 describe('ATTN_EVENT_KINDS', () => {
   it('should export all required event kinds', () => {
-    expect(ATTN_EVENT_KINDS.BLOCK).toBe(38088);
+    // Note: BLOCK (38088) was removed - block events are now published by City Protocol (Kind 38808)
     expect(ATTN_EVENT_KINDS.MARKETPLACE).toBe(38188);
     expect(ATTN_EVENT_KINDS.BILLBOARD).toBe(38288);
     expect(ATTN_EVENT_KINDS.PROMOTION).toBe(38388);
@@ -57,6 +57,12 @@ describe('NIP51_LIST_TYPES', () => {
     list_types.forEach((list_type) => {
       expect(list_type).toMatch(/^org\.attnprotocol:/);
     });
+  });
+});
+
+describe('CITY_PROTOCOL_KINDS', () => {
+  it('should export City Protocol block kind', () => {
+    expect(CITY_PROTOCOL_KINDS.BLOCK).toBe(38808);
   });
 });
 

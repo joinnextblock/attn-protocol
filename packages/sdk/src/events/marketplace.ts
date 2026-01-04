@@ -4,7 +4,7 @@
 
 import { finalizeEvent } from "nostr-tools";
 import type { Event } from "nostr-tools";
-import { ATTN_EVENT_KINDS } from "@attn/core";
+import { ATTN_EVENT_KINDS } from "@attn/ts-core";
 import type { MarketplaceEventParams } from "../types/index.js";
 import { format_d_tag, format_coordinate } from "../utils/formatting.js";
 
@@ -29,7 +29,8 @@ export function create_marketplace_event(
     confirmation_fee_sats: params.confirmation_fee_sats ?? 0,
     ref_marketplace_pubkey: params.marketplace_pubkey,
     ref_marketplace_id: params.marketplace_id,
-    ref_node_pubkey: params.ref_node_pubkey, // Required per ATTN-01
+    ref_node_pubkey: params.ref_clock_pubkey || params.ref_node_pubkey, // Required per ATTN-01
+    ref_clock_pubkey: params.ref_clock_pubkey, // For backwards compatibility
     ref_block_id: params.ref_block_id, // Required per ATTN-01
     // Metrics fields (required per ATTN-01, can be 0)
     billboard_count: params.billboard_count ?? 0,
@@ -58,8 +59,8 @@ export function create_marketplace_event(
   // Required p tag (marketplace pubkey)
   tags.push(["p", params.marketplace_pubkey]);
 
-  // Required p tag for node pubkey - per ATTN-01
-  tags.push(["p", params.ref_node_pubkey]);
+  // Required p tag for clock pubkey - per ATTN-01
+  tags.push(["p", params.ref_clock_pubkey]);
 
   // Required r tags (multiple allowed, one per relay)
   // relay_list is in tags only, NOT in content per ATTN-01

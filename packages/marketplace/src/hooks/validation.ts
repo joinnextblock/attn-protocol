@@ -13,7 +13,7 @@ export class MissingHooksError extends Error {
 
   constructor(missing_hooks: string[]) {
     const message = `Missing required hook implementations: ${missing_hooks.join(', ')}\n\n` +
-      `@attn/marketplace requires you to bring your own implementations.\n` +
+      `@attn/ts-marketplace requires you to bring your own implementations.\n` +
       `Register handlers for these hooks before calling start():\n\n` +
       missing_hooks.map(h => `  marketplace.on('${h}', async (ctx) => { /* your implementation */ });`).join('\n');
 

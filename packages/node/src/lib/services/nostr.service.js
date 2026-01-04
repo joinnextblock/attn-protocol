@@ -1,6 +1,6 @@
 import WebSocket from 'ws';
 import * as nostr_tools from 'nostr-tools';
-import { create_block_event } from '@attn/sdk';
+import { create_block_event } from '@attn/ts-sdk';
 import { EventEmitter } from 'events';
 import { logger } from '../logger.js';
 import { ConnectionManager } from '../connection-manager.js';

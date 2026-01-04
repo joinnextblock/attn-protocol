@@ -9,6 +9,16 @@ vi.mock('nostr-tools', () => ({
   nip19: {
     decode: vi.fn(),
   },
+  utils: {
+    hexToBytes: vi.fn((hex: string) => {
+      // Simple hex to bytes conversion for testing
+      const bytes = new Uint8Array(hex.length / 2);
+      for (let i = 0; i < hex.length; i += 2) {
+        bytes[i / 2] = parseInt(hex.substr(i, 2), 16);
+      }
+      return bytes;
+    }),
+  },
 }));
 
 // Import after mock to get mocked versions
@@ -168,11 +178,13 @@ describe('AttnSdk', () => {
 
   describe('create_block', () => {
     it('should create block event with Uint8Array private key', () => {
+      // Note: Block events are now published by City Protocol (Kind 38808)
+      // This test verifies the deprecated ATTN SDK block builder still works
       const mock_event = {
         id: 'block_event_id',
         pubkey: 'a'.repeat(64),
         created_at: 1234567890,
-        kind: 38088,
+        kind: 38808, // City Protocol block kind
         tags: [],
         content: '',
         sig: 'sig',
@@ -205,7 +217,7 @@ describe('AttnSdk', () => {
         id: 'block_event_id',
         pubkey: 'a'.repeat(64),
         created_at: 1234567890,
-        kind: 38088,
+        kind: 38808, // City Protocol block kind
         tags: [],
         content: '',
         sig: 'sig',
@@ -254,9 +266,9 @@ describe('AttnSdk', () => {
         admin_pubkey: 'a'.repeat(64),
         marketplace_id: 'marketplace_1',
         marketplace_pubkey: 'b'.repeat(64),
-        ref_node_pubkey: 'c'.repeat(64),
-        ref_block_id: 'org.attnprotocol:block:850000:hash',
-        block_coordinate: '38088:c'.repeat(64) + ':org.attnprotocol:block:850000:hash',
+        ref_clock_pubkey: 'c'.repeat(64),
+        ref_block_id: 'org.cityprotocol:block:850000:hash',
+        block_coordinate: '38808:' + 'c'.repeat(64) + ':org.cityprotocol:block:850000:hash',
       };
 
       const event = sdk.create_marketplace(params);

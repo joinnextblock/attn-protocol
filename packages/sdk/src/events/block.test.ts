@@ -1,7 +1,16 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { create_block_event } from './block.js';
-import { ATTN_EVENT_KINDS } from '@attn/core';
 import { finalizeEvent, getPublicKey } from 'nostr-tools';
+
+// Mock @attn/core
+vi.mock('@attn/ts-core', () => ({
+  CITY_PROTOCOL_KINDS: {
+    BLOCK: 38808,
+  },
+}));
+
+// Import after mock
+import { CITY_PROTOCOL_KINDS } from '@attn/ts-core';
 
 // Mock nostr-tools
 vi.mock('nostr-tools', async () => {
@@ -40,8 +49,8 @@ describe('create_block_event', () => {
 
     const event = create_block_event(private_key, params);
 
-    expect(event.kind).toBe(ATTN_EVENT_KINDS.BLOCK);
-    expect(event.tags).toContainEqual(['d', 'org.attnprotocol:block:850000:block_hash_123']);
+    expect(event.kind).toBe(CITY_PROTOCOL_KINDS.BLOCK);
+    expect(event.tags).toContainEqual(['d', 'org.cityprotocol:block:850000:block_hash_123']);
     expect(event.tags).toContainEqual(['t', '850000']);
     expect(JSON.parse(event.content)).toMatchObject({
       height: 850000,

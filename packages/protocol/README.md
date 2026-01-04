@@ -2,27 +2,27 @@
 
 A decentralized framework enabling paid content promotion within the Nostr ecosystem. By establishing standardized communication methods for promotional content, the protocol creates new economic opportunities while preserving Nostr's core principles of decentralization and privacy.
 
-It also functions as the Bitcoin-native attention interchange for block-synced marketplaces. Bitcoin node services broadcast each new block height (kind 38088), services react in lockstep, and marketplace state freezes so every snapshot stays truthful. Promotions, matches, confirmations, and payouts all ride Nostr events, which keeps independent services synchronized without trusting a central coordinator.
+It also functions as the Bitcoin-native attention interchange for block-synced marketplaces. City Protocol's clock services broadcast each new block height (kind 38808), ATTN Protocol services react in lockstep, and marketplace state freezes so every snapshot stays truthful. Promotions, matches, confirmations, and payouts all ride Nostr events, which keeps independent services synchronized without trusting a central coordinator.
 
 ## Why it exists
 
-- **Block-synchronized marketplaces**: Replace timestamp-based ad tech with deterministic block heights so block services, billboards, and marketplaces never drift.
+- **Block-synchronized marketplaces**: Replace timestamp-based ad tech with deterministic block heights so City Protocol clocks, billboards, and marketplaces never drift.
 - **Sovereign payments**: All value settles over Bitcoin/Lightning—no subscriptions, no rent extraction, instant exit between blocks.
-- **Composable services**: Because events are just Nostr kinds (38088–38988), anyone can build clients, billboards, or analytics without permission while still mapping to marketplace inventory, user earnings, transfers, and settlement flows.
+- **Composable services**: Because events are just Nostr kinds (38188–38988 for ATTN, 38808 for City Protocol blocks), anyone can build clients, billboards, or analytics without permission while still mapping to marketplace inventory, user earnings, transfers, and settlement flows.
 
 ## Key capabilities
 
-- **ATTN-01 spec**: [`docs/ATTN-01.md`](./docs/ATTN-01.md) is the canonical definition of kinds 38088–38988, the event mapping, and all required tags.
+- **ATTN-01 spec**: [`docs/ATTN-01.md`](./docs/ATTN-01.md) is the canonical definition of kinds 38188–38988, the event mapping, and all required tags. Block events (kind 38808) are published by City Protocol.
 - **Runtime framework**: `@attn-protocol/framework` exposes the `Attn` hook system that wires relays, handles NIP-42 auth, deduplicates events, and sequences `before_block_event → on_block_event → after_block_event`.
-- **Typed SDK**: `@attn-protocol/sdk` ships builders plus validators such as `create_block_event`, `create_promotion_event`, and relay publishers so services can emit fully-signed events with the correct `["t","<block_height>"]` tags.
+- **Typed SDK**: `@attn-protocol/sdk` ships builders plus validators such as `create_promotion_event`, `create_marketplace_event`, and relay publishers so services can emit fully-signed events with the correct `["t","<block_height>"]` tags.
 - **Snapshot discipline**: Every helper enforces block height tagging and deterministic IDs so downstream marketplace inventory, user earnings, transfers, and settlement calculations never accumulate across blocks.
 
 ## Event kinds
 
 | Kind | Name | Description | Published By |
 | --- | --- | --- | --- |
-| 38088 | BLOCK | Bitcoin block arrival event. Timing primitive for the entire protocol. | Bitcoin node services |
-| 38188 | MARKETPLACE | Marketplace definition with parameters (min/max duration, supported event kinds, relay lists). References the official Bitcoin node pubkey for that marketplace. | Marketplace operators |
+| 38808 | BLOCK | Bitcoin block arrival event. Timing primitive for the entire protocol. | City Protocol clock ([@city/clock](https://github.com/joinnextblock/city-protocol)) |
+| 38188 | MARKETPLACE | Marketplace definition with parameters (min/max duration, supported event kinds, relay lists). References the City Protocol clock pubkey for timing. | Marketplace operators |
 | 38288 | BILLBOARD | Billboard definition within a marketplace. Billboards are where promotions are watched and verified. | Billboard operators |
 | 38388 | PROMOTION | Promotion request with bid (total satoshis for duration), duration (milliseconds), and content reference. | Promotion creators |
 | 38488 | ATTENTION | Viewer availability signal with ask (total satoshis for duration), duration range (min/max milliseconds), and content preferences. | Attention owners |

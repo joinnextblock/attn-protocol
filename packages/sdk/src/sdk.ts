@@ -4,7 +4,7 @@
  */
 
 import { getPublicKey } from "nostr-tools";
-import { decode_private_key } from "@attn/core";
+import { decode_private_key } from "@attn/ts-core";
 import type { Event } from "nostr-tools";
 import {
   create_block_event,
@@ -59,7 +59,7 @@ export interface AttnSdkConfig {
  *
  * @example
  * ```ts
- * import { AttnSdk } from '@attn/sdk';
+ * import { AttnSdk } from '@attn/ts-sdk';
  *
  * // Initialize with private key
  * const sdk = new AttnSdk({ private_key: "nsec1..." });
@@ -102,7 +102,8 @@ export class AttnSdk {
   }
 
   /**
-   * Create BLOCK event (kind 38088)
+   * Create BLOCK event (kind 38808 - City Protocol)
+   * @deprecated Block events are now published by City Protocol. Use @city/clock or @city/sdk.
    */
   create_block(params: BlockEventParams): Event {
     return create_block_event(this.private_key, params);

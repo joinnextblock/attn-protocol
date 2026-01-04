@@ -22,12 +22,13 @@ jobs:
       # Checkout Repo
       - name: Checkout Repo
         uses: actions/checkout@v3
-      # Setup Node.js
+      # Setup Node.js v20 LTS (required for vitest/tinypool compatibility)
+      # See CODE_REVIEW_REPORT.md for details on Node.js v22 tinypool issue
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version-file: '.nvmrc'
-      # Install Dependencies      
+      # Install Dependencies
       - name: Install Dependencies
         run: bun install
       # Create Release Pull Request

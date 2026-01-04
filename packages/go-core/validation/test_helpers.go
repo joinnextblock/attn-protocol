@@ -48,7 +48,7 @@ func createTestEvent(kind int, pubkey string, content string) *nostr.Event {
 }
 
 // createTestPromotionEvent creates a test PROMOTION event (kind 38388)
-func createTestPromotionEvent(pubkey string, blockHeight int, marketplace string, billboard string, video string) *nostr.Event {
+func createTestPromotionEvent(pubkey string, block_height int, marketplace string, billboard string, video string) *nostr.Event {
 	content := fmt.Sprintf(`{
 		"duration": 30000,
 		"bid": 5000,
@@ -67,7 +67,7 @@ func createTestPromotionEvent(pubkey string, blockHeight int, marketplace string
 	event := createTestEvent(38388, pubkey, content)
 	event.Tags = append(event.Tags,
 		nostr.Tag{"d", "org.attnprotocol:promotion:test-promotion"},
-		nostr.Tag{"t", fmt.Sprintf("%d", blockHeight)},
+		nostr.Tag{"t", fmt.Sprintf("%d", block_height)},
 		nostr.Tag{"a", fmt.Sprintf("38188:%s:org.attnprotocol:marketplace:test-marketplace", pubkey)},
 		nostr.Tag{"a", fmt.Sprintf("38288:%s:org.attnprotocol:billboard:test-billboard", pubkey)},
 		nostr.Tag{"a", fmt.Sprintf("34236:%s:test-video", pubkey)},
@@ -84,7 +84,7 @@ func createTestPromotionEvent(pubkey string, blockHeight int, marketplace string
 }
 
 // createTestAttentionEvent creates a test ATTENTION event (kind 38488)
-func createTestAttentionEvent(pubkey string, blockHeight int, marketplace string) *nostr.Event {
+func createTestAttentionEvent(pubkey string, block_height int, marketplace string) *nostr.Event {
 	content := fmt.Sprintf(`{
 		"ask": 3000,
 		"min_duration": 15000,
@@ -100,7 +100,7 @@ func createTestAttentionEvent(pubkey string, blockHeight int, marketplace string
 	event := createTestEvent(38488, pubkey, content)
 	event.Tags = append(event.Tags,
 		nostr.Tag{"d", "org.attnprotocol:attention:test-attention"},
-		nostr.Tag{"t", fmt.Sprintf("%d", blockHeight)},
+		nostr.Tag{"t", fmt.Sprintf("%d", block_height)},
 		nostr.Tag{"a", fmt.Sprintf("38188:%s:org.attnprotocol:marketplace:test-marketplace", pubkey)},
 		nostr.Tag{"a", fmt.Sprintf("30000:%s:org.attnprotocol:promotion:blocked", pubkey)},
 		nostr.Tag{"a", fmt.Sprintf("30000:%s:org.attnprotocol:promoter:blocked", pubkey)},
@@ -115,9 +115,9 @@ func createTestAttentionEvent(pubkey string, blockHeight int, marketplace string
 }
 
 // createTestMarketplaceEvent creates a test MARKETPLACE event (kind 38188)
-func createTestMarketplaceEvent(pubkey string, blockHeight int) *nostr.Event {
-	nodePubkey := generateTestPubkey()
-	blockHash := "00000000000000000001a7c"
+func createTestMarketplaceEvent(pubkey string, block_height int) *nostr.Event {
+	node_pubkey := generateTestPubkey()
+	block_hash := "00000000000000000001a7c"
 	content := fmt.Sprintf(`{
 		"name": "Test Marketplace",
 		"description": "Test marketplace description",
@@ -128,18 +128,18 @@ func createTestMarketplaceEvent(pubkey string, blockHeight int) *nostr.Event {
 		"confirmation_fee_sats": 0,
 		"ref_marketplace_pubkey": "%s",
 		"ref_marketplace_id": "test-marketplace",
-		"ref_node_pubkey": "%s",
-		"ref_block_id": "org.attnprotocol:block:%d:%s"
-	}`, pubkey, pubkey, nodePubkey, blockHeight, blockHash)
+		"ref_clock_pubkey": "%s",
+		"ref_block_id": "org.cityprotocol:block:%d:%s"
+	}`, pubkey, pubkey, node_pubkey, block_height, block_hash)
 
 	event := createTestEvent(38188, pubkey, content)
 	event.Tags = append(event.Tags,
 		nostr.Tag{"d", "org.attnprotocol:marketplace:test-marketplace"},
-		nostr.Tag{"t", fmt.Sprintf("%d", blockHeight)},
-		nostr.Tag{"a", fmt.Sprintf("38088:%s:org.attnprotocol:block:%d:%s", nodePubkey, blockHeight, blockHash)},
+		nostr.Tag{"t", fmt.Sprintf("%d", block_height)},
+		nostr.Tag{"a", fmt.Sprintf("38808:%s:org.cityprotocol:block:%d:%s", node_pubkey, block_height, block_hash)},
 		nostr.Tag{"k", "34236"},
 		nostr.Tag{"p", pubkey},
-		nostr.Tag{"p", nodePubkey},
+		nostr.Tag{"p", node_pubkey},
 		nostr.Tag{"r", "wss://relay.nextblock.city"},
 	)
 

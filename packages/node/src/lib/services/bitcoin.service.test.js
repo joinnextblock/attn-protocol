@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach, jest } from '@jest/globals';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { BitcoinService } from './bitcoin.service.js';
 import { BitcoinRpcError, BitcoinZmqError } from '../errors.js';
 
@@ -56,9 +56,9 @@ describe('BitcoinService', () => {
       service = new BitcoinService(mockConfig);
       // Create mock socket
       const mockSocket = {
-        connect: jest.fn(),
-        subscribe: jest.fn(),
-        close: jest.fn(),
+        connect: vi.fn(),
+        subscribe: vi.fn(),
+        close: vi.fn(),
         closed: false
       };
       service.zmq_socket = mockSocket;
@@ -71,11 +71,11 @@ describe('BitcoinService', () => {
     it('should handle connection errors', async () => {
       service = new BitcoinService(mockConfig);
       const mockSocket = {
-        connect: jest.fn(() => {
+        connect: vi.fn(() => {
           throw new Error('Connection failed');
         }),
-        subscribe: jest.fn(),
-        close: jest.fn(),
+        subscribe: vi.fn(),
+        close: vi.fn(),
         closed: false
       };
       service.zmq_socket = mockSocket;
@@ -86,9 +86,9 @@ describe('BitcoinService', () => {
     it('should recreate socket if closed', async () => {
       service = new BitcoinService(mockConfig);
       const mockSocket = {
-        connect: jest.fn(),
-        subscribe: jest.fn(),
-        close: jest.fn(),
+        connect: vi.fn(),
+        subscribe: vi.fn(),
+        close: vi.fn(),
         closed: true
       };
       service.zmq_socket = mockSocket;
@@ -103,9 +103,9 @@ describe('BitcoinService', () => {
     it('should close ZMQ socket', async () => {
       service = new BitcoinService(mockConfig);
       const mockSocket = {
-        connect: jest.fn(),
-        subscribe: jest.fn(),
-        close: jest.fn(),
+        connect: vi.fn(),
+        subscribe: vi.fn(),
+        close: vi.fn(),
         closed: false
       };
       service.zmq_socket = mockSocket;
@@ -116,9 +116,9 @@ describe('BitcoinService', () => {
     it('should handle errors during disconnect', async () => {
       service = new BitcoinService(mockConfig);
       const mockSocket = {
-        connect: jest.fn(),
-        subscribe: jest.fn(),
-        close: jest.fn(() => {
+        connect: vi.fn(),
+        subscribe: vi.fn(),
+        close: vi.fn(() => {
           throw new Error('Close failed');
         }),
         closed: false
@@ -140,7 +140,7 @@ describe('BitcoinService', () => {
   describe('call_rpc', () => {
     it('should make successful RPC call', async () => {
       service = new BitcoinService(mockConfig);
-      global.fetch = jest.fn().mockResolvedValue({
+      global.fetch = vi.fn().mockResolvedValue({
         ok: true,
         text: async () => JSON.stringify({
           result: { height: 850000 },
@@ -156,7 +156,7 @@ describe('BitcoinService', () => {
 
     it('should include authentication headers when credentials provided', async () => {
       service = new BitcoinService(mockConfig);
-      global.fetch = jest.fn().mockResolvedValue({
+      global.fetch = vi.fn().mockResolvedValue({
         ok: true,
         text: async () => JSON.stringify({
           result: { height: 850000 },
@@ -173,7 +173,7 @@ describe('BitcoinService', () => {
 
     it('should handle HTTP errors', async () => {
       service = new BitcoinService(mockConfig);
-      global.fetch = jest.fn().mockResolvedValue({
+      global.fetch = vi.fn().mockResolvedValue({
         ok: false,
         status: 401,
         statusText: 'Unauthorized',
@@ -186,7 +186,7 @@ describe('BitcoinService', () => {
 
     it('should handle RPC method errors', async () => {
       service = new BitcoinService(mockConfig);
-      global.fetch = jest.fn().mockResolvedValue({
+      global.fetch = vi.fn().mockResolvedValue({
         ok: true,
         text: async () => JSON.stringify({
           result: null,
@@ -201,7 +201,7 @@ describe('BitcoinService', () => {
 
     it('should handle empty RPC response', async () => {
       service = new BitcoinService(mockConfig);
-      global.fetch = jest.fn().mockResolvedValue({
+      global.fetch = vi.fn().mockResolvedValue({
         ok: true,
         text: async () => ''
       });
@@ -212,7 +212,7 @@ describe('BitcoinService', () => {
 
     it('should handle network errors', async () => {
       service = new BitcoinService(mockConfig);
-      global.fetch = jest.fn().mockRejectedValue(new Error('ECONNREFUSED'));
+      global.fetch = vi.fn().mockRejectedValue(new Error('ECONNREFUSED'));
 
       await expect(service.call_rpc('getblockhash', [850000]))
         .rejects.toThrow(BitcoinRpcError);
@@ -221,7 +221,7 @@ describe('BitcoinService', () => {
     it('should handle timeout errors', async () => {
       service = new BitcoinService(mockConfig);
       const abortController = new AbortController();
-      global.fetch = jest.fn().mockImplementation(() => {
+      global.fetch = vi.fn().mockImplementation(() => {
         abortController.abort();
         return Promise.reject(new Error('AbortError'));
       });
@@ -235,7 +235,7 @@ describe('BitcoinService', () => {
     it('should call RPC with correct parameters', async () => {
       service = new BitcoinService(mockConfig);
       const blockHash = '0'.repeat(64);
-      global.fetch = jest.fn().mockResolvedValue({
+      global.fetch = vi.fn().mockResolvedValue({
         ok: true,
         text: async () => JSON.stringify({
           result: { hash: blockHash, height: 850000 },
@@ -254,7 +254,7 @@ describe('BitcoinService', () => {
     it('should fetch current best block hash', async () => {
       service = new BitcoinService(mockConfig);
       const best_hash = '0'.repeat(64);
-      global.fetch = jest.fn().mockResolvedValue({
+      global.fetch = vi.fn().mockResolvedValue({
         ok: true,
         text: async () => JSON.stringify({
           result: best_hash,

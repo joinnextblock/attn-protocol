@@ -6,24 +6,24 @@ Hook-based framework for building Bitcoin-native attention marketplace implement
 
 The ATTN Framework provides a Rely-style hook system for receiving and processing ATTN Protocol events. It handles Nostr relay connections, Bitcoin block synchronization, and event lifecycle management, allowing you to focus on implementing your marketplace logic.
 
-The framework depends on `@attn/core` for shared constants and type definitions. Event kind constants are available from the core package for consistency across the ATTN Protocol ecosystem.
+The framework depends on `@attn/ts-core` for shared constants and type definitions. Event kind constants are available from the core package for consistency across the ATTN Protocol ecosystem.
 
 ## Installation
 
 ```bash
 # JSR (recommended)
-bunx jsr add @attn/framework
+bunx jsr add @attn/ts-framework
 # or
-npx jsr add @attn/framework
+npx jsr add @attn/ts-framework
 
 # npm
-npm install @attn/framework
+npm install @attn/ts-framework
 ```
 
 ## Quick Start
 
 ```typescript
-import { Attn } from "@attn/framework";
+import { Attn } from "@attn/ts-framework";
 
 // Basic usage (uses default relay: wss://relay.attnprotocol.org)
 const attn = new Attn({
@@ -105,8 +105,8 @@ The framework handles Nostr relay connections, including:
 
 ### Bitcoin Block Synchronization
 
-- Subscribes to Bitcoin node block events (kind `ATTN_EVENT_KINDS.BLOCK` / 38088)
-- Filters events by trusted `node_pubkeys` for security
+- Subscribes to City Protocol block events (kind `CITY_PROTOCOL_KINDS.BLOCK` / 38808)
+- Filters events by trusted `clock_pubkeys` for security
 - Detects block gaps and surfaces them via hooks
 
 ### ATTN Protocol Event Subscriptions
@@ -124,10 +124,10 @@ The framework handles Nostr relay connections, including:
 - Optional pubkey filtering via `marketplace_pubkeys`, `billboard_pubkeys`, or `advertiser_pubkeys`
 - Emits hooks for each event type automatically
 
-You can import event kind constants from `@attn/core`:
+You can import event kind constants from `@attn/ts-core`:
 
 ```typescript
-import { ATTN_EVENT_KINDS } from "@attn/core";
+import { ATTN_EVENT_KINDS } from "@attn/ts-core";
 
 // Use constants instead of hardcoded numbers
 if (event.kind === ATTN_EVENT_KINDS.PROMOTION) {
@@ -308,7 +308,7 @@ import type {
   // Error Handling
   RateLimitContext,
   HealthChangeContext,
-} from "@attn/framework";
+} from "@attn/ts-framework";
 ```
 
 ## Lifecycle
@@ -350,7 +350,7 @@ attn.on_health_change(async (context) => {
 All hook handlers are fully typed with TypeScript:
 
 ```typescript
-import type { HookHandler, PromotionEventContext } from "@attn/framework";
+import type { HookHandler, PromotionEventContext } from "@attn/ts-framework";
 
 const handler: HookHandler<PromotionEventContext> = async (context) => {
   // context is fully typed
@@ -368,7 +368,7 @@ const handler: HookHandler<PromotionEventContext> = async (context) => {
 The framework provides hooks for block-synchronized processing, ensuring all operations align with Bitcoin block boundaries:
 
 ```typescript
-import { Attn } from "@attn/framework";
+import { Attn } from "@attn/ts-framework";
 
 const attn = new Attn({
   relays_auth: ["wss://auth-relay.example.com"],
@@ -421,7 +421,7 @@ This pattern ensures that:
 For publishing events directly to relays, use the exported `Publisher` class:
 
 ```typescript
-import { Publisher } from "@attn/framework";
+import { Publisher } from "@attn/ts-framework";
 
 const publisher = new Publisher({
   private_key,
@@ -446,9 +446,9 @@ const follow_result = await publisher.publish_follow_list([pubkey1, pubkey2]);
 
 ## Related Projects
 
-- **@attn/core**: Core constants and types shared across all ATTN Protocol packages
-- **@attn/sdk**: TypeScript SDK for creating and publishing ATTN Protocol events
-- **@attn/marketplace**: Matching engine for PROMOTION and ATTENTION events
+- **@attn/ts-core**: Core constants and types shared across all ATTN Protocol packages
+- **@attn/ts-sdk**: TypeScript SDK for creating and publishing ATTN Protocol events
+- **@attn/ts-marketplace**: Matching engine for PROMOTION and ATTENTION events
 
 ## License
 

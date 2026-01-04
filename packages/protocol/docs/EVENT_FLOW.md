@@ -4,21 +4,21 @@ This document illustrates the complete event flow in the ATTN Protocol, from the
 
 ## Overview
 
-The ATTN Protocol flow begins with Bitcoin block events (kind 38088) that synchronize all marketplace operations. All events include block height tags for deterministic state snapshots per block.
+The ATTN Protocol flow begins with Bitcoin block events (kind 38808) published by City Protocol that synchronize all marketplace operations. All events include block height tags for deterministic state snapshots per block.
 
 ## Event Flow Diagram
 
 ```mermaid
 sequenceDiagram
-    participant Bitcoin Node as Bitcoin Node Service
+    participant City Clock as City Protocol Clock
     participant Relay as Nostr Relay
     participant Marketplace as Marketplace Service
     participant Billboard as Billboard Operator
     participant Promoter as Promotion Creator
     participant Viewer as Attention Owner
 
-    Note over Bitcoin Node: New Bitcoin block confirmed
-    Bitcoin Node->>Relay: BLOCK event (38088)
+    Note over City Clock: New Bitcoin block confirmed
+    City Clock->>Relay: BLOCK event (38808)
 
     Note over Marketplace: Block hooks: before_new_block,<br/>on_new_block, after_new_block
 
@@ -59,7 +59,7 @@ sequenceDiagram
 
 ### Setup & Matching
 
-**BLOCK events (38088)** trigger block synchronization hooks in marketplace services (`before_new_block`, `on_new_block`, `after_new_block`).
+**BLOCK events (38808)** from City Protocol trigger block synchronization hooks in marketplace services (`before_new_block`, `on_new_block`, `after_new_block`).
 
 **MARKETPLACE (38188)** and **BILLBOARD (38288)** events establish marketplace infrastructure. These can be published before or after block events.
 

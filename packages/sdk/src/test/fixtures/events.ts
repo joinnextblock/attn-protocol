@@ -3,7 +3,7 @@
  */
 
 import type { Event } from 'nostr-tools';
-import { ATTN_EVENT_KINDS } from '@attn/core';
+import { ATTN_EVENT_KINDS, CITY_PROTOCOL_KINDS } from '@attn/ts-core';
 
 export function create_mock_event(
   kind: number,
@@ -24,7 +24,7 @@ export function create_mock_event(
 
 export function create_mock_block_event(block_height: number = 850000): Event {
   return create_mock_event(
-    ATTN_EVENT_KINDS.BLOCK,
+    CITY_PROTOCOL_KINDS.BLOCK,
     {
       height: block_height,
       hash: 'block_hash_' + block_height,

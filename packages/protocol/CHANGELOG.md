@@ -1,4 +1,4 @@
-# @attn-protocol/protocol
+# @attn/protocol
 
 ## 0.6.1
 

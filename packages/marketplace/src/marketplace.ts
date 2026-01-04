@@ -9,7 +9,7 @@
  *
  * @example
  * ```ts
- * import { Marketplace } from '@attn/marketplace';
+ * import { Marketplace } from '@attn/ts-marketplace';
  *
  * const marketplace = new Marketplace({
  *   // Identity
@@ -43,9 +43,9 @@
  * @module
  */
 
-import { Attn } from '@attn/framework';
-import { AttnSdk } from '@attn/sdk';
-import { ATTN_EVENT_KINDS, decode_private_key } from '@attn/core';
+import { Attn } from '@attn/ts-framework';
+import { AttnSdk } from '@attn/ts-sdk';
+import { ATTN_EVENT_KINDS, CITY_PROTOCOL_KINDS, decode_private_key } from '@attn/ts-core';
 import { nip19 } from 'nostr-tools';
 import type { Event } from 'nostr-tools';
 import type {
@@ -58,7 +58,7 @@ import type {
   AttentionConfirmationData,
   MarketplaceConfirmationData,
   AttentionPaymentConfirmationData,
-} from '@attn/core';
+} from '@attn/ts-core';
 import type { MarketplaceConfig } from './types/config.ts';
 import type { HookName, HookHandler, HookHandle } from './hooks/types.ts';
 import type {
@@ -397,7 +397,7 @@ export class Marketplace {
   }
 
   /**
-   * Access underlying @attn/framework instance
+   * Access underlying @attn/ts-framework instance
    */
   get attn(): Attn {
     return this.framework;
@@ -415,6 +415,14 @@ export class Marketplace {
    */
   get pubkey(): string {
     return this.sdk.get_public_key();
+  }
+
+  /**
+   * Inject initial block height (e.g., from startup query)
+   * This triggers block boundary processing and marketplace event publishing
+   */
+  async inject_block(block_height: number, block_hash?: string): Promise<void> {
+    await this.handle_block(block_height, block_hash);
   }
 
   /**
@@ -1022,9 +1030,9 @@ export class Marketplace {
       block_height,
     }) as AggregatesResult;
 
-    // Build block reference
-    const block_id = `org.attnprotocol:block:${block_height}:${block_hash ?? '0'.repeat(64)}`;
-    const block_coordinate = `${ATTN_EVENT_KINDS.BLOCK}:${this.config.node_pubkey}:${block_id}`;
+    // Build block reference (City Protocol format: org.cityprotocol:block:<height>:<hash>)
+    const block_id = `org.cityprotocol:block:${block_height}:${block_hash ?? '0'.repeat(64)}`;
+    const block_coordinate = `${CITY_PROTOCOL_KINDS.BLOCK}:${this.config.node_pubkey}:${block_id}`;
 
     // Create marketplace event
     const marketplace_event = this.sdk.create_marketplace({
@@ -1046,7 +1054,8 @@ export class Marketplace {
       website_url: this.config.website_url,
       marketplace_pubkey: this.pubkey,
       block_height,
-      ref_node_pubkey: this.config.node_pubkey,
+      ref_clock_pubkey: this.config.node_pubkey,
+      ref_node_pubkey: this.config.node_pubkey, // deprecated, kept for compatibility
       ref_block_id: block_id,
       block_coordinate,
       billboard_count: aggregates.billboard_count,

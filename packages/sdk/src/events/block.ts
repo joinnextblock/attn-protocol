@@ -1,14 +1,23 @@
 /**
  * BLOCK Event builder (kind 38088)
+ *
+ * @deprecated Block events are now published by City Protocol (Kind 38808).
+ * Use @city/clock or @city/sdk for block event creation.
+ * This file is kept for backwards compatibility but will be removed in a future version.
+ *
+ * @see https://github.com/joinnextblock/city-protocol
  */
 
 import { finalizeEvent, getPublicKey } from "nostr-tools";
 import type { Event } from "nostr-tools";
-import { ATTN_EVENT_KINDS } from "@attn/core";
+import { CITY_PROTOCOL_KINDS } from "@attn/ts-core";
 import type { BlockEventParams } from "../types/index.js";
 import { format_d_tag } from "../utils/formatting.js";
 
 /**
+ * @deprecated Use @city/sdk build_block_event instead.
+ * Block events are now published by City Protocol (Kind 38808).
+ *
  * Create BLOCK event
  */
 export function create_block_event(
@@ -26,15 +35,21 @@ export function create_block_event(
   // This allows flexibility: if block_height matches height, use it; otherwise use height
   const block_height = params.block_height ?? params.height;
 
-  const node_pubkey = params.node_pubkey ?? getPublicKey(private_key);
-  const block_id = format_d_tag("block", `${params.height}:${params.hash}`);
+  const clock_pubkey = params.node_pubkey ?? getPublicKey(private_key);
+  const block_id = `org.cityprotocol:block:${params.height}:${params.hash}`;
   const ref_block_id = params.block_identifier ?? block_id;
 
   const content_object: Record<string, unknown> = {
+    block_height: params.height,
+    block_hash: params.hash,
+    block_time: params.time,
+    previous_hash: "",
+    ref_clock_pubkey: clock_pubkey,
+    ref_block_id: ref_block_id,
+    // Legacy fields for backwards compatibility
     height: params.height,
     hash: params.hash,
-    ref_node_pubkey: node_pubkey,
-    ref_block_id: ref_block_id,
+    ref_node_pubkey: clock_pubkey,
   };
 
   if (params.time !== undefined) {
@@ -68,7 +83,7 @@ export function create_block_event(
   const tags: string[][] = [
     ["d", block_id],
     ["t", block_height.toString()],
-    ["p", node_pubkey],
+    ["p", clock_pubkey],
   ];
 
   // Add relay URLs if provided
@@ -79,7 +94,7 @@ export function create_block_event(
   }
 
   const event_template = {
-    kind: ATTN_EVENT_KINDS.BLOCK,
+    kind: CITY_PROTOCOL_KINDS.BLOCK,
     created_at: params.created_at ?? Math.floor(Date.now() / 1000),
     content: JSON.stringify(content_object),
     tags,
@@ -87,5 +102,3 @@ export function create_block_event(
 
   return finalizeEvent(event_template, private_key);
 }
-
-

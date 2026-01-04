@@ -3,7 +3,7 @@
  */
 
 import type { Event } from 'nostr-tools';
-import type { BlockHeight } from '@attn/core';
+import type { BlockHeight } from '@attn/ts-core';
 
 /**
  * Extract block height from event t tag

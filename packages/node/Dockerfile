@@ -1,8 +1,9 @@
 # Multi-stage build for @attn-protocol/node
 # Build context should be attn-protocol root
 
-# Build stage
-FROM node:22-alpine3.20 AS builder
+# Build stage - Use Node.js v20 LTS for vitest/tinypool compatibility
+# See CODE_REVIEW_REPORT.md for details on Node.js v22 tinypool issue
+FROM node:20-alpine3.19 AS builder
 
 # Keep base image patched
 RUN apk upgrade --no-cache
@@ -52,8 +53,8 @@ COPY packages/node .
 WORKDIR /app
 RUN npm prune --omit=dev
 
-# Production stage
-FROM node:22-alpine3.20
+# Production stage - Use Node.js v20 LTS for consistency
+FROM node:20-alpine3.19
 
 # Keep runtime image patched
 RUN apk upgrade --no-cache

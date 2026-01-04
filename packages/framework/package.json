@@ -1,5 +1,5 @@
 {
-  "name": "@attn/framework",
+  "name": "@attn/ts-framework",
   "version": "0.9.6",
   "description": "Hook-based framework for building attention marketplace implementations using ATTN Protocol on Nostr",
   "private": true,
@@ -25,7 +25,7 @@
   "author": "ATTN Protocol Contributors",
   "license": "MIT",
   "dependencies": {
-    "@attn/core": "file:../core",
+    "@attn/ts-core": "file:../core",
     "isomorphic-ws": "^5.0.0",
     "nostr-tools": "^2.4.0",
     "pino": "^10.1.0"

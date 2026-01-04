@@ -18,7 +18,7 @@ name: attn_protocol
 services:
   relay:
     container_name: attn-protocol.relay
-    image: org.attnprotocol.relay:latest
+    image: org-attn-protocol/relay:latest
     build:
       context: ./packages/relay
       dockerfile: Dockerfile
@@ -40,7 +40,7 @@ services:
 
   node:
     container_name: attn-protocol.node
-    image: org.attnprotocol.node:latest
+    image: org-attn-protocol/node:latest
     build:
       context: .
       dockerfile: packages/node/Dockerfile

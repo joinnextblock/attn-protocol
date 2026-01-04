@@ -17,7 +17,7 @@
  * ## Usage
  *
  * ```ts
- * import { ATTN_EVENT_KINDS, type BlockHeight } from '@attn/core';
+ * import { ATTN_EVENT_KINDS, type BlockHeight } from '@attn/ts-core';
  *
  * // Use event kinds for Nostr filters
  * const filter = { kinds: [ATTN_EVENT_KINDS.PROMOTION] };
@@ -31,7 +31,7 @@
  */
 
 // Event kind constants
-export { ATTN_EVENT_KINDS, NIP51_LIST_TYPES } from './constants.js';
+export { ATTN_EVENT_KINDS, CITY_PROTOCOL_KINDS, NIP51_LIST_TYPES } from './constants.js';
 
 // Primitive type aliases
 export type {

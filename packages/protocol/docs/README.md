@@ -41,13 +41,13 @@
 
 A decentralized framework enabling paid content promotion within the Nostr ecosystem. By establishing standardized communication methods for promotional content, the protocol creates new economic opportunities while preserving Nostr's core principles of decentralization and privacy.
 
-It also functions as the Bitcoin-native attention interchange for block-synced marketplaces. Every Bitcoin node service heartbeat (kind 38088) announces a new block height, services react in lockstep, and marketplace state freezes so block-synchronized snapshots remain truthful. Promotions, matches, confirmations, and payouts all ride Nostr events, which keeps independent services synchronized without trusting a central coordinator.
+It also functions as the Bitcoin-native attention interchange for block-synced marketplaces. City Protocol's clock service broadcasts each new block height (kind 38808), ATTN Protocol services react in lockstep, and marketplace state freezes so block-synchronized snapshots remain truthful. Promotions, matches, confirmations, and payouts all ride Nostr events, which keeps independent services synchronized without trusting a central coordinator.
 
 ### Why it exists
 
-- **Block-synchronized marketplaces**: Replace timestamp-based ad tech with deterministic block heights so block services, billboards, and marketplaces never drift.
+- **Block-synchronized marketplaces**: Replace timestamp-based ad tech with deterministic block heights so City Protocol clocks, billboards, and marketplaces never drift.
 - **Sovereign payments**: All value settles over Bitcoin/Lightning—no subscriptions, no rent extraction, instant exit between blocks.
-- **Composable services**: Because events are just Nostr kinds (38088–38988), anyone can build clients, billboards, or analytics without permission while still mapping to marketplace inventory, user earnings, transfers, and settlement flows.
+- **Composable services**: Because events are just Nostr kinds (38188–38988 for ATTN, 38808 for City Protocol blocks), anyone can build clients, billboards, or analytics without permission while still mapping to marketplace inventory, user earnings, transfers, and settlement flows.
 
 > For detailed technical specifications, see [ATTN-01](./ATTN-01.md).
 
@@ -114,7 +114,7 @@ sequenceDiagram
     participant PROMOTION Creator
     participant Attention Owner
 
-    Note over MARKETPLACE Service: Subscribes to BLOCK (38088), MARKETPLACE (38188), BILLBOARD (38288),<br/>PROMOTION (38388), ATTENTION (38488), MATCH (38888), and confirmation events (38588, 38688, 38788, 38988)
+    Note over MARKETPLACE Service: Subscribes to BLOCK (38808 from City Protocol), MARKETPLACE (38188), BILLBOARD (38288),<br/>PROMOTION (38388), ATTENTION (38488), MATCH (38888), and confirmation events (38588, 38688, 38788, 38988)
     MARKETPLACE Service->>RELAY: Publishes MARKETPLACE event (38188)
     BILLBOARD->>RELAY: Publishes BILLBOARD event (38288)
     PROMOTION Creator->>RELAY: Publishes PROMOTION event (38388)
@@ -335,7 +335,7 @@ Running a BILLBOARD is a technical undertaking that enables you to facilitate th
 ### Implementation Steps
 
 1. **Set Up Infrastructure**:
-   - Deploy Nostr relay listeners for BLOCK (38088), MARKETPLACE (38188), BILLBOARD (38288), PROMOTION (38388), ATTENTION (38488), MATCH (38888), and confirmation events (38588, 38688, 38788, 38988)
+   - Deploy Nostr relay listeners for BLOCK (38808 from City Protocol), MARKETPLACE (38188), BILLBOARD (38288), PROMOTION (38388), ATTENTION (38488), MATCH (38888), and confirmation events (38588, 38688, 38788, 38988)
    - Implement a matching engine based on protocol specifications (bid ≥ ask, duration within range)
    - Configure payment channels for satoshi transfers
    - Create verification mechanisms for viewing confirmation
@@ -798,7 +798,7 @@ This comprehensive analytics ecosystem enables PROMOTION Creators to continuousl
 
 - **Coordinate (`a` tag)**: Format `<kind>:<pubkey>:<identifier>` that uniquely identifies protocol entities (marketplaces, billboards, promotions, attention). For example: `38188:marketplace_pubkey:marketplace_001` identifies a specific marketplace instance.
 
-- **Event Kind**: Numeric identifier for Nostr event types. ATTN Protocol uses kinds 38088-38988 for protocol events, plus kind 30000 for NIP-51 lists.
+- **Event Kind**: Numeric identifier for Nostr event types. ATTN Protocol uses kinds 38188-38988 for protocol events, plus kind 30000 for NIP-51 lists. Block events (kind 38808) are published by City Protocol.
 
 - **Content Field**: JSON payload in event `content` field. All custom data (sats, durations, descriptions, etc.) lives here, NOT in tags. Tags are used only for indexing and filtering.
 
@@ -808,7 +808,7 @@ This comprehensive analytics ecosystem enables PROMOTION Creators to continuousl
 
 ### Event Types
 
-- **BLOCK (38088)**: Bitcoin block arrival event. Published by Bitcoin node services when a new block is confirmed. This is the timing primitive for the entire protocol.
+- **BLOCK (38808)**: Bitcoin block arrival event. Published by City Protocol clock services when a new block is confirmed. This is the timing primitive for the entire protocol.
 
 - **MARKETPLACE (38188)**: Marketplace definition with parameters (min/max duration, supported event kinds, relay lists). Published by marketplace operators.
 
@@ -834,7 +834,7 @@ This comprehensive analytics ecosystem enables PROMOTION Creators to continuousl
 
 - **Match → Confirmations**: Three confirmation events (BILLBOARD_CONFIRMATION, ATTENTION_CONFIRMATION, MARKETPLACE_CONFIRMATION) reference the MATCH event via `e` tags, creating an auditable chain.
 
-- **Block Synchronization**: All events include block height in `t` tag. Services subscribe to BLOCK events (kind 38088) and process events grouped by block height, ensuring deterministic state snapshots.
+- **Block Synchronization**: All events include block height in `t` tag. Services subscribe to BLOCK events (kind 38808 from City Protocol) and process events grouped by block height, ensuring deterministic state snapshots.
 
 ## Quick Reference
 
@@ -842,7 +842,7 @@ This comprehensive analytics ecosystem enables PROMOTION Creators to continuousl
 
 | Kind | Name | Who Publishes | When | Key Fields |
 |------|------|---------------|------|------------|
-| 38088 | BLOCK | Bitcoin node services | Every new block | `height`, `hash`, `time` |
+| 38808 | BLOCK | City Protocol clock | Every new block | `block_height`, `block_hash`, `block_time` |
 | 38188 | MARKETPLACE | Marketplace operators | Marketplace creation/update | `name`, `kind_list`, `min_duration`, `max_duration` |
 | 38288 | BILLBOARD | Billboard operators | Billboard announcement | `name`, `marketplace_coordinate` |
 | 38388 | PROMOTION | Promotion creators | Promotion request | `bid`, `duration`, `event_id` |
@@ -932,7 +932,7 @@ When selecting relays for ATTN Protocol participation, consider:
    - Prioritize relays with consistent uptime and performance
 
 2. **Protocol Compatibility**:
-   - Ensure relays support all required event kinds: 38088 (BLOCK), 38188 (MARKETPLACE), 38288 (BILLBOARD), 38388 (PROMOTION), 38488 (ATTENTION), 38588 (BILLBOARD_CONFIRMATION), 38688 (ATTENTION_CONFIRMATION), 38788 (MARKETPLACE_CONFIRMATION), 38888 (MATCH), 38988 (ATTENTION_PAYMENT_CONFIRMATION)
+   - Ensure relays support all required event kinds: 38808 (BLOCK from City Protocol), 38188 (MARKETPLACE), 38288 (BILLBOARD), 38388 (PROMOTION), 38488 (ATTENTION), 38588 (BILLBOARD_CONFIRMATION), 38688 (ATTENTION_CONFIRMATION), 38788 (MARKETPLACE_CONFIRMATION), 38888 (MATCH), 38988 (ATTENTION_PAYMENT_CONFIRMATION)
    - Check for any relay-specific event or content restrictions
    - Verify support for required NIP implementations (NIP-51 for block lists)
 

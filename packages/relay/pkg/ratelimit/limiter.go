@@ -43,7 +43,7 @@ func NewRateLimiter(rateLimitWindow time.Duration, cleanupInterval time.Duration
 	rl.limits[38288] = 20  // Billboard: 20/min
 	rl.limits[38388] = 50  // Promotion: 50/min
 	rl.limits[38888] = 1000 // Match: 1000/min
-	rl.limits[38088] = 10  // Block events: 10/min
+	rl.limits[38808] = 10  // City Protocol block events: 10/min
 	rl.limits[30023] = 20  // Long-form content: 20/min (cityscape scenes)
 	rl.limits[1] = 100     // Comments: 100/min
 	rl.limits[6] = 50      // Reposts: 50/min

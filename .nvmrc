@@ -1,1 +1,3 @@
+# Node.js v20 LTS (Iron) - Required for vitest/tinypool compatibility
+# See CODE_REVIEW_REPORT.md for details on Node.js v22 tinypool issue
 lts/iron

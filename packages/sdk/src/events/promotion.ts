@@ -4,7 +4,7 @@
 
 import { finalizeEvent } from "nostr-tools";
 import type { Event } from "nostr-tools";
-import { ATTN_EVENT_KINDS } from "@attn/core";
+import { ATTN_EVENT_KINDS } from "@attn/ts-core";
 import type { PromotionEventParams } from "../types/index.js";
 import { format_d_tag } from "../utils/formatting.js";
 

@@ -9,7 +9,7 @@
  */
 
 import type { Event } from 'nostr-tools';
-import type { BlockHeight, Pubkey, EventId } from '@attn/core';
+import type { BlockHeight, Pubkey, EventId } from '@attn/ts-core';
 
 export type { BlockHeight, Pubkey, EventId };
 
@@ -282,9 +282,44 @@ export interface AttentionPaymentConfirmationEventContext extends HookContext {
 }
 
 /**
- * Bitcoin block data from node service.
+ * City Protocol block data.
+ * Block events are now published by City Protocol (Kind 38808).
  *
  * Contains block header information and optional statistics.
+ *
+ * @see https://github.com/joinnextblock/city-protocol
+ */
+export interface CityBlockData {
+  /** Bitcoin block height */
+  block_height: BlockHeight;
+  /** Block hash (hex string) */
+  block_hash: string;
+  /** Block timestamp (Unix seconds) */
+  block_time: number;
+  /** Previous block hash */
+  previous_hash: string;
+  /** Mining difficulty */
+  difficulty?: string;
+  /** Number of transactions in the block */
+  tx_count?: number;
+  /** Block size in bytes */
+  size?: number;
+  /** Block weight (for segwit) */
+  weight?: number;
+  /** Block version */
+  version?: number;
+  /** Merkle root hash */
+  merkle_root?: string;
+  /** Block nonce */
+  nonce?: number;
+  /** Public key of the City clock that published this */
+  ref_clock_pubkey?: string;
+  /** City Protocol block identifier */
+  ref_block_id?: string;
+}
+
+/**
+ * @deprecated Use CityBlockData instead. Block events are now published by City Protocol.
  */
 export interface BlockData {
   /** Bitcoin block height */
@@ -307,15 +342,19 @@ export interface BlockData {
   merkle_root?: string;
   /** Block nonce */
   nonce?: number;
-  /** Public key of the node service that published this */
+  /** @deprecated Use ref_clock_pubkey instead */
   node_pubkey?: string;
+  /** Public key of the City clock that published this */
+  ref_clock_pubkey?: string;
 }
 
 /**
- * Context for block events (kind 38088).
+ * Context for block events (City Protocol Kind 38808).
  *
- * Emitted when a new Bitcoin block is received from a trusted node.
+ * Emitted when a new Bitcoin block is received from a City Protocol clock.
  * Use this for Bitcoin-synchronized processing.
+ *
+ * Note: Block events are now published by City Protocol, not ATTN Protocol.
  */
 export interface BlockEventContext extends HookContext {
   /** Bitcoin block height */
@@ -325,11 +364,13 @@ export interface BlockEventContext extends HookContext {
   /** Block timestamp (Unix seconds) */
   block_time?: number;
   /** Full block data if available */
-  block_data?: BlockData;
+  block_data?: CityBlockData | BlockData;
   /** Raw Nostr event if available */
   event?: Event;
   /** Relay URL that delivered this event */
   relay_url?: string;
+  /** City clock pubkey that published this block event */
+  clock_pubkey?: string;
 }
 
 /**

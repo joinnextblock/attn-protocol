@@ -1,5 +1,5 @@
 {
-  "name": "@attn/marketplace",
+  "name": "@attn/ts-marketplace",
   "version": "0.3.1",
   "description": "ATTN Protocol marketplace - bring your own storage implementation",
   "private": true,
@@ -25,9 +25,9 @@
   "author": "ATTN Protocol Contributors",
   "license": "MIT",
   "dependencies": {
-    "@attn/core": "file:../core",
-    "@attn/framework": "file:../framework",
-    "@attn/sdk": "file:../sdk",
+    "@attn/ts-core": "file:../core",
+    "@attn/ts-framework": "file:../framework",
+    "@attn/ts-sdk": "file:../sdk",
     "nostr-tools": "^2.4.0"
   },
   "peerDependencies": {

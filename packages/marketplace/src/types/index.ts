@@ -19,7 +19,7 @@ export type {
   AttentionConfirmationData,
   MarketplaceConfirmationData,
   AttentionPaymentConfirmationData,
-} from '@attn/core';
+} from '@attn/ts-core';
 
 // Config types
 export type {

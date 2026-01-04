@@ -4,11 +4,15 @@ go 1.24.3
 
 require (
 	github.com/joho/godotenv v1.5.1
+	github.com/joinnextblock/attn-protocol/go-core v0.0.0
 	github.com/nbd-wtf/go-nostr v0.52.3
 	github.com/pippellia-btc/rely v1.2.1
 	github.com/rs/zerolog v1.34.0
 	modernc.org/sqlite v1.33.1
 )
+
+// Use local path for development - remove for production
+replace github.com/joinnextblock/attn-protocol/go-core => ../go-core
 
 require (
 	github.com/ImVexed/fasturl v0.0.0-20230304231329-4e41488060f3 // indirect

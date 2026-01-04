@@ -3,22 +3,32 @@
  */
 
 import type { Event } from 'nostr-tools';
-import { ATTN_EVENT_KINDS } from '@attn/core';
+import { ATTN_EVENT_KINDS, CITY_PROTOCOL_KINDS } from '@attn/ts-core';
 
 export function create_mock_block_event(
   block_height: number = 850000,
   pubkey: string = 'a'.repeat(64)
 ): Event {
+  // Block events are now published by City Protocol (kind 38808)
   return {
     id: 'block_event_id_' + block_height,
     pubkey,
     created_at: Math.floor(Date.now() / 1000),
-    kind: ATTN_EVENT_KINDS.BLOCK,
+    kind: CITY_PROTOCOL_KINDS.BLOCK,
     tags: [
       ['t', block_height.toString()],
-      ['h', block_height.toString()],
+      ['d', `org.cityprotocol:block:${block_height}:block_hash_${block_height}`],
+      ['city', 'org.cityprotocol:city:test.city'],
+      ['p', pubkey],
     ],
     content: JSON.stringify({
+      block_height: block_height,
+      block_hash: 'block_hash_' + block_height,
+      block_time: Math.floor(Date.now() / 1000),
+      previous_hash: 'prev_hash_' + (block_height - 1),
+      ref_clock_pubkey: pubkey,
+      ref_block_id: `org.cityprotocol:block:${block_height}:block_hash_${block_height}`,
+      // Legacy fields for backwards compatibility
       height: block_height,
       hash: 'block_hash_' + block_height,
       time: Math.floor(Date.now() / 1000),

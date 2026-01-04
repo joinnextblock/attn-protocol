@@ -45,13 +45,47 @@ export type EventId = string;
 export type RelayUrl = string;
 
 /**
+ * City Protocol block reference.
+ * ATTN Protocol events reference City Protocol block events for timing.
+ */
+export interface CityBlockReference {
+  /** City clock pubkey that published the block event */
+  ref_clock_pubkey?: string;
+  /** City Protocol block identifier: org.cityprotocol:block:<height>:<hash> */
+  ref_block_id?: string;
+}
+
+/**
  * Parsed event content types
  * These represent the JSON content structure of received ATTN Protocol events
  * (vs SDK's *EventParams which are for creating events)
  */
 
 /**
- * BLOCK event content (kind 38088)
+ * City Protocol BLOCK event content (kind 38808)
+ * Block events are now published by City Protocol, not ATTN Protocol.
+ * This interface is provided for parsing block events from City Protocol.
+ *
+ * @see https://github.com/joinnextblock/city-protocol
+ */
+export interface CityBlockData {
+  block_height: number;
+  block_hash: string;
+  block_time: number;
+  previous_hash: string;
+  difficulty?: string;
+  tx_count?: number;
+  size?: number;
+  weight?: number;
+  version?: number;
+  merkle_root?: string;
+  nonce?: number;
+  ref_clock_pubkey?: string;
+  ref_block_id?: string;
+}
+
+/**
+ * @deprecated Use CityBlockData instead. Block events are now published by City Protocol.
  */
 export interface BlockData {
   height: number;
@@ -64,14 +98,16 @@ export interface BlockData {
   version?: number;
   merkle_root?: string;
   nonce?: number;
+  /** @deprecated Use ref_clock_pubkey instead */
   ref_node_pubkey?: string;
+  ref_clock_pubkey?: string;
   ref_block_id?: string;
 }
 
 /**
  * MARKETPLACE event content (kind 38188)
  */
-export interface MarketplaceData {
+export interface MarketplaceData extends CityBlockReference {
   name?: string;
   description?: string;
   admin_pubkey?: string;
@@ -81,8 +117,8 @@ export interface MarketplaceData {
   confirmation_fee_sats?: number;
   ref_marketplace_pubkey?: string;
   ref_marketplace_id?: string;
+  /** @deprecated Use ref_clock_pubkey from CityBlockReference instead */
   ref_node_pubkey?: string;
-  ref_block_id?: string;
   billboard_count?: number;
   promotion_count?: number;
   attention_count?: number;
@@ -226,4 +262,3 @@ export interface AttentionPaymentConfirmationData {
   ref_promotion_id?: string;
   ref_attention_id?: string;
 }
-

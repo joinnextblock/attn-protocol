@@ -60,13 +60,13 @@ func TestValidateEvent_MissingDTag(t *testing.T) {
 	pubkey := generateTestPubkey()
 	event := createTestPromotionEvent(pubkey, 870500, pubkey, pubkey, pubkey)
 	// Remove d tag
-	var newTags nostr.Tags
+	var new_tags nostr.Tags
 	for _, tag := range event.Tags {
 		if tag[0] != "d" {
-			newTags = append(newTags, tag)
+			new_tags = append(new_tags, tag)
 		}
 	}
-	event.Tags = newTags
+	event.Tags = new_tags
 
 	result := ValidateEvent(event)
 	if result.Valid {
@@ -78,13 +78,13 @@ func TestValidateEvent_MissingMarketplaceCoordinate(t *testing.T) {
 	pubkey := generateTestPubkey()
 	event := createTestPromotionEvent(pubkey, 870500, pubkey, pubkey, pubkey)
 	// Remove marketplace coordinate a tag
-	var newTags nostr.Tags
+	var new_tags nostr.Tags
 	for _, tag := range event.Tags {
 		if tag[0] != "a" || !strings.HasPrefix(tag[1], "38188:") {
-			newTags = append(newTags, tag)
+			new_tags = append(new_tags, tag)
 		}
 	}
-	event.Tags = newTags
+	event.Tags = new_tags
 
 	result := ValidateEvent(event)
 	if result.Valid {
@@ -221,19 +221,20 @@ func TestValidateEvent_RejectedKinds(t *testing.T) {
 }
 
 func TestAllowedEventKinds_ATTNProtocolKinds(t *testing.T) {
-	attnKinds := []int{38088, 38188, 38288, 38388, 38488, 38588, 38688, 38788, 38888, 38988}
+	// ATTN Protocol kinds (38188-38988), plus City Protocol block kind (38808)
+	attn_kinds := []int{38808, 38188, 38288, 38388, 38488, 38588, 38688, 38788, 38888, 38988}
 
-	for _, kind := range attnKinds {
+	for _, kind := range attn_kinds {
 		if !AllowedEventKinds[kind] {
-			t.Errorf("Expected ATTN Protocol kind %d to be allowed", kind)
+			t.Errorf("Expected ATTN/City Protocol kind %d to be allowed", kind)
 		}
 	}
 }
 
 func TestAllowedEventKinds_SupportingKinds(t *testing.T) {
-	supportingKinds := []int{0, 1, 3, 5, 6, 16, 1111, 9735, 10002, 22242, 30000, 34236}
+	supporting_kinds := []int{0, 1, 3, 5, 6, 16, 1111, 9735, 10002, 22242, 30000, 34236}
 
-	for _, kind := range supportingKinds {
+	for _, kind := range supporting_kinds {
 		if !AllowedEventKinds[kind] {
 			t.Errorf("Expected supporting kind %d to be allowed", kind)
 		}
@@ -241,11 +242,30 @@ func TestAllowedEventKinds_SupportingKinds(t *testing.T) {
 }
 
 func TestAllowedEventKinds_TotalCount(t *testing.T) {
-	// 10 ATTN Protocol kinds + 12 supporting kinds = 22 total
-	expected := 22
+	// 10 ATTN Protocol kinds + 23 supporting kinds = 33 total
+	expected := 33
 	actual := len(AllowedEventKinds)
 
 	if actual != expected {
 		t.Errorf("Expected %d allowed event kinds, got %d", expected, actual)
 	}
 }
+
+func TestIsATTNProtocolKind(t *testing.T) {
+	// ATTN Protocol kinds should return true
+	attn_kinds := []int{38808, 38188, 38288, 38388, 38488, 38588, 38688, 38788, 38888, 38988}
+	for _, kind := range attn_kinds {
+		if !IsATTNProtocolKind(kind) {
+			t.Errorf("Expected IsATTNProtocolKind(%d) to return true", kind)
+		}
+	}
+
+	// Non-ATTN kinds should return false
+	non_attn_kinds := []int{0, 1, 5, 10002, 30000, 34236}
+	for _, kind := range non_attn_kinds {
+		if IsATTNProtocolKind(kind) {
+			t.Errorf("Expected IsATTNProtocolKind(%d) to return false", kind)
+		}
+	}
+}
+

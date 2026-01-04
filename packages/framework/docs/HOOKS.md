@@ -106,11 +106,11 @@ Event reception and processing for the attention marketplace. Each event type ha
 
 ### 3. Block Synchronization Hooks
 
-Bitcoin block processing and synchronization:
+Bitcoin block processing and synchronization (via City Protocol):
 
-- **before_block_event**: Fires before each BLOCK event (kind 38088) to prepare state
-- **on_block_event**: BLOCK event received from trusted node services (kind 38088)
-- **after_block_event**: Fires after block processing completes (kind 38088)
+- **before_block_event**: Fires before each BLOCK event (kind 38808 from City Protocol) to prepare state
+- **on_block_event**: BLOCK event received from City Protocol clock services (kind 38808)
+- **after_block_event**: Fires after block processing completes (kind 38808)
 
 ### 4. Standard Nostr Event Hooks
 

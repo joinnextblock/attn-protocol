@@ -7,7 +7,7 @@
  *
  * @example
  * ```ts
- * import { Attn } from '@attn/framework';
+ * import { Attn } from '@attn/ts-framework';
  *
  * const attn = new Attn({
  *   private_key: privateKeyBytes,

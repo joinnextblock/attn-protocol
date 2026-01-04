@@ -8,12 +8,12 @@ import {
   create_mock_event_message,
   create_mock_eose,
 } from '../test/fixtures/events.js';
-import { ATTN_EVENT_KINDS } from '@attn/core';
+import { ATTN_EVENT_KINDS, CITY_PROTOCOL_KINDS } from '@attn/ts-core';
 import { HOOK_NAMES } from '../hooks/index.js';
 import { getPublicKey } from 'nostr-tools';
 
 // Import shared MockWebSocket from core package
-import { create_mock_websocket } from '@attn/core/src/test/mocks/websocket.mock.js';
+import { create_mock_websocket } from '@attn/ts-core/src/test/mocks/websocket.mock.js';
 
 // Define MockWebSocket using vi.hoisted to ensure it's available for mocks
 const { MockWebSocket } = vi.hoisted(() => create_mock_websocket());
@@ -319,7 +319,7 @@ describe('RelayConnection', () => {
           block_height: 850000,
           block_hash: 'block_hash_850000',
           event: expect.objectContaining({
-            kind: ATTN_EVENT_KINDS.BLOCK,
+            kind: CITY_PROTOCOL_KINDS.BLOCK,
           }),
         })
       );

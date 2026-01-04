@@ -17,7 +17,7 @@
  * ## Quick Start
  *
  * ```ts
- * import { Marketplace } from '@attn/marketplace';
+ * import { Marketplace } from '@attn/ts-marketplace';
  *
  * const marketplace = new Marketplace({
  *   // Identity
@@ -111,10 +111,10 @@ export type {
   AttentionConfirmationData,
   MarketplaceConfirmationData,
   AttentionPaymentConfirmationData,
-} from '@attn/core';
+} from '@attn/ts-core';
 
 // Profile config (re-exported from framework)
-export type { ProfileConfig } from '@attn/framework';
+export type { ProfileConfig } from '@attn/ts-framework';
 
 // Hook types
 export type {

@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach, jest } from '@jest/globals';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { EventEmitter } from 'events';
 import { NostrService } from './nostr.service.js';
 
@@ -9,7 +9,7 @@ class MockWebSocket extends EventEmitter {
     super();
     this.url = url;
     this.readyState = 0; // CONNECTING
-    this.send = jest.fn();
+    this.send = vi.fn();
     MockWebSocket.instances.push(this);
   }
 

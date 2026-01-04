@@ -1,11 +1,11 @@
 {
-  "name": "@attn/framework",
+  "name": "@attn/ts-framework",
   "version": "0.9.6",
   "description": "Hook-based framework for building Bitcoin-native attention marketplace implementations using ATTN Protocol on Nostr",
   "license": "MIT",
   "exports": "./src/index.ts",
   "imports": {
-    "@attn/core": "jsr:@attn/core@^0.8.0",
+    "@attn/ts-core": "jsr:@attn/ts-core@^0.8.0",
     "nostr-tools": "npm:nostr-tools@^2.4.0",
     "isomorphic-ws": "npm:isomorphic-ws@^5.0.0",
     "pino": "npm:pino@^10.1.0"

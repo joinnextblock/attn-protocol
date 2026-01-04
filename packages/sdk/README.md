@@ -6,40 +6,28 @@ TypeScript SDK for creating and publishing ATTN Protocol events on Nostr.
 
 The ATTN SDK provides type-safe event creation and publishing for the ATTN Protocol. It complements the `attn` framework (which receives/processes events) by providing event creation and publishing capabilities.
 
-The SDK depends on `@attn/core` for shared constants and type definitions. Event kind constants are available from the core package and are used internally by all event builders to ensure consistency across the ATTN Protocol ecosystem.
+The SDK depends on `@attn/ts-core` for shared constants and type definitions. Event kind constants are available from the core package and are used internally by all event builders to ensure consistency across the ATTN Protocol ecosystem.
 
 ## Installation
 
 ```bash
-npm install @attn/sdk
+npm install @attn/ts-sdk
 ```
 
 ## Quick Start
 
 ```typescript
-import { AttnSdk } from "@attn/sdk";
-import { ATTN_EVENT_KINDS } from "@attn/core";
+import { AttnSdk } from "@attn/ts-sdk";
+import { ATTN_EVENT_KINDS } from "@attn/ts-core";
 
 // Initialize SDK with private key (hex or nsec format)
 const sdk = new AttnSdk({
   private_key: "your_private_key_here", // hex or nsec
 });
 
-// Create and publish a BLOCK event for the current height
-const block_event = sdk.create_block({
-  height: 862626,
-  hash: "00000000000000000001a7c...",
-  time: 1732680000,
-  tx_count: 2345,
-  difficulty: "97345261772782.69",
-  size: 1234567,
-  weight: 3999999,
-  version: 2,
-  merkle_root: "1111...",
-  nonce: 1234567890,
-  block_identifier: "node-service-alpha:block#862626",
-});
-await sdk.publish(block_event, "wss://relay.attnprotocol.org");
+// Note: Block events (kind 38808) are now published by City Protocol (@city/clock)
+// ATTN SDK provides a deprecated create_block method for backwards compatibility
+// For new implementations, use @city/clock for block event publishing
 
 // Create and publish a PROMOTION event that matches ATTN-01
 const promotion_event = sdk.create_promotion({
@@ -74,10 +62,10 @@ await sdk.publish_to_multiple(promotion_event, [
 
 Every builder implements the schemas and tag layout defined in `@attn-protocol/packages/protocol/docs/ATTN-01.md`. Content fields live in the JSON payload, while routing/indexing values (identifiers, block height, coordinates) ride inside Nostr tags. Always pass the current Bitcoin `block_height` so the SDK can emit the `t` tag that powers block-synchronized filtering.
 
-**Note:** All event builders use constants from `@attn/core` internally. You can import `ATTN_EVENT_KINDS` to reference event kinds in your code:
+**Note:** All event builders use constants from `@attn/ts-core` internally. You can import `ATTN_EVENT_KINDS` to reference event kinds in your code:
 
 ```typescript
-import { ATTN_EVENT_KINDS } from "@attn/core";
+import { ATTN_EVENT_KINDS } from "@attn/ts-core";
 
 // Check event kind
 if (event.kind === ATTN_EVENT_KINDS.PROMOTION) {
@@ -121,33 +109,17 @@ if (event.kind === ATTN_EVENT_KINDS.PROMOTION) {
 
 Each subsection restates the ATTN-01 content + tag requirements so builders stay in lockstep with the block-synchronized snapshot model. When the SDK does not yet expose a specific field/tag (for example, `relay_list` inside the PROMOTION content), treat that as a TODO before publishing—extend the helper or compose the JSON manually so every required field lands on-chain of record.
 
-### BLOCK Event (kind `ATTN_EVENT_KINDS.BLOCK` / 38088)
+### BLOCK Event (kind 38808 - City Protocol)
 
-ATTN-01 content requirements:
-- `height`, `hash`, `time`
+> **Note:** Block events are now published by City Protocol (kind 38808). The ATTN SDK's `create_block` method is deprecated and kept only for backwards compatibility. For new implementations, use `@city/clock` from the City Protocol.
+
+City Protocol block events (CITY-01) include:
+- `block_height`, `block_hash`, `block_time`, `previous_hash`
 - Optional: `difficulty`, `tx_count`, `size`, `weight`, `version`, `merkle_root`, `nonce`
-- `node_pubkey` is derived automatically from the provided private key unless overridden
-- `block_identifier` defaults to `block#<height>`; override when multiple node services co-exist
+- `ref_clock_pubkey` - The City clock pubkey that published the event
+- `ref_block_id` - The block identifier (format: `org.cityprotocol:block:<height>:<hash>`)
 
-ATTN-01 tag requirements:
-- `["d", block_identifier]`
-- `["t", block_height]` (block height defaults to `height` unless explicitly provided)
-
-```typescript
-const block_event = sdk.create_block({
-  height: 862626,
-  hash: "00000000000000000001a7c...",
-  time: 1732680000,
-  tx_count: 2345,
-  difficulty: "97345261772782.69",
-  size: 1234567,
-  weight: 3999999,
-  version: 2,
-  merkle_root: "1111...",
-  nonce: 1234567890,
-  block_identifier: "node-service-alpha:block#862626",
-});
-```
+For creating block events, see the [City Protocol documentation](https://github.com/joinnextblock/city-protocol).
 
 ### PROMOTION Event (kind `ATTN_EVENT_KINDS.PROMOTION` / 38388)
 
@@ -349,7 +321,7 @@ ATTN-01 tag requirements:
 - `["u", url]`
 
 ```typescript
-import { create_billboard_confirmation_event } from "@attn/sdk";
+import { create_billboard_confirmation_event } from "@attn/ts-sdk";
 import { nip19 } from "nostr-tools";
 
 const decoded = nip19.decode("nsec1...");
@@ -399,7 +371,7 @@ ATTN-01 tag requirements:
 - `["u", url]`
 
 ```typescript
-import { create_attention_confirmation_event } from "@attn/sdk";
+import { create_attention_confirmation_event } from "@attn/ts-sdk";
 import { nip19 } from "nostr-tools";
 
 const decoded = nip19.decode("nsec1...");
@@ -454,7 +426,7 @@ ATTN-01 tag requirements:
 - `["u", url]`
 
 ```typescript
-import { create_marketplace_confirmation_event } from "@attn/sdk";
+import { create_marketplace_confirmation_event } from "@attn/ts-sdk";
 import { nip19 } from "nostr-tools";
 
 const decoded = nip19.decode("nsec1...");
@@ -560,42 +532,23 @@ All validation happens at construction time, ensuring the SDK instance is always
 
 ```typescript
 // Import SDK for creating events
-import { AttnSdk } from "@attn/sdk";
+import { AttnSdk } from "@attn/ts-sdk";
 // Import framework for receiving/processing events
-import { Attn } from "@attn/framework";
+import { Attn } from "@attn/ts-framework";
 
 // Initialize SDK with private key (hex or nsec format)
 const sdk = new AttnSdk({
   private_key: "your_private_key_here", // hex or nsec
 });
 
-// Create a BLOCK event (typically done by Bitcoin node services)
-const block_event = sdk.create_block({
-  height: 880000,
-  hash: "00000000000000000001a7c...",
-  time: 1730000000,
-  tx_count: 2345,
-  difficulty: "97345261772782.69",
-  block_identifier: "node-service-alpha:block#880000",
-});
-
-// Publish block event to relay
-try {
-  const result = await sdk.publish(block_event, "wss://relay.attnprotocol.org");
-  if (result.success) {
-    console.log(`Block event published: ${result.event_id}`);
-  } else {
-    console.error(`Failed to publish: ${result.error}`);
-  }
-} catch (error) {
-  console.error("Error publishing block event:", error);
-}
+// Note: Block events (kind 38808) are now published by City Protocol (@city/clock)
+// ATTN Protocol services subscribe to City Protocol block events for timing
 
 // Initialize framework for receiving events
 const attn = new Attn({
   relays: ["wss://relay.attnprotocol.org"],
   private_key: private_key_uint8array, // Uint8Array for NIP-42 auth
-  node_pubkeys: [node_pubkey_hex], // Trusted Bitcoin node services
+  clock_pubkeys: [clock_pubkey_hex], // Trusted City Protocol clock services
 });
 
 // Register hook handlers
@@ -621,7 +574,7 @@ try {
 ### Pattern 1: Creating a Complete Promotion Flow
 
 ```typescript
-import { AttnSdk } from "@attn/sdk";
+import { AttnSdk } from "@attn/ts-sdk";
 
 const sdk = new AttnSdk({ private_key: "your_private_key" });
 
@@ -758,7 +711,7 @@ import {
   validate_block_height,
   validate_json_content,
   validate_pubkey,
-} from "@attn/sdk";
+} from "@attn/ts-sdk";
 
 const result = validate_block_height(event);
 if (!result.valid) {
@@ -775,7 +728,7 @@ import type {
   PromotionEventParams,
   AttentionEventParams,
   MatchEventParams,
-} from "@attn/sdk";
+} from "@attn/ts-sdk";
 ```
 
 ## Bitcoin Block Height Support
@@ -802,8 +755,8 @@ if (!result.success) {
 
 ## Related Projects
 
-- **@attn/core**: Core constants and types shared across all ATTN Protocol packages
-- **@attn/framework**: Hook-based framework for receiving and processing ATTN Protocol events
+- **@attn/ts-core**: Core constants and types shared across all ATTN Protocol packages
+- **@attn/ts-framework**: Hook-based framework for receiving and processing ATTN Protocol events
 - **@attn/protocol**: ATTN Protocol specification and documentation
 
 ## License

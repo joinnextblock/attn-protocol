@@ -1,7 +1,16 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { create_marketplace_event } from './marketplace.js';
-import { ATTN_EVENT_KINDS } from '@attn/core';
 import { finalizeEvent } from 'nostr-tools';
+
+// Mock @attn/core
+vi.mock('@attn/ts-core', () => ({
+  ATTN_EVENT_KINDS: {
+    MARKETPLACE: 38188,
+  },
+}));
+
+// Import after mock
+import { ATTN_EVENT_KINDS } from '@attn/ts-core';
 
 // Mock nostr-tools
 vi.mock('nostr-tools', async () => {
@@ -38,9 +47,9 @@ describe('create_marketplace_event', () => {
       admin_pubkey: 'a'.repeat(64),
       marketplace_id: 'marketplace_1',
       marketplace_pubkey: 'b'.repeat(64),
-      ref_node_pubkey: 'c'.repeat(64),
-      ref_block_id: 'org.attnprotocol:block:850000:hash',
-      block_coordinate: '38088:c'.repeat(64) + ':org.attnprotocol:block:850000:hash',
+      ref_clock_pubkey: 'c'.repeat(64),
+      ref_block_id: 'org.cityprotocol:block:850000:hash',
+      block_coordinate: '38808:' + 'c'.repeat(64) + ':org.cityprotocol:block:850000:hash',
     };
 
     const event = create_marketplace_event(private_key, params);
@@ -51,7 +60,7 @@ describe('create_marketplace_event', () => {
     expect(event.tags).toContainEqual(['a', params.block_coordinate]);
     expect(event.tags).toContainEqual(['k', '34236']);
     expect(event.tags).toContainEqual(['p', params.marketplace_pubkey]);
-    expect(event.tags).toContainEqual(['p', params.ref_node_pubkey]);
+    expect(event.tags).toContainEqual(['p', params.ref_clock_pubkey]);
     expect(event.tags).toContainEqual(['r', 'ws://relay.example.com']);
 
     const content = JSON.parse(event.content);
@@ -60,7 +69,7 @@ describe('create_marketplace_event', () => {
     expect(content.admin_pubkey).toBe(params.admin_pubkey);
     expect(content.ref_marketplace_pubkey).toBe(params.marketplace_pubkey);
     expect(content.ref_marketplace_id).toBe('marketplace_1');
-    expect(content.ref_node_pubkey).toBe(params.ref_node_pubkey);
+    expect(content.ref_clock_pubkey).toBe(params.ref_clock_pubkey);
     expect(content.ref_block_id).toBe(params.ref_block_id);
   });
 
@@ -74,9 +83,9 @@ describe('create_marketplace_event', () => {
       admin_pubkey: 'a'.repeat(64),
       marketplace_id: 'marketplace_1',
       marketplace_pubkey: 'b'.repeat(64),
-      ref_node_pubkey: 'c'.repeat(64),
-      ref_block_id: 'org.attnprotocol:block:850000:hash',
-      block_coordinate: '38088:c'.repeat(64) + ':org.attnprotocol:block:850000:hash',
+      ref_clock_pubkey: 'c'.repeat(64),
+      ref_block_id: 'org.cityprotocol:block:850000:hash',
+      block_coordinate: '38808:' + 'c'.repeat(64) + ':org.cityprotocol:block:850000:hash',
     };
 
     const event = create_marketplace_event(private_key, params);
@@ -98,9 +107,9 @@ describe('create_marketplace_event', () => {
       admin_pubkey: 'a'.repeat(64),
       marketplace_id: 'marketplace_1',
       marketplace_pubkey: 'b'.repeat(64),
-      ref_node_pubkey: 'c'.repeat(64),
-      ref_block_id: 'org.attnprotocol:block:850000:hash',
-      block_coordinate: '38088:c'.repeat(64) + ':org.attnprotocol:block:850000:hash',
+      ref_clock_pubkey: 'c'.repeat(64),
+      ref_block_id: 'org.cityprotocol:block:850000:hash',
+      block_coordinate: '38808:' + 'c'.repeat(64) + ':org.cityprotocol:block:850000:hash',
       website_url: 'https://example.com',
     };
 
@@ -119,9 +128,9 @@ describe('create_marketplace_event', () => {
       admin_pubkey: 'a'.repeat(64),
       marketplace_id: 'marketplace_1',
       marketplace_pubkey: 'b'.repeat(64),
-      ref_node_pubkey: 'c'.repeat(64),
-      ref_block_id: 'org.attnprotocol:block:850000:hash',
-      block_coordinate: '38088:c'.repeat(64) + ':org.attnprotocol:block:850000:hash',
+      ref_clock_pubkey: 'c'.repeat(64),
+      ref_block_id: 'org.cityprotocol:block:850000:hash',
+      block_coordinate: '38808:' + 'c'.repeat(64) + ':org.cityprotocol:block:850000:hash',
     };
 
     const event = create_marketplace_event(private_key, params);
@@ -142,9 +151,9 @@ describe('create_marketplace_event', () => {
       admin_pubkey: 'a'.repeat(64),
       marketplace_id: 'marketplace_1',
       marketplace_pubkey: 'b'.repeat(64),
-      ref_node_pubkey: 'c'.repeat(64),
-      ref_block_id: 'org.attnprotocol:block:850000:hash',
-      block_coordinate: '38088:c'.repeat(64) + ':org.attnprotocol:block:850000:hash',
+      ref_clock_pubkey: 'c'.repeat(64),
+      ref_block_id: 'org.cityprotocol:block:850000:hash',
+      block_coordinate: '38808:' + 'c'.repeat(64) + ':org.cityprotocol:block:850000:hash',
     };
 
     const event = create_marketplace_event(private_key, params);

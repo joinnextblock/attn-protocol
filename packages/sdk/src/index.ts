@@ -16,7 +16,7 @@
  * ## Quick Start
  *
  * ```ts
- * import { AttnSdk } from '@attn/sdk';
+ * import { AttnSdk } from '@attn/ts-sdk';
  *
  * // Initialize SDK with your private key
  * const sdk = new AttnSdk({ private_key: process.env.NOSTR_PRIVATE_KEY });
@@ -42,7 +42,7 @@
  * For more control, use the standalone event builder functions:
  *
  * ```ts
- * import { create_promotion_event, publish_to_relay } from '@attn/sdk';
+ * import { create_promotion_event, publish_to_relay } from '@attn/ts-sdk';
  * ```
  *
  * @module

@@ -144,7 +144,7 @@ describe('MissingHooksError', () => {
     expect(error.message).toContain('store_promotion');
     expect(error.message).toContain('exists');
     expect(error.message).toContain('Missing required hook implementations');
-    expect(error.message).toContain('@attn/marketplace');
+    expect(error.message).toContain('@attn/ts-marketplace');
   });
 
   it('should include example registration code in message', () => {

@@ -1,4 +1,4 @@
-# @attn-protocol/framework
+# @attn/ts-framework
 
 ## 0.9.6
 
@@ -137,7 +137,7 @@
 ### Patch Changes
 
 - Updated dependencies [ebd67d2]
-  - @attn-protocol/core@0.5.0
+  - @attn/ts-core@0.5.0
 
 ## 0.4.1
 
@@ -165,28 +165,28 @@
 ### Patch Changes
 
 - Updated dependencies
-  - @attn-protocol/core@0.4.0
+  - @attn/ts-core@0.4.0
 
 ## 0.2.5
 
 ### Patch Changes
 
 - Update HOOKS.md documentation to accurately reflect current framework implementation. Added missing hooks (on_subscription, on_new_profile, on_new_relay_list, on_new_nip51_list), documented unimplemented hooks with status notes, updated lifecycle diagram, and reorganized sections for clarity.
-- Update README documentation to reference @attn-protocol/core constants instead of hardcoded event kind numbers. Added examples showing how to import and use ATTN_EVENT_KINDS from core package. Updated Related Projects sections to include core package.
+- Update README documentation to reference @attn/ts-core constants instead of hardcoded event kind numbers. Added examples showing how to import and use ATTN_EVENT_KINDS from core package. Updated Related Projects sections to include core package.
 
 ## 0.2.4
 
 ### Patch Changes
 
-- Update README documentation to reference @attn-protocol/core constants instead of hardcoded event kind numbers. Added examples showing how to import and use ATTN_EVENT_KINDS from core package. Updated Related Projects sections to include core package.
+- Update README documentation to reference @attn/ts-core constants instead of hardcoded event kind numbers. Added examples showing how to import and use ATTN_EVENT_KINDS from core package. Updated Related Projects sections to include core package.
 
 ## 0.2.3
 
 ### Patch Changes
 
-- Refactor existing packages into new `@attn-protocol/core` package. Extracted shared constants (`ATTN_EVENT_KINDS`, `NIP51_LIST_TYPES`) and core types (`BlockHeight`, `Pubkey`, `EventId`, `RelayUrl`) from framework into core package. Updated SDK to use constants from core instead of hardcoded event kind numbers. Framework and SDK now depend on core package for shared constants and types.
+- Refactor existing packages into new `@attn/ts-core` package. Extracted shared constants (`ATTN_EVENT_KINDS`, `NIP51_LIST_TYPES`) and core types (`BlockHeight`, `Pubkey`, `EventId`, `RelayUrl`) from framework into core package. Updated SDK to use constants from core instead of hardcoded event kind numbers. Framework and SDK now depend on core package for shared constants and types.
 - Updated dependencies
-  - @attn-protocol/core@0.3.0
+  - @attn/ts-core@0.3.0
 
 ## 0.2.2
 

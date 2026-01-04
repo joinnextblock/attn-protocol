@@ -9,7 +9,8 @@ import (
 // ATTNHooks defines the interface for ATTN event lifecycle hooks.
 // Implementations can provide custom processing for each ATTN event type at different stages.
 type ATTNHooks interface {
-	// Block Event (38088) lifecycle
+	// City Protocol Block Event (38808) lifecycle
+	// Block events are now published by City Protocol's clock service
 	BeforeBlockEvent(ctx context.Context, event *nostr.Event) error
 	AfterBlockEvent(ctx context.Context, event *nostr.Event) error
 

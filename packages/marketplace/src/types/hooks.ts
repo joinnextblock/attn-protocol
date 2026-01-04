@@ -21,7 +21,7 @@ import type {
   AttentionConfirmationData,
   MarketplaceConfirmationData,
   AttentionPaymentConfirmationData,
-} from '@attn/core';
+} from '@attn/ts-core';
 
 /**
  * Generic context for storing ATTN Protocol events.

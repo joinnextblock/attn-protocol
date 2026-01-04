@@ -14,7 +14,8 @@ export interface BaseEventParams {
 }
 
 /**
- * BLOCK Event (kind 38088) parameters
+ * BLOCK Event (kind 38808 - City Protocol) parameters
+ * @deprecated Block events are now published by City Protocol. Use @city/sdk for block event creation.
  */
 export interface BlockEventParams extends BaseEventParams {
   height: number;
@@ -49,9 +50,11 @@ export interface MarketplaceEventParams extends BaseEventParams {
   website_url?: string; // Website URL (for u tag, optional)
   marketplace_pubkey: string; // Marketplace pubkey (for content ref_marketplace_pubkey)
   // Block reference fields (required per ATTN-01)
-  ref_node_pubkey: string; // Node pubkey that published the block event (required)
-  ref_block_id: string; // Block event identifier (org.attnprotocol:block:<height>:<hash>) (required)
-  block_coordinate: string; // Block coordinate: 38088:<node_pubkey>:org.attnprotocol:block:<height>:<hash> (required)
+  ref_clock_pubkey: string; // City Protocol clock pubkey that published the block event (required)
+  ref_block_id: string; // Block event identifier (org.cityprotocol:block:<height>:<hash>) (required)
+  block_coordinate: string; // Block coordinate: 38808:<clock_pubkey>:org.cityprotocol:block:<height>:<hash> (required)
+  /** @deprecated Use ref_clock_pubkey instead */
+  ref_node_pubkey?: string;
   // Metrics fields (required per ATTN-01, can be 0)
   billboard_count?: number; // Total billboards (default: 0)
   promotion_count?: number; // Total promotions (default: 0)

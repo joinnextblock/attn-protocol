@@ -24,8 +24,10 @@ ATTN-01 defines the event kinds, schemas, and tag specifications for the ATTN Pr
 
 ## Event Kinds
 
-### Protocol Event Kinds
-- **38088**: BLOCK (Bitcoin block arrival)
+### City Protocol Event Kind (Block Events)
+- **38808**: BLOCK (Bitcoin block arrival, published by Bitcoin node operators)
+
+### ATTN Protocol Event Kinds
 - **38188**: MARKETPLACE
 - **38288**: BILLBOARD
 - **38388**: PROMOTION
@@ -35,6 +37,8 @@ ATTN-01 defines the event kinds, schemas, and tag specifications for the ATTN Pr
 - **38788**: MARKETPLACE_CONFIRMATION
 - **38888**: MATCH (promotion-attention match)
 - **38988**: ATTENTION_PAYMENT_CONFIRMATION
+
+**Note:** Block events (Kind 38808) are published by Bitcoin node operators, not ATTN Protocol. ATTN Protocol events reference block events for timing synchronization.
 
 ### Standard Event Kinds
 - **30000**: NIP-51 Lists (blocked promotions, blocked promoters, trusted billboards, trusted marketplaces)
@@ -51,7 +55,7 @@ The ATTN Protocol uses only official Nostr tags. All custom data is stored in th
 
 | Event Kind | Name | Published By | Key Content Fields | Key Tags |
 |------------|------|--------------|-------------------|----------|
-| 38088 | BLOCK | Bitcoin node services | `height`, `hash`, `time?`, `ref_node_pubkey`, `ref_block_id` | `["d", "org.attnprotocol:block:<height>:<hash>"]`, `["t", "<block_height>"]`, `["p", "<node_pubkey>"]`, `["r", "<relay_url>"]` |
+| 38808 | BLOCK | Bitcoin node operators | `block_height`, `block_hash`, `block_time`, `previous_hash`, `ref_clock_pubkey`, `ref_block_id` | `["d", "org.cityprotocol:block:<height>:<hash>"]`, `["p", "<clock_pubkey>"]` |
 | 38188 | MARKETPLACE | Marketplace operators | `name`, `description`, `admin_pubkey`, `min_duration`, `max_duration`, `match_fee_sats`, `confirmation_fee_sats`, `ref_block_id` | `["d", "org.attnprotocol:marketplace:<marketplace_id>"]`, `["a", "<block_coordinate>"]`, `["p", "<marketplace_pubkey>"]`, `["k", "<kind>"]`, `["r", "<relay_url>"]` |
 | 38288 | BILLBOARD | Billboard operators | `name`, `description?`, `confirmation_fee_sats` | `["d", "org.attnprotocol:billboard:<billboard_id>"]`, `["a", "<marketplace_coordinate>"]`, `["p", "<billboard_pubkey>"]` |
 | 38388 | PROMOTION | Promotion creators | `duration`, `bid`, `event_id`, `call_to_action`, `call_to_action_url`, `escrow_id_list` | `["d", "org.attnprotocol:promotion:<promotion_id>"]`, `["a", "<marketplace_coordinate>"]`, `["a", "<video_coordinate>"]`, `["a", "<billboard_coordinate>"]` |
@@ -64,22 +68,25 @@ The ATTN Protocol uses only official Nostr tags. All custom data is stored in th
 
 ---
 
-## BLOCK Event (kind 38088)
+## BLOCK Event (kind 38808) - City Protocol
 
 **Purpose**: Bitcoin block arrival signal for protocol synchronization
 
-**Published By**: Bitcoin node services
+**Published By**: Bitcoin node operators see [City Protocol](https://github.com/joinnextblock/city-protocol)
 
 **When**: Immediately after a new Bitcoin block is confirmed on the Bitcoin network
+
+**Note**: Block events are published by City Protocol, not ATTN Protocol. ATTN Protocol events reference City Protocol block events for timing synchronization. This allows the attention marketplace to operate on Bitcoin time without needing its own block event infrastructure.
 
 **Schema**:
 
 ```typescript
-interface BlockContent {
-  // Block data (no event prefix - this is the source event)
-  height: number;
-  hash: string;
-  time?: number;  // Unix timestamp (optional, informational only; block height is the primary timing mechanism)
+interface CityBlockContent {
+  // Block data (City Protocol format)
+  block_height: number;
+  block_hash: string;
+  block_time: number;  // Unix timestamp
+  previous_hash: string;
   difficulty?: string;
   tx_count?: number;
   size?: number;
@@ -89,7 +96,7 @@ interface BlockContent {
   nonce?: number;
 
   // Reference fields (ref_ prefix)
-  ref_node_pubkey: string;  // From event.pubkey
+  ref_clock_pubkey: string;  // From event.pubkey (City clock pubkey)
   ref_block_id: string;  // Block identifier (from d tag)
 }
 ```
@@ -98,10 +105,8 @@ interface BlockContent {
 
 ```typescript
 [
-  ["d", "org.attnprotocol:block:<height>:<hash>"],  // Block identifier
-  ["t", "<block_height>"],
-  ["p", "<node_pubkey>"],  // Node that published this block
-  ["r", "<relay_url>"]  // Multiple - relay URLs
+  ["d", "org.cityprotocol:block:<height>:<hash>"],  // Block identifier
+  ["p", "<clock_pubkey>"]  // Clock that published this block
 ]
 ```
 
@@ -109,34 +114,34 @@ interface BlockContent {
 
 ```json
 {
-  "kind": 38088,
-  "pubkey": "node_service_pubkey_hex",
+  "kind": 38808,
+  "pubkey": "clock_pubkey_hex",
   "created_at": 1234567890,
   "tags": [
-    ["d", "org.attnprotocol:block:862626:00000000000000000001a7c..."],
-    ["t", "862626"],
-    ["p", "node_service_pubkey_hex"],
-    ["r", "wss://relay.nextblock.city"]
+    ["d", "org.cityprotocol:block:862626:00000000000000000001a7c..."],
+    ["p", "clock_pubkey_hex"]
   ],
   "content": {
-    "height": 862626,
-    "hash": "00000000000000000001a7c...",
-    "time": 1234567890,
+    "block_height": 862626,
+    "block_hash": "00000000000000000001a7c...",
+    "block_time": 1234567890,
+    "previous_hash": "00000000000000000000b2f...",
     "difficulty": "97345261772782.69",
     "tx_count": 2345,
-    "ref_node_pubkey": "node_service_pubkey_hex",
-    "ref_block_id": "org.attnprotocol:block:862626:00000000000000000001a7c..."
+    "ref_clock_pubkey": "clock_pubkey_hex",
+    "ref_block_id": "org.cityprotocol:block:862626:00000000000000000001a7c..."
   }
 }
 ```
 
 **Notes:**
-- One event per block height per Bitcoin node service
-- Multiple Bitcoin node services can publish for the same block (clients verify consensus)
-- Block height in `t` tag enables efficient filtering: `{ kinds: [38088], "#t": ["862626"] }`
-- All ATTN Protocol events reference block height via `["t", "<block_height>"]` tag
+- Block events are published by Bitcoin node operators, not ATTN Protocol
+- Block events are a pure timing primitive - they have no awareness of other protocols
+- One event per block height per clock
+- Multiple clocks can publish for the same block (clients verify consensus)
+- Other protocols (ATTN, City analytics) reference block events when they need timing synchronization
 - Block events are the timing primitive for the entire protocol
-- The `time` field is informational only; block height is the primary timing mechanism for all protocol operations
+- The `block_time` field is informational only; block height is the primary timing mechanism for all protocol operations
 - Block event contains entire block data minus all transactions (only `tx_count` is included)
 
 ---
@@ -165,8 +170,8 @@ interface MarketplaceContent {
   // Reference fields (ref_ prefix)
   ref_marketplace_pubkey: string;
   ref_marketplace_id: string;
-  ref_node_pubkey: string;  // Block node this marketplace listens to
-  ref_block_id: string;  // Current block event identifier (org.attnprotocol:block:<height>:<hash>)
+  ref_clock_pubkey: string;  // Clock pubkey this marketplace listens to
+  ref_block_id: string;  // Current block event identifier (org.cityprotocol:block:<height>:<hash>)
 
   // Metrics fields (required, can be 0)
   billboard_count: number;  // Total billboards (can be 0)
@@ -182,10 +187,10 @@ interface MarketplaceContent {
 [
   ["d", "org.attnprotocol:marketplace:<marketplace_id>"],
   ["t", "<block_height>"],
-  ["a", "38088:<node_pubkey>:org.attnprotocol:block:<height>:<hash>"],  // Current block event coordinate
+  ["a", "38808:<clock_pubkey>:org.cityprotocol:block:<height>:<hash>"],  // City Protocol block event coordinate
   ["k", "<kind>"],  // Multiple - supported content kinds
   ["p", "<marketplace_pubkey>"],
-  ["p", "<node_pubkey>"],  // Block node reference
+  ["p", "<clock_pubkey>"],  // City clock reference
   ["r", "<relay_url>"],  // Multiple
   ["u", "<website_url>"]  // Optional
 ]
@@ -201,10 +206,10 @@ interface MarketplaceContent {
   "tags": [
     ["d", "org.attnprotocol:marketplace:nextblock.city"],
     ["t", "862626"],
-    ["a", "38088:node_service_pubkey_hex:org.attnprotocol:block:862626:00000000000000000001a7c..."],
+    ["a", "38808:clock_pubkey_hex:org.cityprotocol:block:862626:00000000000000000001a7c..."],
     ["k", "34236"],
     ["p", "marketplace_pubkey_hex"],
-    ["p", "node_service_pubkey_hex"],
+    ["p", "clock_pubkey_hex"],
     ["r", "wss://relay.nextblock.city"],
     ["u", "https://nextblock.city"]
   ],
@@ -218,8 +223,8 @@ interface MarketplaceContent {
     "confirmation_fee_sats": 0,
     "ref_marketplace_pubkey": "marketplace_pubkey_hex",
     "ref_marketplace_id": "nextblock.city",
-    "ref_node_pubkey": "node_service_pubkey_hex",
-    "ref_block_id": "org.attnprotocol:block:862626:00000000000000000001a7c...",
+    "ref_clock_pubkey": "clock_pubkey_hex",
+    "ref_block_id": "org.cityprotocol:block:862626:00000000000000000001a7c...",
     "billboard_count": 5,
     "promotion_count": 42,
     "attention_count": 128,
@@ -230,7 +235,7 @@ interface MarketplaceContent {
 
 **Relationships:**
 - **Referenced by:** BILLBOARD events (via `["a", "<marketplace_coordinate>"]` tag), PROMOTION events, ATTENTION events, MATCH events
-- **References:** BLOCK event (via `["a", "<block_coordinate>"]` tag, `["p", "<node_pubkey>"]` tag, `ref_node_pubkey`, and `ref_block_id`)
+- **References:** City Protocol BLOCK event (via `["a", "<block_coordinate>"]` tag, `["p", "<clock_pubkey>"]` tag, `ref_clock_pubkey`, and `ref_block_id`)
 
 **Notes:**
 - Marketplace events are republished/updated for each new block to maintain current state
@@ -1158,8 +1163,8 @@ All events use these reference fields consistently (ref_ prefix):
 - `ref_attention_pubkey`
 - `ref_match_id`
 - `ref_match_event_id`
-- `ref_node_pubkey`
-- `ref_block_id`
+- `ref_clock_pubkey` (clock pubkey)
+- `ref_block_id` (City Protocol block identifier)
 - `ref_billboard_confirmation_event_id`
 - `ref_attention_confirmation_event_id`
 
@@ -1167,8 +1172,11 @@ All events use these reference fields consistently (ref_ prefix):
 
 All events include:
 - `["t", "<block_height>"]` - Block height for synchronization
-- `["d", "org.attnprotocol:<event_type>:<identifier>"]` - For all protocol events (38088, 38188, 38288, 38388, 38488, 38588, 38688, 38788, 38888, 38988). Format: `org.attnprotocol:` prefix, followed by event type (block, marketplace, billboard, promotion, attention, billboard-confirmation, attention-confirmation, marketplace-confirmation, match, attention-payment-confirmation), followed by unique identifier.
-- `["a", "kind:pubkey:org.attnprotocol:event_type:identifier"]` - For referencing ATTN Protocol events (format: `kind:pubkey:org.attnprotocol:event_type:identifier`). For non-protocol events (e.g., video content kind 34236), the format is `kind:pubkey:d_tag` without the `org.attnprotocol:` prefix.
+- `["d", "org.attnprotocol:<event_type>:<identifier>"]` - For ATTN Protocol events (38188, 38288, 38388, 38488, 38588, 38688, 38788, 38888, 38988). Format: `org.attnprotocol:` prefix, followed by event type (marketplace, billboard, promotion, attention, billboard-confirmation, attention-confirmation, marketplace-confirmation, match, attention-payment-confirmation), followed by unique identifier.
+- `["d", "org.cityprotocol:<event_type>:<identifier>"]` - For City Protocol events (38808 block). Format: `org.cityprotocol:` prefix, followed by event type (block), followed by unique identifier.
+- `["a", "kind:pubkey:org.attnprotocol:event_type:identifier"]` - For referencing ATTN Protocol events (format: `kind:pubkey:org.attnprotocol:event_type:identifier`).
+- `["a", "kind:pubkey:org.cityprotocol:event_type:identifier"]` - For referencing City Protocol events (format: `kind:pubkey:org.cityprotocol:event_type:identifier`).
+- For non-protocol events (e.g., video content kind 34236), the format is `kind:pubkey:d_tag` without namespace prefix.
 - `["p", "<pubkey>"]` - For all party pubkeys
 - `["r", "<relay_url>"]` - For relay hints (multiple allowed)
 - `["k", "<kind>"]` - For content kinds (multiple allowed where applicable)
